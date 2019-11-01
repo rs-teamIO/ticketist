@@ -1,15 +1,33 @@
 package com.siit.ticketist.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.*;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
-@Getter @Setter @NoArgsConstructor
+@Entity
+@Table(name = "Reservations")
+@Getter @Setter
 public class Reservation {
+
+   @Id
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
+
+   @Column(nullable = false)
    private Boolean isCancelled;
+
+   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   @JoinColumn(name = "reservation_id")
    private Set<Seat> seats;
-   private User user;
+
+   @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   @JoinColumn(name = "user_id")
+   private RegisteredUser user;
+
+   public Reservation() {
+      seats = new HashSet<>();
+   }
 }

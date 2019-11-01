@@ -1,6 +1,10 @@
 package com.siit.ticketist.model;
 
-import java.util.*;
+import lombok.NoArgsConstructor;
 
-public class Admin extends Person {
+import javax.persistence.Entity;
+
+@Entity
+@NoArgsConstructor
+public class Admin extends User {
 }
