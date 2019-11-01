@@ -19,10 +19,10 @@ public class Sector {
    private String name;
 
    @Column(nullable = false)
-   private Integer rowsNumber;
+   private Integer rowsCount;
 
    @Column(nullable = false)
-   private Integer columnsNumber;
+   private Integer columnsCount;
 
    @Column(nullable = false)
    private Integer capacity;
