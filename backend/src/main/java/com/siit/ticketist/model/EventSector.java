@@ -29,8 +29,8 @@ public class EventSector {
    private Date date;
 
    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "eventSector")
-   @JsonBackReference(value = "eventSector-seats")
-   private Set<Seat> seats;
+   @JsonBackReference(value = "eventSector-tickets")
+   private Set<Ticket> tickets;
 
    @OneToOne(cascade = { CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.LAZY)
    @JoinColumn(name = "sector_id")
@@ -41,6 +41,6 @@ public class EventSector {
    private Event event;
 
    public EventSector() {
-      seats = new HashSet<>();
+      tickets = new HashSet<>();
    }
 }

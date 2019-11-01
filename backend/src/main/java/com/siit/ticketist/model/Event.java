@@ -51,10 +51,6 @@ public class Event {
    @JsonBackReference(value = "event-tickets")
    private Set<Ticket> tickets;
 
-   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-   @JoinColumn(name = "event_id")
-   private Set<Reservation> reservations;
-
    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
    @JoinColumn(name = "venue_id")
    private Venue venue;
@@ -63,6 +59,5 @@ public class Event {
       mediaFiles = new HashSet<>();
       eventSectors = new HashSet<>();
       tickets = new HashSet<>();
-      reservations = new HashSet<>();
    }
 }

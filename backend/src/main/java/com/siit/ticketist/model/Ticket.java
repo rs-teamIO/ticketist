@@ -17,13 +17,26 @@ public class Ticket {
    private Long id;
 
    @Column(nullable = false)
+   private Integer numberRow;
+
+   @Column(nullable = false)
+   private Integer numberColumn;
+
+   @Column(nullable = false)
    private BigDecimal price;
 
-   @OneToOne(cascade = { CascadeType.DETACH, CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.LAZY)
-   @JoinColumn(name = "seat_id")
-   private Seat seat;
+   @Column(nullable = false)
+   private Boolean isPaid;
+
+   @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   @JoinColumn(name = "event_sector_id")
+   private EventSector eventSector;
 
    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
    @JoinColumn(name = "event_id")
    private Event event;
+
+   @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   @JoinColumn(name = "user_id")
+   private RegisteredUser user;
 }

@@ -23,17 +23,12 @@ public class RegisteredUser extends User {
    private String verificationCode;
 
    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="user")
-   @JsonBackReference(value = "registeredUser-reservations")
-   private Set<Reservation> reservations;
-
-   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-   @JoinColumn(name = "user_id")
+   @JsonBackReference(value = "registeredUser-tickets")
    private Set<Ticket> tickets;
 
    public RegisteredUser() {
       verificationCode = UUID.randomUUID().toString();
       isVerified = false;
-      reservations = new HashSet<Reservation>();
-      tickets = new HashSet<Ticket>();
+      tickets = new HashSet<>();
    }
 }
