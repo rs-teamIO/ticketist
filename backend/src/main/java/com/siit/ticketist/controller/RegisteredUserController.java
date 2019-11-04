@@ -4,7 +4,6 @@ import com.siit.ticketist.dto.RegisterUserDto;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.service.RegisteredUserService;
 import com.siit.ticketist.service.UserService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
