@@ -2,15 +2,14 @@ package com.siit.ticketist.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor
 public class RegisteredUser extends User {
 
    @Column
@@ -26,9 +25,8 @@ public class RegisteredUser extends User {
    @JsonBackReference(value = "registeredUser-tickets")
    private Set<Ticket> tickets;
 
-   public RegisteredUser() {
-      verificationCode = UUID.randomUUID().toString();
-      isVerified = false;
-      tickets = new HashSet<>();
+   public RegisteredUser(String username, String password, String email, String firstName, String lastName) {
+      super(username, password, email, firstName, lastName);
+      this.authorities.add(Role.REGISTERED_USER);
    }
 }
