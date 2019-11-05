@@ -8,11 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 /**
@@ -41,10 +39,16 @@ public class RegisteredUserController {
      * @return ResponseEntity containing the ID of created User
      */
     @PostMapping
-    public ResponseEntity handleCreate(@Valid @RequestBody RegisterUserDto dto) {
+    public ResponseEntity handleCreate(@Valid @RequestBody RegisterUserDto dto) throws MessagingException {
         userService.checkIfUsernameTaken(dto.getUsername());
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
         final RegisteredUser registeredUser = registeredUserService.create(dto.convertToEntity());
         return new ResponseEntity<>(registeredUser.getId(), HttpStatus.CREATED);
+    }
+
+    @GetMapping(value="{verificationCode}")
+    public ResponseEntity handleVerify(@PathVariable("verificationCode") String verificationCode) {
+        registeredUserService.verify(verificationCode);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.mail.MessagingException;
+
 @ControllerAdvice
 public class ExceptionResolver {
 
@@ -24,5 +26,10 @@ public class ExceptionResolver {
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity handleForbiddenException(ForbiddenException e) {
         return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity handleMessagingException(MessagingException e) {
+        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
