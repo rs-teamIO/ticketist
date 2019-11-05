@@ -18,6 +18,9 @@ public class EventDTO {
     @NotBlank(message = "name cannot be blank")
     private String name;
 
+    @NotNull(message = "venue id cannot be null")
+    private Long venueId;
+
     @NotNull(message = "category cannot be null")
     private Category category;
 
@@ -36,18 +39,15 @@ public class EventDTO {
     @NotBlank(message = "description cannot be blank")
     private String description;
 
+    @NotNull(message = "event sectors cannot be null")
+    private Set<EventSectorDTO> eventSectors;
+
     @NotNull(message = "media files cannot be null")
     private Set<MediaFile> mediaFiles;
 
-    @NotNull(message = "sectors cannot be null")
-    private Set<SectorDTO> sectors;
-
-    @NotNull(message = "venue id cannot be null")
-    private Long venueId;
-
     public EventDTO(){
         mediaFiles = new HashSet<>();
-        sectors = new HashSet<>();
+        eventSectors = new HashSet<>();
     }
 
     public EventDTO(Event event) {
@@ -61,11 +61,11 @@ public class EventDTO {
         this.description = event.getDescription();
         this.mediaFiles = event.getMediaFiles();
         this.venueId = event.getVenue().getId();
-        Set<SectorDTO> sectors = new HashSet<>();
-        for(Sector sector : event.getVenue().getSectors()) {
-            sectors.add(new SectorDTO(sector));
+        Set<EventSectorDTO> eventSectors = new HashSet<>();
+        for(EventSector eventSector : event.getEventSectors()) {
+            eventSectors.add(new EventSectorDTO(eventSector));
         }
-        this.setSectors(sectors);
+        this.eventSectors = eventSectors;
     }
 
     public Event convertToEntity() {
@@ -79,14 +79,17 @@ public class EventDTO {
         event.setReservationLimit(this.reservationLimit);
         event.setDescription(this.description);
         event.setMediaFiles(this.mediaFiles);
+
         Venue venue = new Venue();
         venue.setId(this.venueId);
         event.setVenue(venue);
-        Set<Sector> sectors = new HashSet<>();
-        for(SectorDTO sector : this.sectors) {
-            sectors.add(sector.convertToEntity());
+
+        Set<EventSector> eventSectors = new HashSet<>();
+        for(EventSectorDTO eventSector : this.eventSectors) {
+            eventSectors.add(eventSector.convertToEntity());
         }
-        venue.setSectors(sectors);
+        event.setEventSectors(eventSectors);
+
         return event;
     }
 

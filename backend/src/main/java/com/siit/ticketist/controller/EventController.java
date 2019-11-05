@@ -25,11 +25,11 @@ public class EventController {
 
 
     @GetMapping(value="/{id}")
-    public ResponseEntity<EventDTO> getEvent(@PathVariable long id){
-        try{
-            return new ResponseEntity<>(eventService.findOne(id),HttpStatus.OK);
-        }catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.OK);
+    public ResponseEntity<Object> getEvent(@PathVariable long id){
+        try {
+            return new ResponseEntity<>(eventService.findOne(id), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 

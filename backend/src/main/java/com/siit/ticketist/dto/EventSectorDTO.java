@@ -3,16 +3,15 @@ package com.siit.ticketist.dto;
 import com.siit.ticketist.model.Event;
 import com.siit.ticketist.model.EventSector;
 import com.siit.ticketist.model.Sector;
-import com.siit.ticketist.model.Ticket;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Set;
 
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor
 public class EventSectorDTO {
 
     private Long id;
@@ -23,19 +22,17 @@ public class EventSectorDTO {
     @NotNull(message = "are seats numerated cannot be null")
     private Boolean numeratedSeats;
 
-    @NotNull(message = "date cannot be null")
     private Date date;
 
     @NotNull(message = "sector id cannot be null")
     private Long sectorId;
 
-    @NotNull(message = "event id cannot be null")
     private Long eventId;
 
     public EventSectorDTO(EventSector eventSector) {
         this.id = eventSector.getId();
         this.ticketPrice = eventSector.getTicketPrice();
-        this. numeratedSeats = eventSector.getNumeratedSeats();
+        this.numeratedSeats = eventSector.getNumeratedSeats();
         this.date = eventSector.getDate();
         this.sectorId = eventSector.getSector().getId();
         this.eventId = eventSector.getEvent().getId();
