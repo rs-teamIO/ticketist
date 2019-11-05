@@ -6,11 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name="Venues")
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter
 public class Venue {
 
    @Id
@@ -23,15 +24,28 @@ public class Venue {
    @Column(nullable = false)
    private Boolean isActive;
 
+   @Column(nullable = false)
+   private String street;
+
+   @Column(nullable = false)
+   private String city;
+
+   @Column(nullable = false)
+   private Double latitude;
+
+   @Column(nullable = false)
+   private Double longitude;
+
    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
    @JoinColumn(name = "venue_id")
    private Set<Sector> sectors;
 
-   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-   @JoinColumn(name = "location_id")
-   private Location location;
-
    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "venue")
    @JsonBackReference(value = "venue-events")
    private Set<Event> events;
+
+   public Venue() {
+      this.events = new HashSet<>();
+      this.sectors = new HashSet<>();
+   }
 }

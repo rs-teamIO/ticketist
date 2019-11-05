@@ -25,7 +25,7 @@ public class Sector {
    private Integer columnsCount;
 
    @Column(nullable = false)
-   private Integer capacity;
+   private Integer maxCapacity;
 
    @Column(nullable = false)
    private Integer startRow;
