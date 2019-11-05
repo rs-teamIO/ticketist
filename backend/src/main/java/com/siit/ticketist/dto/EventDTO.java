@@ -1,9 +1,6 @@
 package com.siit.ticketist.dto;
 
-import com.siit.ticketist.model.Category;
-import com.siit.ticketist.model.Event;
-import com.siit.ticketist.model.MediaFile;
-import com.siit.ticketist.model.Venue;
+import com.siit.ticketist.model.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,11 +39,15 @@ public class EventDTO {
     @NotNull(message = "media files cannot be null")
     private Set<MediaFile> mediaFiles;
 
+    @NotNull(message = "sectors cannot be null")
+    private Set<SectorDTO> sectors;
+
     @NotNull(message = "venue id cannot be null")
     private Long venueId;
 
     public EventDTO(){
         mediaFiles = new HashSet<>();
+        sectors = new HashSet<>();
     }
 
     public EventDTO(Event event) {
@@ -60,6 +61,11 @@ public class EventDTO {
         this.description = event.getDescription();
         this.mediaFiles = event.getMediaFiles();
         this.venueId = event.getVenue().getId();
+        Set<SectorDTO> sectors = new HashSet<>();
+        for(Sector sector : event.getVenue().getSectors()) {
+            sectors.add(new SectorDTO(sector));
+        }
+        this.setSectors(sectors);
     }
 
     public Event convertToEntity() {
@@ -76,6 +82,11 @@ public class EventDTO {
         Venue venue = new Venue();
         venue.setId(this.venueId);
         event.setVenue(venue);
+        Set<Sector> sectors = new HashSet<>();
+        for(SectorDTO sector : this.sectors) {
+            sectors.add(sector.convertToEntity());
+        }
+        venue.setSectors(sectors);
         return event;
     }
 
