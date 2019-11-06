@@ -18,7 +18,7 @@ public class RegisteredUser extends User {
    @Column(nullable = false)
    private Boolean isVerified;
 
-   @Column(nullable = false)
+   @Column
    private String verificationCode;
 
    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="user")
@@ -27,6 +27,5 @@ public class RegisteredUser extends User {
 
    public RegisteredUser(String username, String password, String email, String firstName, String lastName) {
       super(username, password, email, firstName, lastName);
-      this.authorities.add(Role.REGISTERED_USER);
    }
 }

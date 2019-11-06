@@ -23,6 +23,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Generates a {@link UserDetails} instance for given username
+     * In case an user with given username is not found, {@link UsernameNotFoundException} is thrown.
+     *
+     * @param username User's username
+     * @return {@link UserDetails} instance
+     */
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
