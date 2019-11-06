@@ -13,21 +13,22 @@ import java.util.stream.Collectors;
 @Setter
 public class ReportDTO {
 
-    //naziv venue-a - ukupna zarada (u prethodnih 12 meseci?)
+    //naziv venue-a - ukupna zarada
+    //TODO prikazivati zaradu u prethodnih 12 meseci ili za zivota (trenutno je za zivota)
     Map<String, BigDecimal> allVenuesChart;
 
     List<EventReportDTO> events;
 
-    Map<BigDecimal, BigDecimal> singleVenueChart;
+    Map<Integer, Float> singleVenueChart;
 
     public class EventReportDTO {
 
         public String name;
         public String venueName;
-        public Integer ticketsSold;
+        public Long ticketsSold;
         public BigDecimal totalRevenue;
 
-        public EventReportDTO(String name, String venueName, Integer ticketsSold, BigDecimal totalRevenue){
+        public EventReportDTO(String name, String venueName, Long ticketsSold, BigDecimal totalRevenue){
             this.name = name;
             this.venueName = venueName;
             this.ticketsSold = ticketsSold;
@@ -35,13 +36,26 @@ public class ReportDTO {
         }
     }
 
-    public ReportDTO(Map<String, BigDecimal> mapa, List<Object[]> lista){
-        this.allVenuesChart = mapa;
-        this.events = lista
+    public ReportDTO generateInitialReport(Map<String, BigDecimal> allVenuesChart, List<Object[]> events){
+        this.allVenuesChart = allVenuesChart;
+        this.events = events
                 .stream()
-                .map(obj -> new EventReportDTO((String)obj[0], (String)obj[1], ((BigInteger)obj[2]).intValue(), (BigDecimal)obj[3]))
+                .map(obj -> new EventReportDTO((String)obj[0], (String)obj[1], (Long)obj[2], (BigDecimal)obj[3]))
                 .collect(Collectors.toList());
         this.singleVenueChart = null;
+        return this;
     }
+
+    public ReportDTO generateSpecificReport(Map<Integer, Float> singleVenueChart, List<Object[]> events){
+        this.singleVenueChart = singleVenueChart;
+        this.events = events
+                .stream()
+                .map(obj -> new EventReportDTO((String)obj[0], (String)obj[1], (Long)obj[2], (BigDecimal)obj[3]))
+                .collect(Collectors.toList());
+        this.allVenuesChart = null;
+        return this;
+    }
+
+
 
 }

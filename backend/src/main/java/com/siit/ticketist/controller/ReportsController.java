@@ -24,16 +24,17 @@ public class ReportsController {
 
     @GetMapping
     public ResponseEntity generateInitialReport(){
-        ReportDTO dto = new ReportDTO(
-                venueService.getAllVenueRevenues(), eventService.findAllEventsReport());
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        ReportDTO dto = new ReportDTO();
+        return new ResponseEntity<>(dto.generateInitialReport(venueService.getAllVenueRevenues(), eventService.findAllEventsReport()),
+                HttpStatus.OK);
     }
 
-    @GetMapping(value="/{venueName}/{criteria}")
-    public ResponseEntity generateVenueReport(@PathVariable("venueName") String venueName,
+    @GetMapping(value="/{venueId}/{criteria}")
+    public ResponseEntity generateVenueReport(@PathVariable("venueId") Long venueId,
                                               @PathVariable("criteria") String criteria){
-        //TODO
-        return new ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+        ReportDTO dto = new ReportDTO();
+        return new ResponseEntity(dto.generateSpecificReport(eventService.getVenueChart(criteria, venueId), eventService.findAllEventReportsByVenue(venueId)),
+                HttpStatus.OK);
     }
 
 }

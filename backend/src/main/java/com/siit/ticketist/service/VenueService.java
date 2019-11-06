@@ -15,6 +15,7 @@ public class VenueService {
     @Autowired
     private VenueRepository venueRepository;
 
+    //TODO sta ako je prazna lista
     public Map<String, BigDecimal> getAllVenueRevenues(){
         Map<String, BigDecimal> venueRevenue =
                 venueRepository.getAllVenueRevenues()
