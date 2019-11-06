@@ -23,7 +23,6 @@ public class TicketDTO {
     @NotNull(message = "price cannot be null")
     private BigDecimal price;
 
-    @NotNull(message = "is paid cannot be null")
     private Boolean isPaid;
 
     @NotBlank(message = "event sector id cannot be blank")
@@ -38,6 +37,7 @@ public class TicketDTO {
     public TicketDTO(Ticket ticket){
         this.id = ticket.getId();
         this.isPaid = ticket.getIsPaid();
+        this.price = ticket.getPrice();
         this.numberColumn = ticket.getNumberColumn();
         this.numberRow = ticket.getNumberColumn();
         this.eventId = ticket.getEvent().getId();
