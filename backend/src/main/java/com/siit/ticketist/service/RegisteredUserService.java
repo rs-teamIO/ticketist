@@ -44,6 +44,12 @@ public class RegisteredUserService {
         return registeredUser;
     }
 
+    /**
+     * Verifies the user's account and removes previously generated verification code.
+     *
+     * @param registeredUser RegisteredUser instance to be verified
+     * @return verified RegisteredUser
+     */
     public RegisteredUser verify(String verificationCode) {
 
         final RegisteredUser registeredUser = registeredUserRepository.findByVerificationCode(verificationCode)

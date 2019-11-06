@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.mail.MessagingException;
 
+/**
+ * Provides global exception handling.
+ */
 @ControllerAdvice
 public class ExceptionResolver {
 

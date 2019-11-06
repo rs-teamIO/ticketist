@@ -16,16 +16,16 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * E-mail delivery service
+ */
 @Service
 public class EmailService {
 
     @Value("${spring.mail.username}")
     private String email;
 
-    @Autowired
     private final JavaMailSender mailSender;
-
-    @Autowired
     private final SpringTemplateEngine springTemplateEngine;
 
     @Autowired
@@ -34,6 +34,13 @@ public class EmailService {
         this.springTemplateEngine = springTemplateEngine;
     }
 
+    /**
+     * Sends a verification e-mail to the registered user.
+     * In case an messaging error on the SMTP server occurs, a {@link MessagingException} is thrown.
+     *
+     * @param registeredUser RegisteredUser instance as recepient
+     * @throws MessagingException
+     */
     @Async
     public void sendVerificationEmail(RegisteredUser registeredUser) throws MessagingException {
 
@@ -48,6 +55,12 @@ public class EmailService {
         mailSender.send(mailMessage);
     }
 
+    /**
+     * Generates verification e-mail content using a template, based on the user's info.
+     *
+     * @param registeredUser RegisteredUser instance as recepient, used to fill template data
+     * @return Email content
+     */
     @Async
     private String generateVerificationMail(RegisteredUser user) {
         Map<String, Object> variables = new HashMap<>();

@@ -46,9 +46,16 @@ public class RegisteredUserController {
         return new ResponseEntity<>(registeredUser.getId(), HttpStatus.CREATED);
     }
 
+    /**
+     * GET /api/users/{verificationCode}
+     * Endpoint used for user account verification.
+     *
+     * @param verificationCode Verification code string
+     * @return ResponseEntity containing HttpStatus and message of the operation result
+     */
     @GetMapping(value="{verificationCode}")
     public ResponseEntity handleVerify(@PathVariable("verificationCode") String verificationCode) {
         registeredUserService.verify(verificationCode);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity("User verified successfully.", HttpStatus.OK);
     }
 }
