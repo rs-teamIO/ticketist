@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Implementation of {@link UserDetails}.
+ * Custom implementation of {@link UserDetails}.
  */
 @Getter @Setter
 public class SpringSecurityUser implements UserDetails {

@@ -81,8 +81,7 @@ public class UserService {
      * @param username username
      */
     public void checkIfUsernameTaken(String username) {
-        final Optional user = userRepository.findByUsernameIgnoreCase(username);
-        if (user.isPresent())
-            throw new BadRequestException(String.format("Username '%s' is already taken", username));
+        userRepository.findByUsernameIgnoreCase(username)
+                .ifPresent(u -> {throw new BadRequestException(String.format("Username '%s' is already taken", username));});
     }
 }
