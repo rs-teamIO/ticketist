@@ -86,13 +86,12 @@ public class EmailService {
     private TicketRepository ticketRepository;
 
     @Async
-    @Scheduled(fixedRate = 15000)
+    @Scheduled(fixedRate = 86400000)
     public void sendDeadlineNotifications() throws MessagingException, ParseException {
         List<Event> events = filterEventsByDeadline(eventRepository.findAll());
         List<String> emails;
         for(Event e : events){
             emails = ticketRepository.findEmailsToBeNotified(e.getId());
-            //emails.stream().forEach(this::sendNotificationEmail);
             for(String email : emails){
                 sendNotificationEmail(email);
             }
@@ -103,16 +102,22 @@ public class EmailService {
         MimeMessage mailMessage = mailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(mailMessage, "utf-8");
 
-        mailMessage.setContent("Consider yourself notified.", "text/html");
+        mailMessage.setContent(generateNotificationMail(), "text/html");
         messageHelper.setTo(email);
-        messageHelper.setSubject("Consider yourself notified.");
+        messageHelper.setSubject("Reservation soon to expire");
         messageHelper.setFrom(this.email);
 
         mailSender.send(mailMessage);
     }
 
-    private void generateNotificationMail(){
+    private String generateNotificationMail(){
+        Map<String, Object> variables = new HashMap<>();
 
+        final String templateFileName = "notificationMail";
+        String output = this.springTemplateEngine
+                .process(templateFileName, new Context(Locale.getDefault(), variables));
+
+        return output;
     }
 
     private List<Event> filterEventsByDeadline(List<Event> allEvents){

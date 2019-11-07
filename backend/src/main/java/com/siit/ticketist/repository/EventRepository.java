@@ -74,7 +74,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "SELECT * " +
             "FROM events e JOIN venues v ON e.venue_id = v.id " +
             "WHERE LOWER(e.name) LIKE concat('%', LOWER(:eventName), '%') " +
-            "AND COALESCE(LOWER(e.category), '') LIKE concat('%', LOWER(:category), '%') " +
+            "AND LOWER(e.category) LIKE concat('%', LOWER(:category), '%') " +
             "AND LOWER(v.name) LIKE concat('%', LOWER(:venueName), '%') " +
             "AND COALESCE( (e.start_date >= :startDate), true) AND COALESCE( (e.start_date <= :endDate), true)",
             nativeQuery = true)
