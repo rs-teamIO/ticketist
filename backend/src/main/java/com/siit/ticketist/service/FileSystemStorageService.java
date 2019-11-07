@@ -4,6 +4,7 @@ import com.siit.ticketist.controller.exceptions.BadRequestException;
 import com.siit.ticketist.controller.exceptions.NotFoundException;
 import com.siit.ticketist.service.interfaces.StorageService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedOutputStream;
@@ -12,14 +13,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
+@Service
 public class FileSystemStorageService implements StorageService {
 
     @Value("${storage-root}")
     private String root;
 
     @Override
-    public void write(Long id, MultipartFile file) {
-        final String path = String.format("%s/%d.jpg", root, id);
+    public void write(String fileName, MultipartFile file) {
+        final String path = String.format("%s/%s.jpg", root, fileName);
         final File mediaFile = new File(path);
         try {
             if (mediaFile.exists()) {
@@ -39,9 +41,9 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public byte[] read(Long id) {
+    public byte[] read(String fileName) {
         try {
-            final File path = new File(String.format("%s/%d.jpg", root, id));
+            final File path = new File(String.format("%s/%s.jpg", root, fileName));
             return Files.readAllBytes(path.toPath());
         } catch (IOException e) {
             throw new NotFoundException("Requested media file not found.");

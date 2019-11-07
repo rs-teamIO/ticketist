@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -34,9 +35,9 @@ public class EventController {
     }
 
     @PostMapping()
-    public ResponseEntity<Object> createEvent(@Valid @RequestBody EventDTO event){
+    public ResponseEntity<Object> createEvent(@Valid @RequestBody EventDTO event, @RequestParam("mediaFiles") MultipartFile[] mediaFiles){
         try{
-            return new ResponseEntity<>(eventService.save(event),HttpStatus.OK);
+            return new ResponseEntity<>(eventService.save(event, mediaFiles),HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }

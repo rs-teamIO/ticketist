@@ -9,16 +9,16 @@ public interface StorageService {
     /**
      * Write file to storage (filesystem, DB, etc.)
      *
-     * @param id Id of the file
+     * @param fileName Name of the file
      * @param file Multipart File
      */
-    void write(Long id, MultipartFile file);
+    void write(String fileName, MultipartFile file);
 
     /**
      * Read file from storage (filesystem, DB, etc.)
      *
-     * @param id Id of the file
+     * @param fileName Name of the file
      * @return Byte array file content
      */
-    byte[] read(Long id);
+    byte[] read(String fileName);
 }

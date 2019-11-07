@@ -17,4 +17,8 @@ public class MediaFile {
 
    @Column(nullable = false)
    private String fileName;
+
+   public MediaFile(String fileName) {
+      this.fileName = fileName;
+   }
 }

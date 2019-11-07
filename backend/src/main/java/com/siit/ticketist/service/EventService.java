@@ -6,12 +6,13 @@ import com.siit.ticketist.dto.EventDTO;
 import com.siit.ticketist.dto.EventSectorDTO;
 import com.siit.ticketist.model.Event;
 import com.siit.ticketist.model.EventSector;
+import com.siit.ticketist.model.MediaFile;
 import com.siit.ticketist.repository.EventRepository;
-import com.siit.ticketist.repository.EventSectorRepository;
+import com.siit.ticketist.service.interfaces.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -19,6 +20,9 @@ public class EventService {
 
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private StorageService storageService;
 
     public List<EventDTO> findAll() {
         List<Event> events = eventRepository.findAll();
@@ -33,7 +37,7 @@ public class EventService {
         return new EventDTO(eventRepository.findById(id).orElseThrow(() -> new NotFoundException("Event not found")));
     }
 
-    public EventDTO save(EventDTO event) throws BadRequestException {
+    public EventDTO save(EventDTO event, MultipartFile[] mediaFiles) throws BadRequestException {
         if(event.getReservationDeadline().after(event.getStartDate()) || event.getStartDate().after(event.getEndDate())) {
             throw new BadRequestException("Dates are invalid");
         }
@@ -56,6 +60,15 @@ public class EventService {
             eventSector.setEvent(eventEntity);
         }
 
+        List<MediaFile> eventMediaFiles = new ArrayList<>();
+
+        Arrays.asList(mediaFiles).stream().forEach((mf) -> {
+            String fileName = UUID.randomUUID().toString();
+            storageService.write(fileName, mf);
+            eventMediaFiles.add(new MediaFile(fileName));
+        });
+
+        eventEntity.getMediaFiles().addAll(eventMediaFiles);
         return new EventDTO(eventRepository.save(eventEntity));
     }
 
