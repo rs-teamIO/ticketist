@@ -24,6 +24,8 @@ public class EventSectorDTO {
 
     private Date date;
 
+    private Integer capacity;
+
     @NotNull(message = "sector id cannot be null")
     private Long sectorId;
 
@@ -36,6 +38,7 @@ public class EventSectorDTO {
         this.date = eventSector.getDate();
         this.sectorId = eventSector.getSector().getId();
         this.eventId = eventSector.getEvent().getId();
+        this.capacity = eventSector.getCapacity();
     }
 
     public EventSector convertToEntity(){
@@ -44,6 +47,7 @@ public class EventSectorDTO {
         eventSector.setDate(this.date);
         eventSector.setNumeratedSeats(this.numeratedSeats);
         eventSector.setTicketPrice(this.ticketPrice);
+        eventSector.setCapacity(this.capacity);
         Event event = new Event();
         event.setId(this.eventId);
         eventSector.setEvent(event);

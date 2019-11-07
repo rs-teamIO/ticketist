@@ -1,6 +1,7 @@
 package com.siit.ticketist.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "EventSectors")
-@Getter @Setter
+@Getter @Setter @AllArgsConstructor
 public class EventSector {
 
    @Id
@@ -27,6 +28,9 @@ public class EventSector {
 
    @Column(nullable = false)
    private Date date;
+
+   @Column(nullable = false)
+   private Integer capacity;
 
    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "eventSector")
    @JsonBackReference(value = "eventSector-tickets")

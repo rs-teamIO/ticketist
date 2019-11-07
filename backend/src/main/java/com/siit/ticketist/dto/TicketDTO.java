@@ -20,7 +20,6 @@ public class TicketDTO {
     @NotNull(message = "number column cannot be null")
     private Integer numberColumn;
 
-    @NotNull(message = "price cannot be null")
     private BigDecimal price;
 
     private Boolean isPaid;
@@ -31,7 +30,6 @@ public class TicketDTO {
     @NotBlank(message = "event id cannot be blank")
     private Long eventId;
 
-    @NotBlank(message = "user id cannot be blank")
     private Long userId;
 
     public TicketDTO(Ticket ticket){
