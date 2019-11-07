@@ -51,7 +51,7 @@ public class Event {
    @JsonBackReference(value = "event-tickets")
    private Set<Ticket> tickets;
 
-   @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   @ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH }, fetch = FetchType.LAZY)
    @JoinColumn(name = "venue_id")
    private Venue venue;
 

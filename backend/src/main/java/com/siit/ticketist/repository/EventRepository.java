@@ -1,11 +1,7 @@
 package com.siit.ticketist.repository;
-
 import com.siit.ticketist.model.Event;
+import com.siit.ticketist.model.Sector;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
 
@@ -67,9 +63,4 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                     "AND CURDATE() AND t.is_paid = 1 " +
                     "GROUP BY MONTH(e.start_date)", nativeQuery = true)
     List<Object[]> getVenueRevenueReport(@Param("venueId") Long venueId);
-
-
-
-
-
 }
