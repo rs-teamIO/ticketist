@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class TicketService {
@@ -45,7 +43,7 @@ public class TicketService {
     public List<Ticket> buyTickets (List<Ticket> ticketsToBuy) {
 
         ArrayList<ArrayList<Ticket>> ticketLists = splitTicketsByNumeration(ticketsToBuy);
-
+        checkTicketDuplicates(ticketsToBuy);
         ArrayList<Ticket> numerated = ticketLists.get(0);
         ArrayList<Ticket> nonNumerated = ticketLists.get(1);
         Optional<EventSector> eventSector;
@@ -73,7 +71,9 @@ public class TicketService {
     @Transactional
     public List<Ticket> makeReservations (List<Ticket> reservations) throws BadRequestException {
 
+        checkReservationDate(reservations);
         checkMaxNumberOfReservationsPerUser(reservations);
+        checkTicketDuplicates(reservations);
         ArrayList<ArrayList<Ticket>> ticketLists = splitTicketsByNumeration(reservations);
 
         ArrayList<Ticket> numerated = ticketLists.get(0);
@@ -147,6 +147,30 @@ public class TicketService {
         }
         if(!check) {
             throw new BadRequestException("Event limit of reservations is " + event.get().getReservationLimit());
+        }
+    }
+
+    private void checkReservationDate(List<Ticket> reservations) {
+        Optional<Event> event = eventRepository.findById(reservations.get(0).getEvent().getId());
+        if(event.isPresent()) {
+            if(new Date().after(event.get().getReservationDeadline())) {
+                throw new BadRequestException("Reservation deadline passed! Now you can only buy a ticket");
+            }
+        }
+    }
+
+    private void checkTicketDuplicates(List<Ticket> reservations) {
+        int num = 0;
+        for(Ticket t1 : reservations) {
+            num = 0;
+            for(Ticket t2 : reservations) {
+                if(t1.getEventSector().getId().equals(t2.getEventSector().getId()) && t1.getNumberColumn().equals(t2.getNumberColumn()) && t1.getNumberRow().equals(t2.getNumberRow())) {
+                    num++;
+                }
+            }
+            if(num>1) {
+                throw new BadRequestException("You cannot buy or reserve same ticket more than once!");
+            }
         }
     }
 
