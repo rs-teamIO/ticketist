@@ -6,10 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter
 public class RegisteredUser extends User {
 
    @Column
@@ -24,6 +25,10 @@ public class RegisteredUser extends User {
    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="user")
    @JsonBackReference(value = "registeredUser-tickets")
    private Set<Ticket> tickets;
+
+   public RegisteredUser() {
+      this.tickets = new HashSet<>();
+   }
 
    public RegisteredUser(String username, String password, String email, String firstName, String lastName) {
       super(username, password, email, firstName, lastName);
