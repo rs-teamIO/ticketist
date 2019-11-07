@@ -20,7 +20,6 @@ public class TicketDTO {
     @NotNull(message = "number column cannot be null")
     private Integer numberColumn;
 
-    @NotNull(message = "price cannot be null")
     private BigDecimal price;
 
     private Boolean isPaid;

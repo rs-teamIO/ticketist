@@ -1,7 +1,5 @@
 package com.siit.ticketist.controller;
 
-import com.siit.ticketist.controller.exceptions.NotFoundException;
-import com.siit.ticketist.dto.EventSectorDTO;
 import com.siit.ticketist.dto.TicketDTO;
 import com.siit.ticketist.model.Ticket;
 import com.siit.ticketist.service.TicketService;
@@ -24,12 +22,22 @@ public class TicketController {
 
     @GetMapping(value = "/event/{id}")
     public ResponseEntity<List<TicketDTO>> findAllByEventId(@PathVariable("id") Long eventId) {
-        return new ResponseEntity<>(ticketService.findAllByEventId(eventId), HttpStatus.OK);
+        List<Ticket> tickets = ticketService.findAllByEventId(eventId);
+        List<TicketDTO> ticketsDTO = new ArrayList<>();
+        for (Ticket ticket : tickets) {
+            ticketsDTO.add(new TicketDTO(ticket));
+        }
+        return new ResponseEntity<>(ticketsDTO, HttpStatus.OK);
     }
 
     @GetMapping(value = "/event/sector/{id}")
     public ResponseEntity<List<TicketDTO>> findAllByEventSectorId(@PathVariable("id") Long eventSectorId) {
-        return new ResponseEntity<>(ticketService.findAllByEventSectorId(eventSectorId), HttpStatus.OK);
+        List<Ticket> tickets = ticketService.findAllByEventSectorId(eventSectorId);
+        List<TicketDTO> ticketsDTO = new ArrayList<>();
+        for (Ticket ticket : tickets) {
+            ticketsDTO.add(new TicketDTO(ticket));
+        }
+        return new ResponseEntity<>(ticketsDTO, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")

@@ -2,10 +2,8 @@ package com.siit.ticketist.service;
 
 import com.siit.ticketist.controller.exceptions.BadRequestException;
 import com.siit.ticketist.dto.TicketDTO;
-import com.siit.ticketist.model.EventSector;
-import com.siit.ticketist.model.RegisteredUser;
-import com.siit.ticketist.model.Sector;
-import com.siit.ticketist.model.Ticket;
+import com.siit.ticketist.model.*;
+import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.EventSectorRepository;
 import com.siit.ticketist.repository.SectorRepository;
 import com.siit.ticketist.repository.TicketRepository;
@@ -32,22 +30,15 @@ public class TicketService {
     @Autowired
     private SectorRepository sectorRepository;
 
-    public List<TicketDTO> findAllByEventId(Long id) {
-        List<Ticket> tickets = ticketRepository.findTicketsByEventId(id);
-        List<TicketDTO> ticketsDTO = new ArrayList<>();
-        for (Ticket ticket : tickets) {
-            ticketsDTO.add(new TicketDTO(ticket));
-        }
-        return ticketsDTO;
+    @Autowired
+    private EventRepository eventRepository;
+
+    public List<Ticket> findAllByEventId(Long id) {
+        return ticketRepository.findTicketsByEventId(id);
     }
 
-    public List<TicketDTO> findAllByEventSectorId(Long id) {
-        List<Ticket> tickets = ticketRepository.findTicketsByEventSectorId(id);
-        List<TicketDTO> ticketsDTO = new ArrayList<>();
-        for (Ticket ticket : tickets) {
-            ticketsDTO.add(new TicketDTO(ticket));
-        }
-        return ticketsDTO;
+    public List<Ticket> findAllByEventSectorId(Long id) {
+        return ticketRepository.findTicketsByEventSectorId(id);
     }
 
     @Transactional
@@ -57,10 +48,13 @@ public class TicketService {
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
 
         List<Ticket> boughtTickets = new ArrayList<>();
+        Optional<EventSector> eventSector;
 
         for(Ticket ticket : ticketsToBuy) {
             ticket.setUser(registeredUser);
             ticket.setIsPaid(true);
+            eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
+            eventSector.ifPresent(sector -> ticket.setPrice(sector.getTicketPrice()));
             ticketRepository.save(ticket);
             boughtTickets.add(ticket);
         }
@@ -75,10 +69,13 @@ public class TicketService {
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
 
         List<Ticket> reservedTickets = new ArrayList<>();
+        Optional<EventSector> eventSector;
 
         for(Ticket ticket : reservations) {
             ticket.setUser(registeredUser);
             ticket.setIsPaid(false);
+            eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
+            eventSector.ifPresent(sector -> ticket.setPrice(sector.getTicketPrice()));
             ticketRepository.save(ticket);
             reservedTickets.add(ticket);
         }
