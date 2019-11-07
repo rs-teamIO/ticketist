@@ -45,9 +45,9 @@ public class EventService {
             throw new BadRequestException("Dates are invalid");
         }
 
-//        if(!checkVenueAvalability(event)){
-//            throw new BadRequestException("There is already an event at that time");
-//        }
+        if(!checkVenueAvalability(event)){
+            throw new BadRequestException("There is already an event at that time");
+        }
 
         boolean capacityCheck = true;
         Optional<Sector> sector;
@@ -65,7 +65,7 @@ public class EventService {
             }
         }
 
-        //if(!capacityCheck) throw new BadRequestException("Capacity is greater than max capacity");
+        if(!capacityCheck) throw new BadRequestException("Capacity is greater than max capacity");
 
         List<Date> datesInRange = datesBetween(event.getStartDate(), event.getEndDate());
         Set<EventSector> eventSectorList = new HashSet<>();
