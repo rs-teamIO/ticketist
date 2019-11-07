@@ -9,6 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * A custom authentication entry point which we can use and customize to give the user a custom
+ * authentication error message.
+ */
 @Component(value = "authenticationEntryPoint")
 public class EntryPointUnauthorizedHandler implements AuthenticationEntryPoint {
 

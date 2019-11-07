@@ -1,5 +1,6 @@
 package com.siit.ticketist.controller;
 
+import com.siit.ticketist.controller.exceptions.AuthorizationException;
 import com.siit.ticketist.dto.AuthenticationRequest;
 import com.siit.ticketist.dto.AuthenticationResponse;
 import com.siit.ticketist.model.User;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -62,11 +64,15 @@ public class AuthenticationController {
 
             final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
             final User user = userService.findByUsername(userDetails.getUsername());
+
+            if(user.getAuthorities().isEmpty())
+                throw new AuthorizationException("User not verified.");
+
             final String token = tokenUtils.generateToken(userDetails);
             return new ResponseEntity<>(new AuthenticationResponse(token), HttpStatus.OK);
 
-        } catch (Exception ex) {
-            return new ResponseEntity<>("User credentials invalid.", HttpStatus.UNAUTHORIZED);
+        } catch (BadCredentialsException ex) {
+            throw new AuthorizationException("User credentials invalid.");
         }
     }
 }
