@@ -2,11 +2,11 @@ TRUNCATE TABLE ticketist.venues;
 TRUNCATE TABLE ticketist.events;
 TRUNCATE TABLE ticketist.tickets;
 
-INSERT INTO ticketist.venues (id, is_active, name)
+INSERT INTO ticketist.venues (id, is_active, name, street, city, latitude, longitude)
 VALUES
-	(1, true, "Spens"),
-    (2, true, "Novi Sad Fair"),
-    (3, true, "Startit Centar");
+	(1, true, "Spens", "ulica", "grad", 1, 1),
+    (2, true, "Novi Sad Fair", "ulica", "grad", 1, 1),
+    (3, true, "Startit Centar", "ulica", "grad", 1, 1);
 
 INSERT INTO ticketist.events
 	(id, name, description, start_date, end_date, reservation_deadline, reservation_limit, venue_id)
