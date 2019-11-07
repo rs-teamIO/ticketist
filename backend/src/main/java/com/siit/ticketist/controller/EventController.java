@@ -34,8 +34,8 @@ public class EventController {
         }
     }
 
-    @PostMapping()
-    public ResponseEntity<Object> createEvent(@Valid @RequestBody EventDTO event, @RequestParam("mediaFiles") MultipartFile[] mediaFiles){
+    @PostMapping(consumes = {"application/octet-stream", "multipart/form-data"})
+    public ResponseEntity<Object> createEvent(@RequestPart("event") @Valid EventDTO event, @RequestPart("mediaFiles") MultipartFile[] mediaFiles){
         try{
             return new ResponseEntity<>(eventService.save(event, mediaFiles),HttpStatus.OK);
         }catch(Exception e){
