@@ -27,5 +27,4 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     @Query(value = "select * from tickets t where t.user_id = ?1 and t.is_paid = 1", nativeQuery = true)
     List<Ticket> findUsersTickets(Long userId);
-
 }

@@ -35,6 +35,10 @@ public class EventService {
             throw new BadRequestException("Dates are invalid");
         }
 
+        if(!checkVenueAvalability(event)){
+            throw new BadRequestException("There is already an event at that time");
+        }
+
         boolean capacityCheck = true;
         Optional<Sector> sector;
 
@@ -71,6 +75,19 @@ public class EventService {
         }
 
         return eventRepository.save(event);
+    }
+
+    private boolean checkVenueAvalability(Event event) {
+        boolean check = false;
+        List<Event> events = eventRepository.findEventsByVenueId(event.getVenue().getId());
+
+        for(Event e : events){
+            if(event.getEndDate().before(e.getStartDate()) || event.getStartDate().after(e.getEndDate()))
+                check = true;
+            else
+                check = false;
+        }
+        return check;
     }
 
     private boolean checkEventDates(Event event) {

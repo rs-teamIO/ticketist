@@ -1,7 +1,6 @@
 package com.siit.ticketist.service;
 
 import com.siit.ticketist.controller.exceptions.BadRequestException;
-import com.siit.ticketist.dto.TicketDTO;
 import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.EventSectorRepository;
@@ -43,7 +42,20 @@ public class TicketService {
 
     @Transactional
     public List<Ticket> buyTickets (List<Ticket> ticketsToBuy) {
-        checkTicketsAndReservations(ticketsToBuy);
+
+        List<Ticket> numerated = new ArrayList<>();
+        List<Ticket> nonNumerated = new ArrayList<>();
+
+        for(Ticket ticket : ticketsToBuy){
+            if(eventSectorRepository.findById(ticket.getEventSector().getId()).get().getNumeratedSeats()){
+                numerated.add(ticket);
+            }else{
+                nonNumerated.add(ticket);
+            }
+        }
+
+        checkTicketsAndReservations(numerated);
+        checkTicketsAndReservationsNonumeration(nonNumerated);
 
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
 
@@ -62,9 +74,23 @@ public class TicketService {
         return boughtTickets;
     }
 
+
     @Transactional
     public List<Ticket> makeReservations (List<Ticket> reservations) throws BadRequestException {
-        checkTicketsAndReservations(reservations);
+        List<Ticket> numerated = new ArrayList<>();
+        List<Ticket> nonNumerated = new ArrayList<>();
+
+        for(Ticket ticket : reservations){
+            if(eventSectorRepository.findById(ticket.getEventSector().getId()).get().getNumeratedSeats()){
+                numerated.add(ticket);
+            }else{
+                nonNumerated.add(ticket);
+            }
+        }
+
+        checkTicketsAndReservations(numerated);
+        checkTicketsAndReservationsNonumeration(nonNumerated);
+
 
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
 
@@ -169,5 +195,35 @@ public class TicketService {
         Optional<Ticket> ticket = ticketRepository.checkTicketExistence(eventSectorId, col, row);
         return ticket.isPresent();
     }
+
+    private void checkTicketsAndReservationsNonumeration(List<Ticket> nonNumerated) {
+        boolean check = checkTicketNumeration(nonNumerated);
+
+        if(!check){
+            throw new BadRequestException("Not enough avaliable seats left");
+        }
+    }
+
+    private boolean checkTicketNumeration(List<Ticket> nonNumerated){
+        Optional<EventSector> eventSector;
+        boolean check = true;
+
+        for(Ticket ticket : nonNumerated){
+            eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
+            if(eventSector.isPresent() && !eventSector.get().getNumeratedSeats()){
+                int no_seats=0;
+                for(Ticket t : nonNumerated){
+                    if(ticket.getEventSector().getId().equals(t.getEventSector().getId())){
+                        no_seats++;
+                    }
+                }
+                if(eventSector.get().getCapacity() - ticketRepository.findTicketsByEventSectorId(eventSector.get().getId()).size() - no_seats<0)
+                    check = false;
+            }
+            if(!check) break;
+        }
+        return check;
+    }
+
 
 }
