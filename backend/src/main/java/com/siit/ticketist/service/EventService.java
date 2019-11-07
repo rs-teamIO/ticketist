@@ -10,6 +10,7 @@ import com.siit.ticketist.model.MediaFile;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.service.interfaces.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +18,9 @@ import java.util.*;
 
 @Service
 public class EventService {
+
+    @Value("${allowed-content-types}")
+    private String[] contentTypes;
 
     @Autowired
     private EventRepository eventRepository;
@@ -61,11 +65,15 @@ public class EventService {
         }
 
         List<MediaFile> eventMediaFiles = new ArrayList<>();
+        Arrays.asList(mediaFiles).stream().forEach((mf) -> {
+            if (!Arrays.asList(contentTypes).contains(mf.getContentType()))
+                throw new BadRequestException(String.format("File %s is not a valid media file.", mf.getOriginalFilename()));
+        });
 
         Arrays.asList(mediaFiles).stream().forEach((mf) -> {
             String fileName = UUID.randomUUID().toString();
             storageService.write(fileName, mf);
-            eventMediaFiles.add(new MediaFile(fileName));
+            eventMediaFiles.add(new MediaFile(fileName, mf.getContentType()));
         });
 
         eventEntity.getMediaFiles().addAll(eventMediaFiles);

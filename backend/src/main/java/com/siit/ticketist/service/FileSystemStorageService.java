@@ -21,7 +21,7 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public void write(String fileName, MultipartFile file) {
-        final String path = String.format("%s/%s.jpg", root, fileName);
+        final String path = String.format("%s/%s", root, fileName);
         final File mediaFile = new File(path);
         try {
             if (mediaFile.exists()) {
@@ -43,7 +43,7 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public byte[] read(String fileName) {
         try {
-            final File path = new File(String.format("%s/%s.jpg", root, fileName));
+            final File path = new File(String.format("%s/%s", root, fileName));
             return Files.readAllBytes(path.toPath());
         } catch (IOException e) {
             throw new NotFoundException("Requested media file not found.");

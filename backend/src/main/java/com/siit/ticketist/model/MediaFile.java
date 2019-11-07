@@ -18,7 +18,11 @@ public class MediaFile {
    @Column(nullable = false)
    private String fileName;
 
-   public MediaFile(String fileName) {
+   @Column(nullable = false)
+   private String mimeType;
+
+   public MediaFile(String fileName, String mimeType) {
       this.fileName = fileName;
+      this.mimeType = mimeType;
    }
 }
