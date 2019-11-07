@@ -35,7 +35,7 @@ public class EventService {
             throw new BadRequestException("Dates are invalid");
         }
 
-        if(!checkVenueAvalability(event)){
+        if(!checkVenueAvailability(event)){
             throw new BadRequestException("There is already an event at that time");
         }
 
@@ -77,16 +77,15 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    private boolean checkVenueAvalability(Event event) {
-        boolean check = false;
+    private boolean checkVenueAvailability(Event event) {
+        boolean check = true;
         List<Event> events = eventRepository.findEventsByVenueId(event.getVenue().getId());
 
         for(Event e : events){
-            if(event.getEndDate().before(e.getStartDate()) || event.getStartDate().after(e.getEndDate()))
-                check = true;
-            else
-                check = false;
+            check = event.getEndDate().before(e.getStartDate()) || event.getStartDate().after(e.getEndDate());
+            if(!check) break;
         }
+
         return check;
     }
 

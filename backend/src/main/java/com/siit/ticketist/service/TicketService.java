@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,16 +44,11 @@ public class TicketService {
     @Transactional
     public List<Ticket> buyTickets (List<Ticket> ticketsToBuy) {
 
-        List<Ticket> numerated = new ArrayList<>();
-        List<Ticket> nonNumerated = new ArrayList<>();
+        ArrayList<ArrayList<Ticket>> ticketLists = splitTicketsByNumeration(ticketsToBuy);
 
-        for(Ticket ticket : ticketsToBuy){
-            if(eventSectorRepository.findById(ticket.getEventSector().getId()).get().getNumeratedSeats()){
-                numerated.add(ticket);
-            }else{
-                nonNumerated.add(ticket);
-            }
-        }
+        ArrayList<Ticket> numerated = ticketLists.get(0);
+        ArrayList<Ticket> nonNumerated = ticketLists.get(1);
+        Optional<EventSector> eventSector;
 
         checkTicketsAndReservations(numerated);
         checkTicketsAndReservationsNonumeration(nonNumerated);
@@ -60,7 +56,6 @@ public class TicketService {
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
 
         List<Ticket> boughtTickets = new ArrayList<>();
-        Optional<EventSector> eventSector;
 
         for(Ticket ticket : ticketsToBuy) {
             ticket.setUser(registeredUser);
@@ -77,25 +72,20 @@ public class TicketService {
 
     @Transactional
     public List<Ticket> makeReservations (List<Ticket> reservations) throws BadRequestException {
-        List<Ticket> numerated = new ArrayList<>();
-        List<Ticket> nonNumerated = new ArrayList<>();
 
-        for(Ticket ticket : reservations){
-            if(eventSectorRepository.findById(ticket.getEventSector().getId()).get().getNumeratedSeats()){
-                numerated.add(ticket);
-            }else{
-                nonNumerated.add(ticket);
-            }
-        }
+        checkMaxNumberOfReservationsPerUser(reservations);
+        ArrayList<ArrayList<Ticket>> ticketLists = splitTicketsByNumeration(reservations);
+
+        ArrayList<Ticket> numerated = ticketLists.get(0);
+        ArrayList<Ticket> nonNumerated = ticketLists.get(1);
+        Optional<EventSector> eventSector;
+        List<Ticket> reservedTickets = new ArrayList<>();
 
         checkTicketsAndReservations(numerated);
         checkTicketsAndReservationsNonumeration(nonNumerated);
 
-
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
 
-        List<Ticket> reservedTickets = new ArrayList<>();
-        Optional<EventSector> eventSector;
 
         for(Ticket ticket : reservations) {
             ticket.setUser(registeredUser);
@@ -145,15 +135,41 @@ public class TicketService {
         return ticketRepository.findUsersTickets(registeredUser.getId());
     }
 
-    private boolean checkSeatsAvailability(List<Ticket> reservations) {
-        boolean check = false;
+    private void checkMaxNumberOfReservationsPerUser(List<Ticket> reservations) {
+        boolean check = true;
+        Optional<Event> event = eventRepository.findById(reservations.get(0).getEvent().getId());
+        if(event.isPresent()){
+            int numberOfReservations = ticketRepository.findUsersReservations(userService.findCurrentUser().getId()).size() + reservations.size();
+            System.out.println(numberOfReservations + "   " + event.get().getReservationLimit());
+            if(numberOfReservations > event.get().getReservationLimit()) {
+                check = false;
+            }
+        }
+        if(!check) {
+            throw new BadRequestException("Event limit of reservations is " + event.get().getReservationLimit());
+        }
+    }
 
-        for (Ticket ticket : reservations) {
-            check = checkTicketExistence(ticket.getEventSector().getId(), ticket.getNumberColumn(), ticket.getNumberRow());
-            if(check) break;
+    private ArrayList<ArrayList<Ticket>> splitTicketsByNumeration(List<Ticket> tickets) {
+        ArrayList<Ticket> numeratedTickets = new ArrayList<>();
+        ArrayList<Ticket> nonNumeratedTickets = new ArrayList<>();
+        Optional<EventSector> eventSector;
+
+        for(Ticket ticket : tickets){
+            eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
+            if(eventSector.isPresent()){
+                if(eventSector.get().getNumeratedSeats()) {
+                    numeratedTickets.add(ticket);
+                } else {
+                    nonNumeratedTickets.add(ticket);
+                }
+            }
         }
 
-        return !check;
+        ArrayList<ArrayList<Ticket>> result = new ArrayList<ArrayList<Ticket>>();
+        result.add(numeratedTickets);
+        result.add(nonNumeratedTickets);
+        return result;
     }
 
     private void checkTicketsAndReservations(List<Ticket> tickets) {
@@ -191,6 +207,17 @@ public class TicketService {
         return check;
     }
 
+    private boolean checkSeatsAvailability(List<Ticket> reservations) {
+        boolean check = false;
+
+        for (Ticket ticket : reservations) {
+            check = checkTicketExistence(ticket.getEventSector().getId(), ticket.getNumberColumn(), ticket.getNumberRow());
+            if(check) break;
+        }
+
+        return !check;
+    }
+
     private boolean checkTicketExistence(Long eventSectorId, Integer col, Integer row) {
         Optional<Ticket> ticket = ticketRepository.checkTicketExistence(eventSectorId, col, row);
         return ticket.isPresent();
@@ -200,26 +227,29 @@ public class TicketService {
         boolean check = checkTicketNumeration(nonNumerated);
 
         if(!check){
-            throw new BadRequestException("Not enough avaliable seats left");
+            throw new BadRequestException("Not enough available seats left");
         }
     }
 
-    private boolean checkTicketNumeration(List<Ticket> nonNumerated){
+    private boolean checkTicketNumeration(List<Ticket> nonNumerated) {
         Optional<EventSector> eventSector;
         boolean check = true;
+
+        int noSeats = 0;
 
         for(Ticket ticket : nonNumerated){
             eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
             if(eventSector.isPresent() && !eventSector.get().getNumeratedSeats()){
-                int no_seats=0;
+                noSeats = 0;
                 for(Ticket t : nonNumerated){
                     if(ticket.getEventSector().getId().equals(t.getEventSector().getId())){
-                        no_seats++;
+                        noSeats++;
                     }
                 }
-                if(eventSector.get().getCapacity() - ticketRepository.findTicketsByEventSectorId(eventSector.get().getId()).size() - no_seats<0)
-                    check = false;
+                if(eventSector.get().getCapacity() - ticketRepository.findTicketsByEventSectorId(eventSector.get().getId()).size() - noSeats < 0) check = false;
             }
+            ticket.setNumberColumn(-1);
+            ticket.setNumberRow(-1);
             if(!check) break;
         }
         return check;
