@@ -2,18 +2,28 @@ package com.siit.ticketist.service;
 
 import com.siit.ticketist.controller.exceptions.BadRequestException;
 import com.siit.ticketist.controller.exceptions.NotFoundException;
+import com.siit.ticketist.service.interfaces.StorageService;
 import com.siit.ticketist.model.Event;
-import com.siit.ticketist.model.EventSector;
 import com.siit.ticketist.model.Sector;
+import com.siit.ticketist.model.EventSector;
+import com.siit.ticketist.model.MediaFile;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.SectorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
 @Service
 public class EventService {
+
+    @Value("${allowed-content-types}")
+    private String[] contentTypes;
+
+    @Autowired
+    private StorageService storageService;
 
     @Autowired
     private EventRepository eventRepository;
@@ -29,7 +39,7 @@ public class EventService {
         return eventRepository.findById(id).orElseThrow(() -> new NotFoundException("Event not found"));
     }
 
-    public Event save(Event event) throws BadRequestException {
+    public Event save(Event event, MultipartFile[] mediaFiles) throws BadRequestException {
 
         if(!checkEventDates(event)) {
             throw new BadRequestException("Dates are invalid");
@@ -73,6 +83,20 @@ public class EventService {
         for(EventSector eventSector : event.getEventSectors()) {
             eventSector.setEvent(event);
         }
+
+        List<MediaFile> eventMediaFiles = new ArrayList<>();
+        Arrays.asList(mediaFiles).stream().forEach((mf) -> {
+            if (!Arrays.asList(contentTypes).contains(mf.getContentType()))
+                throw new BadRequestException(String.format("File %s is not a valid media file.", mf.getOriginalFilename()));
+        });
+
+        Arrays.asList(mediaFiles).stream().forEach((mf) -> {
+            String fileName = UUID.randomUUID().toString();
+            storageService.write(fileName, mf);
+            eventMediaFiles.add(new MediaFile(fileName, mf.getContentType()));
+        });
+
+        event.getMediaFiles().addAll(eventMediaFiles);
 
         return eventRepository.save(event);
     }

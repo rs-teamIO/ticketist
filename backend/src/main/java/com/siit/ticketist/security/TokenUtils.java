@@ -20,10 +20,10 @@ import java.util.stream.Collectors;
 @Component
 public class TokenUtils {
 
-    @Value("Authorization")
+    @Value("${security.secret}")
     private String secret;
 
-    @Value("86400")
+    @Value("${security.expiration}")
     private Long expiration;
 
     /**

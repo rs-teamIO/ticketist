@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -43,11 +44,11 @@ public class EventController {
     }
 
 //    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping()
-    public ResponseEntity<Object> createEvent(@Valid @RequestBody EventDTO eventDTO){
+    @PostMapping(consumes = {"application/octet-stream", "multipart/form-data"})
+    public ResponseEntity<Object> createEvent(@RequestPart("event") @Valid EventDTO eventDTO, @RequestPart("mediaFiles") MultipartFile[] mediaFiles){
         try{
             Event event = eventDTO.convertToEntity();
-            return new ResponseEntity<>(new EventDTO(eventService.save(event)),HttpStatus.OK);
+            return new ResponseEntity<>(new EventDTO(eventService.save(event, mediaFiles)),HttpStatus.OK);
         }catch(Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
