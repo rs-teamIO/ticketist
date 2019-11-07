@@ -42,7 +42,6 @@ public class VenueService {
         Reports
     --------------------
     */
-    //TODO sta ako je prazna lista
     public Map<String, BigDecimal> getAllVenueRevenues(){
         Map<String, BigDecimal> venueRevenue =
                 venueRepository.getAllVenueRevenues()

@@ -2,13 +2,13 @@ TRUNCATE TABLE ticketist.venues;
 TRUNCATE TABLE ticketist.events;
 TRUNCATE TABLE ticketist.tickets;
 
-INSERT INTO ticketist.venues (id, is_active, name, street, city, latitude, longitude)
+INSERT INTO venues (id, is_active, name, street, city, latitude, longitude)
 VALUES
 	(1, true, "Spens", "ulica", "grad", 1, 1),
     (2, true, "Novi Sad Fair", "ulica", "grad", 1, 1),
     (3, true, "Startit Centar", "ulica", "grad", 1, 1);
 
-INSERT INTO ticketist.events
+INSERT INTO events
 	(id, name, description, start_date, end_date, reservation_deadline, reservation_limit, venue_id)
 VALUES
 	(4, "Event1", "Opis eventa 1", CURDATE(), CURDATE(), '2019-10-05', 3, 1),
@@ -24,7 +24,17 @@ VALUES
     (13, "Spens event 6", "Opis spens eventa 6", "2019-6-10", "2019-6-11", "2019-10-5", 3, 1),		--
     (14, "Spens event 7", "Opis spens eventa 7", "2019-6-10", "2019-6-11", "2019-10-5", 3, 1);		--
 
-INSERT INTO ticketist.tickets
+INSERT INTO users
+    (dtype, id, email, first_name, last_name, password, username, is_verified, verification_code)
+VALUES
+    ('REGISTERED_USER', 23, 'kacjica+1@gmail.com', 'Katarina', 'Tukelic', 'kaca', 'kaca', 1, null);
+
+INSERT INTO users
+    (dtype, id, email, first_name, last_name, password, username)
+VALUES
+    ('ADMIN', 24, 'f.ivkovic16+1@gmail.com', 'Filip', 'Ivkovic', 'filip', 'filip');
+
+INSERT INTO tickets
 	(id, is_paid, number_row, number_column, price, event_id)
 VALUES
 	(15, true, 2, 2, 20, 4),

@@ -40,7 +40,7 @@ public class ReportDTO {
         this.allVenuesChart = allVenuesChart;
         this.events = events
                 .stream()
-                .map(obj -> new EventReportDTO((String)obj[0], (String)obj[1], (Long)obj[2], (BigDecimal)obj[3]))
+                .map(obj -> new EventReportDTO((String)obj[0], (String)obj[1], ((BigInteger)obj[2]).longValue(), (BigDecimal)obj[3]))
                 .collect(Collectors.toList());
         this.singleVenueChart = null;
         return this;
