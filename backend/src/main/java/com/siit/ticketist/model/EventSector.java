@@ -28,6 +28,9 @@ public class EventSector {
    @Column(nullable = false)
    private Date date;
 
+   @Column(nullable = false)
+   private Integer capacity;
+
    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "eventSector")
    @JsonBackReference(value = "eventSector-tickets")
    private Set<Ticket> tickets;

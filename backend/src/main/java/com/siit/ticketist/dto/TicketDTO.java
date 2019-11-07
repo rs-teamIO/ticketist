@@ -31,7 +31,6 @@ public class TicketDTO {
     @NotBlank(message = "event id cannot be blank")
     private Long eventId;
 
-    @NotBlank(message = "user id cannot be blank")
     private Long userId;
 
     public TicketDTO(Ticket ticket){

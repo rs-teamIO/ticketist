@@ -6,8 +6,10 @@ import com.siit.ticketist.dto.EventDTO;
 import com.siit.ticketist.dto.EventSectorDTO;
 import com.siit.ticketist.model.Event;
 import com.siit.ticketist.model.EventSector;
+import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.EventSectorRepository;
+import com.siit.ticketist.repository.SectorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,9 @@ public class EventService {
 
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private SectorRepository sectorRepository;
 
     public List<EventDTO> findAll() {
         List<Event> events = eventRepository.findAll();
@@ -37,6 +42,23 @@ public class EventService {
         if(event.getReservationDeadline().after(event.getStartDate()) || event.getStartDate().after(event.getEndDate())) {
             throw new BadRequestException("Dates are invalid");
         }
+
+        boolean capacityCheck = true;
+        Optional<Sector> sector;
+        for(EventSectorDTO eventSectorDTO : event.getEventSectors()) {
+            if (eventSectorDTO.getNumeratedSeats()) {
+                sector = sectorRepository.findById(eventSectorDTO.getSectorId());
+                sector.ifPresent(value -> eventSectorDTO.setCapacity(value.getMaxCapacity()));
+            } else {
+                if(eventSectorDTO.getCapacity() == null) {
+                    throw new BadRequestException("Capacity of event sector with innumerable seats cannot be null");
+                }
+            }
+            capacityCheck = checkSectorMaxCapacity(eventSectorDTO.getSectorId(), eventSectorDTO.getCapacity());
+            if(!capacityCheck) break;
+        }
+
+        if(!capacityCheck) throw new BadRequestException("Capacity is greater than max capacity");
 
         List<Date> datesInRange = datesBetween(event.getStartDate(), event.getEndDate());
         Set<EventSectorDTO> eventSectorListDTO = new HashSet<>();
@@ -57,6 +79,19 @@ public class EventService {
         }
 
         return new EventDTO(eventRepository.save(eventEntity));
+    }
+
+    private boolean checkSectorMaxCapacity(Long sectorID, int capacity) {
+        Optional<Sector> sector = sectorRepository.findById(sectorID);
+        boolean check = true;
+
+        if(sector.isPresent()) {
+            if(capacity > sector.get().getMaxCapacity()) {
+                check = false;
+            }
+        }
+
+        return check;
     }
 
     private List<Date> datesBetween(Date startDate, Date endDate) {
