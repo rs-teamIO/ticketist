@@ -134,4 +134,18 @@ public class EventService {
             throw new BadRequestException("Invalid criteria");
     }
 
+    /*
+        Search
+     */
+    public List<Event> search(String eventName, String category, String venueName, Long millisecondsFrom, Long millisecondsTo){
+        return eventRepository.search(eventName, category, venueName,
+                convertMillisToDate(millisecondsFrom), convertMillisToDate(millisecondsTo));
+    }
+
+    private Date convertMillisToDate(Long millisecondsFrom){
+        //ToDo konvertuje u CET (local timezone), mozda bude problema
+        Date date = millisecondsFrom == null ? null : new Date(millisecondsFrom);
+        return date;
+    }
+
 }
