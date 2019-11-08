@@ -115,7 +115,7 @@ public class EventService {
 
     private boolean checkEventDates(Event event) {
         boolean check = true;
-        if(event.getReservationDeadline().after(event.getStartDate()) || event.getStartDate().after(event.getEndDate())) {
+        if(event.getReservationDeadline().after(event.getStartDate()) || event.getStartDate().after(event.getEndDate()) || new Date().after(event.getReservationDeadline())) {
             check = false;
         }
         return check;
