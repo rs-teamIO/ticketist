@@ -67,4 +67,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                     "AND CURDATE() AND t.is_paid = 1 " +
                     "GROUP BY MONTH(e.start_date)", nativeQuery = true)
     List<Object[]> getVenueRevenueReport(@Param("venueId") Long venueId);
+
+    @Query(value = "select * from events e where e.venue_id = ?1",nativeQuery = true)
+    List<Event> findEventsByVenueId(Long id);
 }
