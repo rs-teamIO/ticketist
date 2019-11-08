@@ -10,6 +10,9 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
 
+    @Query(value = "select * from events e where e.venue_id = ?1",nativeQuery = true)
+    List<Event> findEventsByVenueId(Long id);
+
     /*
         Returns all events,
         venue in which that event is happening,
