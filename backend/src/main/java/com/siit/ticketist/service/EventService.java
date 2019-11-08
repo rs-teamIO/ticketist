@@ -1,29 +1,24 @@
 package com.siit.ticketist.service;
 
 import com.siit.ticketist.controller.exceptions.BadRequestException;
-import com.siit.ticketist.repository.EventRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import com.siit.ticketist.controller.exceptions.NotFoundException;
-import com.siit.ticketist.service.interfaces.StorageService;
 import com.siit.ticketist.model.Event;
-import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.model.EventSector;
 import com.siit.ticketist.model.MediaFile;
+import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.SectorRepository;
+import com.siit.ticketist.service.interfaces.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -221,6 +216,29 @@ public class EventService {
         //ToDo konvertuje u CET (local timezone), mozda bude problema
         Date date = millisecondsFrom == null ? null : new Date(millisecondsFrom);
         return date;
+    }
+
+    /*
+        Helper methods for
+     */
+    public List<Event> filterEventsByDeadline(){
+        List<Event> allEvents = eventRepository.findAll();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String threeDaysFromNow = sdf.format(addDays(new Date(), 3));
+
+        List<Event> filteredEvents = new ArrayList<>();
+        for(Event e : allEvents){
+            if(sdf.format(e.getReservationDeadline()).equals(threeDaysFromNow))
+                filteredEvents.add(e);
+        }
+        return filteredEvents;
+    }
+
+    private Date addDays(Date date, int days) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days); //minus number would decrement the days
+        return cal.getTime();
     }
 
 }

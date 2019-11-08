@@ -6,6 +6,7 @@ import com.siit.ticketist.service.VenueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,7 @@ public class ReportsController {
 
 
     @GetMapping
+    //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity generateInitialReport(){
         ReportDTO dto = new ReportDTO();
         return new ResponseEntity<>(dto.generateInitialReport(venueService.getAllVenueRevenues(), eventService.findAllEventsReport()),
@@ -30,6 +32,7 @@ public class ReportsController {
     }
 
     @GetMapping(value="/{venueId}/{criteria}")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity generateVenueReport(@PathVariable("venueId") Long venueId,
                                               @PathVariable("criteria") String criteria){
         ReportDTO dto = new ReportDTO();

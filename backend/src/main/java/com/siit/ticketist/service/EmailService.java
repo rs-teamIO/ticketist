@@ -2,7 +2,6 @@ package com.siit.ticketist.service;
 
 import com.siit.ticketist.model.Event;
 import com.siit.ticketist.model.RegisteredUser;
-import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,17 +78,18 @@ public class EmailService {
         return output;
     }
 
-    @Autowired
-    private EventRepository eventRepository;
 
     @Autowired
     private TicketRepository ticketRepository;
 
+    @Autowired
+    private EventService eventService;
+
     @Async
     @Scheduled(fixedRate = 86400000)
     public void sendDeadlineNotifications() throws MessagingException, ParseException {
-        List<Event> events = filterEventsByDeadline(eventRepository.findAll());
-        List<String> emails;
+        List<Event> events = eventService.filterEventsByDeadline();
+        Set<String> emails;
         for(Event e : events){
             emails = ticketRepository.findEmailsToBeNotified(e.getId());
             for(String email : emails){
@@ -120,22 +120,5 @@ public class EmailService {
         return output;
     }
 
-    private List<Event> filterEventsByDeadline(List<Event> allEvents){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String threeDaysFromNow = sdf.format(addDays(new Date(), 3));
 
-        List<Event> filteredEvents = new ArrayList<>();
-        for(Event e : allEvents){
-            if(sdf.format(e.getReservationDeadline()).equals(threeDaysFromNow))
-                filteredEvents.add(e);
-        }
-        return filteredEvents;
-    }
-
-    private Date addDays(Date date, int days) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, days); //minus number would decrement the days
-        return cal.getTime();
-    }
 }
