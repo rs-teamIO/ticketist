@@ -5,9 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
+
+    @Query(value = "select * from events e where e.venue_id = ?1",nativeQuery = true)
+    List<Event> findEventsByVenueId(Long id);
 
     /*
         Returns all events,
@@ -68,6 +72,20 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                     "GROUP BY MONTH(e.start_date)", nativeQuery = true)
     List<Object[]> getVenueRevenueReport(@Param("venueId") Long venueId);
 
-    @Query(value = "select * from events e where e.venue_id = ?1",nativeQuery = true)
-    List<Event> findEventsByVenueId(Long id);
+
+    @Query(value =
+            "SELECT * " +
+            "FROM events e JOIN venues v ON e.venue_id = v.id " +
+            "WHERE LOWER(e.name) LIKE concat('%', LOWER(:eventName), '%') " +
+            "AND LOWER(e.category) LIKE concat('%', LOWER(:category), '%') " +
+            "AND LOWER(v.name) LIKE concat('%', LOWER(:venueName), '%') " +
+            "AND COALESCE( (e.start_date >= :startDate), true) AND COALESCE( (e.start_date <= :endDate), true)",
+            nativeQuery = true)
+    List<Event> search(@Param("eventName") String eventName,
+                       @Param("category") String category,
+                       @Param("venueName") String venueName,
+                       @Param("startDate") Date startDate,
+                       @Param("endDate") Date endDate);
+
+
 }
