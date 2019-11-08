@@ -34,6 +34,11 @@ INSERT INTO users
 VALUES
     ('ADMIN', 24, 'f.ivkovic16+1@gmail.com', 'Filip', 'Ivkovic', 'filip', 'filip');
 
+INSERT INTO user_role
+VALUES
+    (23, 'REGISTERED_USER'),
+    (24, 'ADMIN');
+
 INSERT INTO tickets
 	(id, is_paid, number_row, number_column, price, event_id)
 VALUES
