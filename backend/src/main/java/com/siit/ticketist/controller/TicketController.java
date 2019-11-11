@@ -69,11 +69,7 @@ public class TicketController {
         for (TicketDTO ticketDTO : tickets) {
             ticketList.add(ticketDTO.convertToEntity());
         }
-        try {
-            return new ResponseEntity<>(ticketService.buyTickets(ticketList), HttpStatus.OK);
-        } catch(Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        return new ResponseEntity<>(ticketService.buyTickets(ticketList), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
@@ -83,23 +79,19 @@ public class TicketController {
         for (TicketDTO ticketDTO : tickets) {
             ticketList.add(ticketDTO.convertToEntity());
         }
-        try {
-            return new ResponseEntity<>(ticketService.makeReservations(ticketList), HttpStatus.OK);
-        } catch(Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        return new ResponseEntity<>(ticketService.makeReservations(ticketList), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping(value="/reservations/accept")
     public ResponseEntity<Boolean> acceptReservations(@Valid @RequestBody List<Long> reservations) {
-        return new ResponseEntity<>(ticketService.acceptReservations(reservations), HttpStatus.OK);
+        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, 1), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping(value="/reservations/cancel")
     public ResponseEntity<Boolean> cancelReservations(@Valid @RequestBody List<Long> reservations) {
-        return new ResponseEntity<>(ticketService.cancelReservations(reservations), HttpStatus.OK);
+        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, -1), HttpStatus.OK);
     }
 
 }
