@@ -2,11 +2,8 @@ package com.siit.ticketist.service;
 
 import com.siit.ticketist.controller.exceptions.BadRequestException;
 import com.siit.ticketist.controller.exceptions.NotFoundException;
+import com.siit.ticketist.model.*;
 import com.siit.ticketist.service.interfaces.StorageService;
-import com.siit.ticketist.model.Event;
-import com.siit.ticketist.model.Sector;
-import com.siit.ticketist.model.EventSector;
-import com.siit.ticketist.model.MediaFile;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.SectorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +36,7 @@ public class EventService {
         return eventRepository.findById(id).orElseThrow(() -> new NotFoundException("Event not found"));
     }
 
-    public Event save(Event event, MultipartFile[] mediaFiles) throws BadRequestException {
+    public Event save(Event event, MultipartFile[] mediaFiles){
 
         if(!checkEventDates(event)) {
             throw new BadRequestException("Dates are invalid");
@@ -82,6 +79,8 @@ public class EventService {
 
         for(EventSector eventSector : event.getEventSectors()) {
             eventSector.setEvent(event);
+            eventSector.setTickets(generateTickets(eventSector));
+            eventSector.getEvent().getTickets().addAll(eventSector.getTickets());
         }
 
         List<MediaFile> eventMediaFiles = new ArrayList<>();
@@ -99,6 +98,26 @@ public class EventService {
         event.getMediaFiles().addAll(eventMediaFiles);
 
         return eventRepository.save(event);
+    }
+
+    private Set<Ticket> generateTickets(EventSector eventSector) {
+        Set<Ticket> tickets = new HashSet<>();
+        if(eventSector.getNumeratedSeats()){
+            Optional<Sector> sector = sectorRepository.findById(eventSector.getSector().getId());
+            if(sector.isPresent()) {
+                for (int row = 1; row <= sector.get().getRowsCount(); row++) {
+                    for (int col = 1; col <= sector.get().getColumnsCount(); col++) {
+                        tickets.add(new Ticket(null, row, col, eventSector.getTicketPrice(), -1, eventSector, eventSector.getEvent(), null));
+                    }
+                }
+            }
+        }else{
+            for(int cap=0;cap<eventSector.getCapacity();cap++){
+                tickets.add(new Ticket(null, -1, -1, eventSector.getTicketPrice(), -1, eventSector, eventSector.getEvent(), null));
+            }
+        }
+
+        return tickets;
     }
 
     private boolean checkVenueAvailability(Event event) {

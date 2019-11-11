@@ -22,7 +22,7 @@ public class TicketDTO {
 
     private BigDecimal price;
 
-    private Boolean isPaid;
+    private Integer status;
 
     @NotBlank(message = "event sector id cannot be blank")
     private Long eventSectorId;
@@ -34,7 +34,7 @@ public class TicketDTO {
 
     public TicketDTO(Ticket ticket){
         this.id = ticket.getId();
-        this.isPaid = ticket.getIsPaid();
+        this.status = ticket.getStatus();
         this.price = ticket.getPrice();
         this.numberColumn = ticket.getNumberColumn();
         this.numberRow = ticket.getNumberColumn();
@@ -46,7 +46,7 @@ public class TicketDTO {
     public Ticket convertToEntity(){
         Ticket ticket = new Ticket();
         ticket.setId(this.id);
-        ticket.setIsPaid(this.isPaid);
+        ticket.setStatus(this.status);
         ticket.setPrice(this.price);
         ticket.setNumberRow(this.numberRow);
         ticket.setNumberColumn(this.numberColumn);

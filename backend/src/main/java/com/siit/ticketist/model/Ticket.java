@@ -1,5 +1,6 @@
 package com.siit.ticketist.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +10,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "Tickets")
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class Ticket {
 
    @Id
@@ -26,7 +27,7 @@ public class Ticket {
    private BigDecimal price;
 
    @Column(nullable = false)
-   private Boolean isPaid;
+   private Integer status;
 
    @ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH }, fetch = FetchType.LAZY)
    @JoinColumn(name = "event_sector_id")

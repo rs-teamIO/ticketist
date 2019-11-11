@@ -43,10 +43,9 @@ public class TicketService {
     public List<Ticket> buyTickets (List<Ticket> ticketsToBuy) {
 
         ArrayList<ArrayList<Ticket>> ticketLists = splitTicketsByNumeration(ticketsToBuy);
-        checkTicketDuplicates(ticketsToBuy);
         ArrayList<Ticket> numerated = ticketLists.get(0);
         ArrayList<Ticket> nonNumerated = ticketLists.get(1);
-        Optional<EventSector> eventSector;
+        checkTicketDuplicates(numerated);
 
         checkTicketsAndReservations(numerated);
         checkTicketsAndReservationsNonumeration(nonNumerated);
@@ -54,16 +53,27 @@ public class TicketService {
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
 
         List<Ticket> boughtTickets = new ArrayList<>();
+        Optional<Ticket> ticketNew;
+        Optional<EventSector> eventSector;
 
         for(Ticket ticket : ticketsToBuy) {
-            ticket.setUser(registeredUser);
-            ticket.setIsPaid(true);
             eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
-            eventSector.ifPresent(sector -> ticket.setPrice(sector.getTicketPrice()));
-            ticketRepository.save(ticket);
-            boughtTickets.add(ticket);
-        }
+            if (eventSector.isPresent()) {
+                if (eventSector.get().getNumeratedSeats()) {
+                    ticketNew = ticketRepository.findByColAndRow(eventSector.get().getId(), ticket.getNumberRow(), ticket.getNumberColumn());
+                } else {
+                    ticketNew = ticketRepository.findInumerableTicket(eventSector.get().getId());
+                }
 
+                if (ticketNew.isPresent()) {
+                    ticketNew.get().setUser(registeredUser);
+                    ticketNew.get().setStatus(1);
+                    ticketNew.get().setPrice(eventSector.get().getTicketPrice());
+                    ticketRepository.save(ticketNew.get());
+                    boughtTickets.add(ticketNew.get());
+                }
+            }
+        }
         return boughtTickets;
     }
 
@@ -73,11 +83,11 @@ public class TicketService {
 
         checkReservationDate(reservations);
         checkMaxNumberOfReservationsPerUser(reservations);
-        checkTicketDuplicates(reservations);
         ArrayList<ArrayList<Ticket>> ticketLists = splitTicketsByNumeration(reservations);
 
         ArrayList<Ticket> numerated = ticketLists.get(0);
         ArrayList<Ticket> nonNumerated = ticketLists.get(1);
+        checkTicketDuplicates(numerated);
         Optional<EventSector> eventSector;
         List<Ticket> reservedTickets = new ArrayList<>();
 
@@ -89,7 +99,7 @@ public class TicketService {
 
         for(Ticket ticket : reservations) {
             ticket.setUser(registeredUser);
-            ticket.setIsPaid(false);
+            ticket.setStatus(0);
             eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
             eventSector.ifPresent(sector -> ticket.setPrice(sector.getTicketPrice()));
             ticketRepository.save(ticket);
@@ -107,7 +117,7 @@ public class TicketService {
         Optional<Ticket> ticket;
         for(Long ticketId : reservations) {
             ticket = ticketRepository.findById(ticketId);
-            ticket.ifPresent(value -> value.setIsPaid(true));
+            ticket.ifPresent(value -> value.setStatus(0));
         }
         return true;
     }
@@ -270,10 +280,8 @@ public class TicketService {
                         noSeats++;
                     }
                 }
-                if(eventSector.get().getCapacity() - ticketRepository.findTicketsByEventSectorId(eventSector.get().getId()).size() - noSeats < 0) check = false;
+                if(ticketRepository.findTicketsByEventSectorIdInumerable(eventSector.get().getId()).size() < noSeats) check = false;
             }
-            ticket.setNumberColumn(-1);
-            ticket.setNumberRow(-1);
             if(!check) break;
         }
         return check;
