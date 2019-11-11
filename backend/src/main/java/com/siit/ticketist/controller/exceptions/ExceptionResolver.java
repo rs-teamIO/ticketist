@@ -40,4 +40,9 @@ public class ExceptionResolver {
     public ResponseEntity handleMessagingException(MessagingException e) {
         return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(PayPalException.class)
+    public ResponseEntity handlePayPalException(PayPalException e){
+        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
