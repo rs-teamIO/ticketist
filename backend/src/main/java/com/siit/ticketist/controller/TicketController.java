@@ -69,7 +69,7 @@ public class TicketController {
         for (TicketDTO ticketDTO : tickets) {
             ticketList.add(ticketDTO.convertToEntity());
         }
-        return new ResponseEntity<>(ticketService.buyTickets(ticketList), HttpStatus.OK);
+        return new ResponseEntity<>(ticketService.buyTickets(ticketList, true), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
@@ -79,7 +79,7 @@ public class TicketController {
         for (TicketDTO ticketDTO : tickets) {
             ticketList.add(ticketDTO.convertToEntity());
         }
-        return new ResponseEntity<>(ticketService.makeReservations(ticketList), HttpStatus.OK);
+        return new ResponseEntity<>(ticketService.buyTickets(ticketList, false), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")

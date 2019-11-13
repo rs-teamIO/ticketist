@@ -29,6 +29,9 @@ public class Ticket {
    @Column(nullable = false)
    private Integer status;
 
+   @Version
+   private Long version;
+
    @ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH }, fetch = FetchType.LAZY)
    @JoinColumn(name = "event_sector_id")
    private EventSector eventSector;

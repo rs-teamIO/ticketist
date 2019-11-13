@@ -1,6 +1,7 @@
 package com.siit.ticketist.service;
 
 import com.siit.ticketist.controller.exceptions.BadRequestException;
+import com.siit.ticketist.controller.exceptions.OptimisticLockException;
 import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.EventSectorRepository;
@@ -8,12 +9,14 @@ import com.siit.ticketist.repository.SectorRepository;
 import com.siit.ticketist.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Array;
 import java.util.*;
 
 @Service
+@Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 public class TicketService {
 
     @Autowired
@@ -39,13 +42,19 @@ public class TicketService {
         return ticketRepository.findTicketsByEventSectorId(id);
     }
 
-    @Transactional
-    public List<Ticket> buyTickets(List<Ticket> ticketsToBuy) {
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false, rollbackFor = OptimisticLockException.class)
+    public List<Ticket> buyTickets(List<Ticket> tickets, boolean isBuy) {
 
-        checkNumberOfTickets(ticketsToBuy);
+        checkNumberOfTickets(tickets);
+
+        if(!isBuy) {
+            //Check reservation rules
+            checkReservationDate(tickets);
+            checkMaxNumberOfReservationsPerUser(tickets);
+        }
 
         //Split numerated and innumerable tickets
-        ArrayList<ArrayList<Ticket>> ticketLists = splitTicketsByNumeration(ticketsToBuy);
+        ArrayList<ArrayList<Ticket>> ticketLists = splitTicketsByNumeration(tickets);
         ArrayList<Ticket> numerated = ticketLists.get(0);
         ArrayList<Ticket> nonNumerated = ticketLists.get(1);
         checkRowAndColumnExistenceOfNumeratedTickets(numerated);
@@ -57,89 +66,41 @@ public class TicketService {
 
         //Initialization
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
-        List<Ticket> boughtTickets = new ArrayList<>();
-        Optional<Ticket> dbTicket;
+        List<Ticket> resultTickets = new ArrayList<>();
         Optional<EventSector> eventSector;
+        Optional<Ticket> dbTicket;
 
-        for(Ticket ticket : ticketsToBuy) {
+        for(Ticket ticket : tickets) {
             eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
             if (eventSector.isPresent()) {
                 if (eventSector.get().getNumeratedSeats()) {
                     dbTicket = ticketRepository.findNumerableTicketByColAndRow(eventSector.get().getId(), ticket.getNumberRow(), ticket.getNumberColumn());
+                    if(dbTicket.isPresent()) {
+                        dbTicket = ticketRepository.findOneById(dbTicket.get().getId());
+                    }
                 } else {
                     dbTicket = ticketRepository.findOneInnumerableTicketsByEventSectorId(eventSector.get().getId());
+                    if(dbTicket.isPresent()) {
+                        dbTicket = ticketRepository.findOneById(dbTicket.get().getId());
+                    }
                 }
 
                 if (dbTicket.isPresent()) {
                     dbTicket.get().setUser(registeredUser);
-                    dbTicket.get().setStatus(1);
-                    dbTicket.get().setPrice(eventSector.get().getTicketPrice());
-                    ticketRepository.save(dbTicket.get());
-                    boughtTickets.add(dbTicket.get());
+                    if (isBuy) {
+                        dbTicket.get().setStatus(1);
+                        dbTicket.get().setPrice(eventSector.get().getTicketPrice());
+                    } else {
+                        dbTicket.get().setStatus(0);
+                    }
+                    resultTickets.add(dbTicket.get());
                 }
             }
         }
-        return boughtTickets;
+        return resultTickets;
     }
 
-
-    @Transactional
-    public List<Ticket> makeReservations (List<Ticket> reservations) throws BadRequestException {
-
-        checkNumberOfTickets(reservations);
-
-        //Check reservation rules
-        checkReservationDate(reservations);
-        checkMaxNumberOfReservationsPerUser(reservations);
-
-        //Split numerated and innumerable tickets
-        ArrayList<ArrayList<Ticket>> ticketLists = splitTicketsByNumeration(reservations);
-        ArrayList<Ticket> numerated = ticketLists.get(0);
-        ArrayList<Ticket> nonNumerated = ticketLists.get(1);
-        checkRowAndColumnExistenceOfNumeratedTickets(numerated);
-        checkTicketDuplicates(numerated);
-
-        //Check tickets and reservations
-        checkNumerableTicketsAndReservations(numerated);
-        checkInnumerableTicketsAndReservations(nonNumerated);
-
-        //Initialization
-        RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
-        List<Ticket> reservedTickets = new ArrayList<>();
-        Optional<EventSector> eventSector;
-        Optional<Ticket> dbTicket;
-
-        for(Ticket ticket : reservations) {
-            eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
-            if (eventSector.isPresent()) {
-                if (eventSector.get().getNumeratedSeats()) {
-                    dbTicket = ticketRepository.findNumerableTicketByColAndRow(eventSector.get().getId(), ticket.getNumberRow(), ticket.getNumberColumn());
-                } else {
-                    dbTicket = ticketRepository.findOneInnumerableTicketsByEventSectorId(eventSector.get().getId());
-                }
-
-                if (dbTicket.isPresent()) {
-                    dbTicket.get().setUser(registeredUser);
-                    dbTicket.get().setStatus(0);
-                    ticketRepository.save(dbTicket.get());
-                    reservedTickets.add(dbTicket.get());
-                }
-            }
-        }
-
-//        for(Ticket ticket : reservations) {
-//            ticket.setUser(registeredUser);
-//            ticket.setStatus(0);
-//            eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
-//            eventSector.ifPresent(sector -> ticket.setPrice(sector.getTicketPrice()));
-//            ticketRepository.save(ticket);
-//            reservedTickets.add(ticket);
-//        }
-
-        return reservedTickets;
-    }
-
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public Boolean acceptOrCancelReservations (List<Long> reservations, Integer newStatus) {
         if(reservations.size() == 0) throw new BadRequestException("Array must contain at least 1 reservation id");
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
@@ -147,7 +108,7 @@ public class TicketService {
         if(tickets.size() != reservations.size()) throw new BadRequestException("Some of tickets cannot be found/already sold");
         Optional<Ticket> ticket;
         for(Long ticketId : reservations) {
-            ticket = ticketRepository.findById(ticketId);
+            ticket = ticketRepository.findOneById(ticketId);
             ticket.ifPresent(value -> value.setStatus(newStatus));
         }
         return true;

@@ -107,13 +107,13 @@ public class EventService {
             if(sector.isPresent()) {
                 for (int row = 1; row <= sector.get().getRowsCount(); row++) {
                     for (int col = 1; col <= sector.get().getColumnsCount(); col++) {
-                        tickets.add(new Ticket(null, row, col, eventSector.getTicketPrice(), -1, eventSector, eventSector.getEvent(), null));
+                        tickets.add(new Ticket(null, row, col, eventSector.getTicketPrice(), -1, 0L, eventSector, eventSector.getEvent(), null));
                     }
                 }
             }
         }else{
             for(int cap=0;cap<eventSector.getCapacity();cap++){
-                tickets.add(new Ticket(null, -1, -1, eventSector.getTicketPrice(), -1, eventSector, eventSector.getEvent(), null));
+                tickets.add(new Ticket(null, -1, -1, eventSector.getTicketPrice(), -1, 0L, eventSector, eventSector.getEvent(), null));
             }
         }
 
