@@ -25,15 +25,6 @@ public class TicketService {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private EventSectorRepository eventSectorRepository;
-
-    @Autowired
-    private SectorRepository sectorRepository;
-
-    @Autowired
-    private EventRepository eventRepository;
-
     public List<Ticket> findAllByEventId(Long id) {
         return ticketRepository.findTicketsByEventId(id);
     }
@@ -43,58 +34,39 @@ public class TicketService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false, rollbackFor = OptimisticLockException.class)
-    public List<Ticket> buyTickets(List<Ticket> tickets, boolean isBuy) {
+    public List<Ticket> buyTickets(List<Long> ticketIDS, boolean isBuy) {
 
-        checkNumberOfTickets(tickets);
+        // Basic checks
+        checkNumberOfTickets(ticketIDS);
+        checkTicketDuplicates(ticketIDS);
+
+        // Check tickets and reservations
+        checkTicketsAndReservationsAvailability(ticketIDS);
 
         if(!isBuy) {
             //Check reservation rules
-            checkReservationDate(tickets);
-            checkMaxNumberOfReservationsPerUser(tickets);
+            checkReservationDate(ticketIDS.get(0));
+            checkMaxNumberOfReservationsPerUser(ticketIDS);
+        } else {
+            checkBuyTicketsDate(ticketIDS.get(0));
         }
-
-        //Split numerated and innumerable tickets
-        ArrayList<ArrayList<Ticket>> ticketLists = splitTicketsByNumeration(tickets);
-        ArrayList<Ticket> numerated = ticketLists.get(0);
-        ArrayList<Ticket> nonNumerated = ticketLists.get(1);
-        checkRowAndColumnExistenceOfNumeratedTickets(numerated);
-        checkTicketDuplicates(numerated);
-
-        //Check tickets and reservations
-        checkNumerableTicketsAndReservations(numerated);
-        checkInnumerableTicketsAndReservations(nonNumerated);
 
         //Initialization
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
         List<Ticket> resultTickets = new ArrayList<>();
-        Optional<EventSector> eventSector;
         Optional<Ticket> dbTicket;
 
-        for(Ticket ticket : tickets) {
-            eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
-            if (eventSector.isPresent()) {
-                if (eventSector.get().getNumeratedSeats()) {
-                    dbTicket = ticketRepository.findNumerableTicketByColAndRow(eventSector.get().getId(), ticket.getNumberRow(), ticket.getNumberColumn());
-                    if(dbTicket.isPresent()) {
-                        dbTicket = ticketRepository.findOneById(dbTicket.get().getId());
-                    }
-                } else {
-                    dbTicket = ticketRepository.findOneInnumerableTicketsByEventSectorId(eventSector.get().getId());
-                    if(dbTicket.isPresent()) {
-                        dbTicket = ticketRepository.findOneById(dbTicket.get().getId());
-                    }
-                }
+        for(Long ticketID : ticketIDS) {
+            dbTicket = ticketRepository.findOneById(ticketID);
 
-                if (dbTicket.isPresent()) {
-                    dbTicket.get().setUser(registeredUser);
-                    if (isBuy) {
-                        dbTicket.get().setStatus(1);
-                        dbTicket.get().setPrice(eventSector.get().getTicketPrice());
-                    } else {
-                        dbTicket.get().setStatus(0);
-                    }
-                    resultTickets.add(dbTicket.get());
+            if (dbTicket.isPresent()) {
+                dbTicket.get().setUser(registeredUser);
+                if (isBuy) {
+                    dbTicket.get().setStatus(1);
+                } else {
+                    dbTicket.get().setStatus(0);
                 }
+                resultTickets.add(dbTicket.get());
             }
         }
         return resultTickets;
@@ -102,21 +74,31 @@ public class TicketService {
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public Boolean acceptOrCancelReservations (List<Long> reservations, Integer newStatus) {
-        if(reservations.size() == 0) throw new BadRequestException("Array must contain at least 1 reservation id");
+        checkNumberOfTickets(reservations);
+
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
         List<Ticket> tickets = ticketRepository.findTicketsByIdGroup(reservations, registeredUser.getId());
+
         if(tickets.size() != reservations.size()) throw new BadRequestException("Some of tickets cannot be found/already sold");
+
         Optional<Ticket> ticket;
+
         for(Long ticketId : reservations) {
             ticket = ticketRepository.findOneById(ticketId);
-            ticket.ifPresent(value -> value.setStatus(newStatus));
+            if(ticket.isPresent()) {
+                ticket.get().setStatus(newStatus);
+                if(newStatus == -1) {
+                    ticket.get().setUser(null);
+                }
+            }
         }
+
         return true;
     }
 
     public List<Ticket> getUsersReservations() {
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
-        return ticketRepository.findUsersReservations(registeredUser.getId());
+        return ticketRepository.findAllReservationsByUser(registeredUser.getId());
     }
 
     public List<Ticket> getUsersTickets() {
@@ -124,158 +106,65 @@ public class TicketService {
         return ticketRepository.findUsersTickets(registeredUser.getId());
     }
 
-    private void checkNumberOfTickets(List<Ticket> tickets) {
+    private void checkNumberOfTickets(List<Long> tickets) {
         if(tickets.size() == 0) throw new BadRequestException("Ticket array is empty!");
     }
 
-    private void checkMaxNumberOfReservationsPerUser(List<Ticket> reservations) {
-        boolean check = true;
-        Optional<Event> event = eventRepository.findById(reservations.get(0).getEvent().getId());
-        if(event.isPresent()){
-            int numberOfReservations = ticketRepository.findUsersReservations(userService.findCurrentUser().getId()).size() + reservations.size();
-            if(numberOfReservations > event.get().getReservationLimit()) {
-                check = false;
+    private void checkMaxNumberOfReservationsPerUser(List<Long> reservations) {
+        Optional<Ticket> ticket = ticketRepository.findById(reservations.get(0));
+        if(ticket.isPresent()) {
+            int numberOfReservations = ticketRepository.findUsersReservationsByEvent(userService.findCurrentUser().getId(), ticket.get().getEvent().getId()).size() + reservations.size();
+            if(numberOfReservations > ticket.get().getEvent().getReservationLimit()) {
+                throw new BadRequestException("Event limit of reservations is " + ticket.get().getEvent().getReservationLimit());
             }
-        }
-        if(!check) {
-            throw new BadRequestException("Event limit of reservations is " + event.get().getReservationLimit());
         }
     }
 
-    private void checkReservationDate(List<Ticket> reservations) {
-        Optional<Event> event = eventRepository.findById(reservations.get(0).getEvent().getId());
-        if(event.isPresent()) {
-            if(new Date().after(event.get().getReservationDeadline())) {
+    private void checkReservationDate(Long reservationID) {
+        Optional<Ticket> ticket = ticketRepository.findById(reservationID);
+        if(ticket.isPresent()) {
+            if(new Date().after(ticket.get().getEvent().getReservationDeadline())) {
                 throw new BadRequestException("Reservation deadline passed! Now you can only buy a ticket");
             }
         }
     }
 
-    private void checkRowAndColumnExistenceOfNumeratedTickets(ArrayList<Ticket> tickets) {
-        for(Ticket ticket : tickets) {
-            if(ticket.getNumberRow() == null || ticket.getNumberColumn() == null) {
-                throw new BadRequestException("Numerated seat must have row and column fields!");
+    private void checkBuyTicketsDate(Long ticketID) {
+        Optional<Ticket> ticket = ticketRepository.findById(ticketID);
+        if(ticket.isPresent()) {
+            if(new Date().after(ticket.get().getEvent().getStartDate())) {
+                throw new BadRequestException("Event already started!");
             }
         }
     }
 
-    private void checkTicketDuplicates(List<Ticket> reservations) {
+    private void checkTicketDuplicates(List<Long> ticketIDS) {
         int num = 0;
-        for(Ticket t1 : reservations) {
+        for(Long t1 : ticketIDS) {
             num = 0;
-            for(Ticket t2 : reservations) {
-                if(t1.getEventSector().getId().equals(t2.getEventSector().getId()) && t1.getNumberColumn().equals(t2.getNumberColumn()) && t1.getNumberRow().equals(t2.getNumberRow())) {
+            for(Long t2 : ticketIDS) {
+                if(t1 == t2) {
                     num++;
                 }
             }
-            if(num>1) {
+            if(num > 1) {
                 throw new BadRequestException("You cannot buy or reserve same ticket more than once!");
             }
         }
     }
 
-    private ArrayList<ArrayList<Ticket>> splitTicketsByNumeration(List<Ticket> tickets) {
-        ArrayList<Ticket> numeratedTickets = new ArrayList<>();
-        ArrayList<Ticket> nonNumeratedTickets = new ArrayList<>();
-        Optional<EventSector> eventSector;
-
-        for(Ticket ticket : tickets){
-            eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
-            if(eventSector.isPresent()){
-                if(eventSector.get().getNumeratedSeats()) {
-                    numeratedTickets.add(ticket);
-                } else {
-                    nonNumeratedTickets.add(ticket);
+    private void checkTicketsAndReservationsAvailability(List<Long> ticketIDS) {
+        Optional<Ticket> ticket;
+        for(Long ticketID : ticketIDS) {
+            ticket = ticketRepository.findById(ticketID);
+            if(ticket.isPresent()) {
+                if(ticket.get().getStatus() != -1) {
+                    System.out.println(ticket.get().getStatus());
+                    throw new BadRequestException("Tickets are already taken");
                 }
+            } else {
+                throw new BadRequestException("Ticket not found!");
             }
         }
-
-        ArrayList<ArrayList<Ticket>> result = new ArrayList<ArrayList<Ticket>>();
-        result.add(numeratedTickets);
-        result.add(nonNumeratedTickets);
-        return result;
     }
-
-    private void checkNumerableTicketsAndReservations(List<Ticket> tickets) {
-        boolean check = checkSeatsValidation(tickets);
-
-        if(!check) {
-            throw new BadRequestException("Seat numeration is incorrect");
-        }
-
-        check = checkSeatsAvailability(tickets);
-
-        if(!check) {
-            throw new BadRequestException("Tickets are already taken");
-        }
-    }
-
-    private boolean checkSeatsValidation(List<Ticket> reservations) {
-        boolean check = true;
-        Optional<EventSector> eventSector;
-        Optional<Sector> sector;
-
-        for (Ticket ticket : reservations) {
-            eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
-            if(eventSector.isPresent() && eventSector.get().getNumeratedSeats()) {
-                sector = sectorRepository.findById(eventSector.get().getSector().getId());
-                if(sector.isPresent()) {
-                    if(ticket.getNumberRow() > sector.get().getRowsCount() || ticket.getNumberColumn() > sector.get().getColumnsCount()) {
-                        check = false;
-                    }
-                }
-                if(!check) break;
-            }
-        }
-
-        return check;
-    }
-
-    private boolean checkSeatsAvailability(List<Ticket> reservations) {
-        boolean check = true;
-
-        for (Ticket ticket : reservations) {
-            check = checkTicketExistence(ticket.getEventSector().getId(), ticket.getNumberColumn(), ticket.getNumberRow());
-            if(!check) break;
-        }
-
-        return check;
-    }
-
-    private boolean checkTicketExistence(Long eventSectorId, Integer col, Integer row) {
-        Optional<Ticket> ticket = ticketRepository.checkNumerableTicketExistence(eventSectorId, row, col);
-        return ticket.isPresent();
-    }
-
-    private void checkInnumerableTicketsAndReservations(List<Ticket> nonNumerated) {
-        boolean check = checkTicketNumeration(nonNumerated);
-
-        if(!check){
-            throw new BadRequestException("Not enough available seats left");
-        }
-    }
-
-    private boolean checkTicketNumeration(List<Ticket> nonNumerated) {
-        Optional<EventSector> eventSector;
-        boolean check = true;
-
-        int noSeats = 0;
-
-        for(Ticket ticket : nonNumerated){
-            eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
-            if(eventSector.isPresent() && !eventSector.get().getNumeratedSeats()){
-                noSeats = 0;
-                for(Ticket t : nonNumerated){
-                    if(ticket.getEventSector().getId().equals(t.getEventSector().getId())){
-                        noSeats++;
-                    }
-                }
-                if(ticketRepository.findAllInnumerableTicketsByEventSectorId(eventSector.get().getId()).size() < noSeats) check = false;
-            }
-            if(!check) break;
-        }
-        return check;
-    }
-
-
 }
