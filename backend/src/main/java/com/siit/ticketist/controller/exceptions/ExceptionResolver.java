@@ -1,5 +1,6 @@
 package com.siit.ticketist.controller.exceptions;
 
+import com.paypal.base.rest.PayPalRESTException;
 import com.siit.ticketist.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,5 +45,8 @@ public class ExceptionResolver {
     @ExceptionHandler(OptimisticLockException.class)
     public ResponseEntity handleOptimisticLockException(MessagingException e) {
         return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.LOCKED);
+    @ExceptionHandler(PayPalRESTException.class)
+    public ResponseEntity handlePayPalException(PayPalRESTException e){
+        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

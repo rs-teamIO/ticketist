@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ public class RegisteredUser extends User {
    private String phone;
 
    @Column(nullable = false)
+   @ColumnDefault("false")
    private Boolean isVerified;
 
    @Column

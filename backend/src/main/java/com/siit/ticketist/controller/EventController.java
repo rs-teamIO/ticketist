@@ -2,6 +2,7 @@ package com.siit.ticketist.controller;
 
 import com.siit.ticketist.controller.exceptions.NotFoundException;
 import com.siit.ticketist.dto.EventDTO;
+import com.siit.ticketist.dto.SearchDTO;
 import com.siit.ticketist.model.Event;
 import com.siit.ticketist.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/events")
@@ -52,5 +55,12 @@ public class EventController {
         }catch(Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping(value = "/search")
+    public ResponseEntity search(@RequestBody SearchDTO dto) {
+        List<Event> events = eventService.search(dto.getEventName(), dto.getCategory(), dto.getVenueName(), dto.getStartDate(), dto.getEndDate());
+        List<EventDTO> eventDTOs = events.stream().map(obj -> new EventDTO((Event) obj)).collect(Collectors.toList());
+        return new ResponseEntity(eventDTOs, HttpStatus.OK);
     }
 }

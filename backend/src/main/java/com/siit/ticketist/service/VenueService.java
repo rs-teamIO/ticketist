@@ -10,6 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 @Service
 public class VenueService {
@@ -49,6 +55,21 @@ public class VenueService {
         else if(sector.getStartColumn()>sectorSave.getStartColumn()+sectorSave.getColumnsCount()) return true;
         else if(sector.getStartColumn()+sector.getColumnsCount()<sectorSave.getStartColumn()) return true;
         else return false;
+    }
+
+    /*
+    --------------------
+        Reports
+    --------------------
+    */
+    public Map<String, BigDecimal> getAllVenueRevenues(){
+        Map<String, BigDecimal> venueRevenue =
+                venueRepository.getAllVenueRevenues()
+                        .stream()
+                        .collect(Collectors.toMap(
+                                obj -> (String)obj[0],
+                                obj -> (BigDecimal) obj[1]));
+        return venueRevenue;
     }
 
 }
