@@ -64,42 +64,26 @@ public class TicketController {
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping()
-    public ResponseEntity<Object> buyTickets(@Valid @RequestBody List<TicketDTO> tickets) {
-        List<Ticket> ticketList = new ArrayList<>();
-        for (TicketDTO ticketDTO : tickets) {
-            ticketList.add(ticketDTO.convertToEntity());
-        }
-        try {
-            return new ResponseEntity<>(ticketService.buyTickets(ticketList), HttpStatus.OK);
-        } catch(Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Object> buyTickets(@Valid @RequestBody List<Long> tickets) {
+        return new ResponseEntity<>(ticketService.buyTickets(tickets, true), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping(value = "/reservations")
-    public ResponseEntity<Object> makeReservations(@Valid @RequestBody List<TicketDTO> tickets) {
-        List<Ticket> ticketList = new ArrayList<>();
-        for (TicketDTO ticketDTO : tickets) {
-            ticketList.add(ticketDTO.convertToEntity());
-        }
-        try {
-            return new ResponseEntity<>(ticketService.makeReservations(ticketList), HttpStatus.OK);
-        } catch(Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Object> makeReservations(@Valid @RequestBody List<Long> tickets) {
+        return new ResponseEntity<>(ticketService.buyTickets(tickets, false), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping(value="/reservations/accept")
     public ResponseEntity<Boolean> acceptReservations(@Valid @RequestBody List<Long> reservations) {
-        return new ResponseEntity<>(ticketService.acceptReservations(reservations), HttpStatus.OK);
+        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, 1), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping(value="/reservations/cancel")
     public ResponseEntity<Boolean> cancelReservations(@Valid @RequestBody List<Long> reservations) {
-        return new ResponseEntity<>(ticketService.cancelReservations(reservations), HttpStatus.OK);
+        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, -1), HttpStatus.OK);
     }
 
 }
