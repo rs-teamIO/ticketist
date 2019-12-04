@@ -42,6 +42,11 @@ public class ExceptionResolver {
         return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(OptimisticLockException.class)
+    public ResponseEntity handleOptimisticLockException(MessagingException e) {
+        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.LOCKED);
+    }
+
     @ExceptionHandler(PayPalRESTException.class)
     public ResponseEntity handlePayPalException(PayPalRESTException e){
         return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
