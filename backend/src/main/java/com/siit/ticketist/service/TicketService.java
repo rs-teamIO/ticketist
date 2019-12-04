@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -30,6 +31,9 @@ public class TicketService {
 
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     public List<Ticket> findAllByEventId(Long id) {
         return ticketRepository.findTicketsByEventId(id);
@@ -54,14 +58,24 @@ public class TicketService {
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
 
         List<Ticket> boughtTickets = new ArrayList<>();
+        List<PdfTicket> pdfTickets = new ArrayList<>();
 
         for(Ticket ticket : ticketsToBuy) {
             ticket.setUser(registeredUser);
             ticket.setIsPaid(true);
             eventSector = eventSectorRepository.findById(ticket.getEventSector().getId());
             eventSector.ifPresent(sector -> ticket.setPrice(sector.getTicketPrice()));
+            String sectorName = eventSector.get().getSector().getName();
+            String venueName = eventSector.get().getEvent().getVenue().getName();
             ticketRepository.save(ticket);
             boughtTickets.add(ticket);
+            pdfTickets.add(new PdfTicket(ticket));
+        }
+
+        try {
+            this.emailService.sendTicketsPurchaseEmail(registeredUser, pdfTickets);
+        } catch (MessagingException e) {
+            e.printStackTrace();
         }
 
         return boughtTickets;
@@ -278,6 +292,4 @@ public class TicketService {
         }
         return check;
     }
-
-
 }

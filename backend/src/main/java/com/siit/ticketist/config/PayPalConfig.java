@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Provides configuration for Paypal payment API.
+ */
 @Configuration
 public class PayPalConfig {
 
@@ -24,5 +27,4 @@ public class PayPalConfig {
         APIContext apiContext = new APIContext(clientId, clientSecret, mode);
         return apiContext;
     }
-
 }

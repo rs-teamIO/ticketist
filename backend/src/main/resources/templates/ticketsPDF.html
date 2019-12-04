@@ -1,0 +1,141 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8"></meta>
+    <style type="text/css">
+        
+        .cardWrap {
+            /*width: 900px;*/
+            /*margin: 1em auto;*/
+            /*color: #fff;*/
+            font-family: sans-serif;
+        }
+        .card {
+            /*background: linear-gradient(to bottom, #e84c3d 0%, #e84c3d 26%, #ecedef 27%, #ecedef 100%);*/ 
+            border-style: solid;
+            border-width: 1px;
+            height: 180px;
+            float: left;
+            position: relative;
+            padding: 20px;
+            margin-top: 0px;
+        }
+        .cardTop {
+            float: top;
+            position: relative;
+            width: 700px;
+            height: 40px;
+            margin-top: 10px;
+            background: #000000;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            
+        } 
+         .cardTop h1 {
+            font-size: 1.3em;
+            text-align: center;
+            padding: 10px;
+            color: #ffffff;
+        }
+        .cardLeft {
+            width: 500px;
+            border-right: none;
+            border-bottom-left-radius: 12px;
+        }
+        .cardRight {
+            width: 200px;
+            border-left: 0.16em dotted rgb(179, 179, 179);
+            border-bottom-right-radius: 8px;
+        }
+
+        h1 {
+            font-size: 1.1em;
+            margin-top: 0;
+        }
+
+        .title, .seat, .row, .time, .price, .sector {
+            text-transform: uppercase;
+            font-weight: normal;
+        }
+        .title h2, .seat h2, .row h2, .time h2, .price h2, .sector h2 {
+            font-size: 0.9em;
+            color: #525252;
+            margin: 0;
+        }
+        .title span, .seat span, .row span, .time span, .price span, .sector span {
+            font-size: 0.7em;
+            color: #a2aeae;
+        }
+        .title {
+            margin: 2em 0 0 0;
+        }
+        .row, .sector {
+            margin: 0.7em 0 0 0;
+        }
+        .seat {
+            margin: 0.7em 0 0 0.7em;
+        }
+        .time, .price {
+            margin: 0.7em 0 0 1em;
+        }
+        .seat, .row, .time {
+            float: left;
+        }
+        .price {
+            float: right;
+        }
+        .qrcode {
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <table border="0">
+        <tr data-th-each="ticket : ${tickets}">
+            <td>
+            <!-- TICKET START -->
+                <div class="cardWrap">
+                    <div class="cardTop">
+                        <h1>TICKETIST</h1>
+                    </div>
+                    <div class="card cardLeft">
+                        <h1 th:text="${ticket.eventName}"></h1>
+                        <div class="title">
+                            <h2 th:text="${ticket.venueName}"></h2>
+                            <span>event</span>
+                        </div>
+                        <div class="sector">
+                            <h2 th:text="${ticket.eventSector}"></h2>
+                            <span>sector</span>
+                        </div>
+                        <div class="row">
+                            <h2 th:text="${ticket.row}"></h2>
+                            <span>row</span>
+                        </div>
+                        <div class="seat">
+                            <h2 th:text="${ticket.column}"></h2>
+                            <span>seat</span>
+                        </div>
+                        <div class="time">
+                            <h2 th:text="${ticket.date}"></h2>
+                            <span>date and time</span>
+                        </div>
+                        <div class="price">
+                            <h2 th:text="${ticket.price}"></h2>
+                            <span>price</span>
+                        </div>
+                    </div>
+                    <div class="card cardRight">
+                        <div class="qrcode">
+                            <!-- TODO: QR Code -->
+                            <img src="" width="180" height="180"></img>
+                        </div>
+                    </div>     
+                </div>
+            <!-- TICKET END -->   
+            </td>
+        </tr>
+    </table>
+                
+</body>
+</html>
