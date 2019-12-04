@@ -22,14 +22,15 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      */
     @Query( value =
             "SELECT e.name, venue_name, COUNT(t.id), COALESCE(SUM(t.price), 0) " +
-            "FROM events as e LEFT OUTER JOIN (SELECT t.id, t.price, t.event_id FROM tickets as t where t.is_paid) as t " +
+            "FROM events as e LEFT OUTER JOIN (SELECT t.id, t.price, t.event_id FROM tickets as t where t.status) as t " +
             "ON e.id = t.event_id " +
             "LEFT OUTER JOIN (SELECT v.name as venue_name, v.id from venues as v) as v " +
             "ON e.venue_id = v.id " +
-            "GROUP BY e.id", nativeQuery = true)
+            "GROUP BY e.id " +
+            "ORDER BY SUM(t.price) desc", nativeQuery = true)
     List<Object[]> findAllEventsReport();
 
-    /*
+    /*  TODO
         Returns all events for wanted venue,
         number of sold tickets for the event and
         total revenue.
@@ -37,12 +38,12 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     */
     @Query( "SELECT e.name, v.name, COUNT(t.id), COALESCE(SUM(t.price), 0) " +
             "FROM Event e JOIN e.venue as v JOIN e.tickets as t " +
-            "WHERE v.id = ?1 AND t.isPaid = 1 " +
+            "WHERE v.id = ?1 AND t.status = 1 " +
             "GROUP BY e.id")
     List<Object[]> findAllEventReportsByVenue(Long venueId);
 
 
-    /*
+    /*  TODO
         Returns month (in last 12 months) and
         number of tickets sold in that month
         for wanted venue.
@@ -53,11 +54,11 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "FROM events e JOIN tickets t ON e.id = t.event_id " +
             "WHERE e.venue_id = :venueId " +
                     "AND e.start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 12 MONTH) " +
-                    "AND CURDATE() AND t.is_paid = 1 " +
+                    "AND CURDATE() AND t.status = 1 " +
             "GROUP BY MONTH(e.start_date)", nativeQuery = true)
     List<Object[]> getVenueTicketsReport(@Param("venueId") Long venueId);
 
-    /*
+    /*  TODO
         Returns month (in last 12 months) and
         total revenue for that month
         for wanted venue.
@@ -68,11 +69,11 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                     "FROM events e JOIN tickets t ON e.id = t.event_id " +
                     "WHERE e.venue_id = :venueId " +
                     "AND e.start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 12 MONTH) " +
-                    "AND CURDATE() AND t.is_paid = 1 " +
+                    "AND CURDATE() AND t.status = 1 " +
                     "GROUP BY MONTH(e.start_date)", nativeQuery = true)
     List<Object[]> getVenueRevenueReport(@Param("venueId") Long venueId);
 
-
+    //TODO
     @Query(value =
             "SELECT * " +
             "FROM events e JOIN venues v ON e.venue_id = v.id " +

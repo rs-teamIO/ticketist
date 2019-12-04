@@ -34,11 +34,13 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     @Query(value = "select * from tickets t where t.id in :ids and t.user_id = :userId and t.status = 0", nativeQuery = true)
     List<Ticket> findTicketsByIdGroup(@Param("ids") List<Long> ticketIds, @Param("userId") Long userId);
+
+    //TODO
     @Query(value =
             "SELECT u.email " +
                     "FROM tickets t JOIN users u " +
                     "ON t.user_id = u.id " +
-                    "WHERE t.event_id = :eventId  AND t.is_paid = 0 " +
+                    "WHERE t.event_id = :eventId  AND t.status = 0 " +
                     "GROUP BY u.id", nativeQuery = true)
     Set<String> findEmailsToBeNotified(Long eventId);
 }
