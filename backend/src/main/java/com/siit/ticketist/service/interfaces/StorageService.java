@@ -1,6 +1,7 @@
 package com.siit.ticketist.service.interfaces;
 
 import org.springframework.web.multipart.MultipartFile;
+
 /**
  * File storage service interface.
  */

@@ -99,9 +99,9 @@
                         <h1>TICKETIST</h1>
                     </div>
                     <div class="card cardLeft">
-                        <h1 th:text="${ticket.eventName}"></h1>
+                        <h1 th:text="${ticket.venueName}"></h1>
                         <div class="title">
-                            <h2 th:text="${ticket.venueName}"></h2>
+                            <h2 th:text="${ticket.eventName}"></h2>
                             <span>event</span>
                         </div>
                         <div class="sector">
@@ -127,8 +127,7 @@
                     </div>
                     <div class="card cardRight">
                         <div class="qrcode">
-                            <!-- TODO: QR Code -->
-                            <img src="" width="180" height="180"></img>
+                            <img th:src="*{ticket.base64Image}" alt="" width="180" height="180"></img>
                         </div>
                     </div>     
                 </div>

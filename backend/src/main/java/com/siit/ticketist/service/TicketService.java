@@ -2,10 +2,8 @@ package com.siit.ticketist.service;
 
 import com.siit.ticketist.controller.exceptions.BadRequestException;
 import com.siit.ticketist.controller.exceptions.OptimisticLockException;
+import com.siit.ticketist.dto.PdfTicket;
 import com.siit.ticketist.model.*;
-import com.siit.ticketist.repository.EventRepository;
-import com.siit.ticketist.repository.EventSectorRepository;
-import com.siit.ticketist.repository.SectorRepository;
 import com.siit.ticketist.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +11,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 @Service
@@ -25,6 +22,9 @@ public class TicketService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private EmailService emailService;
 
     public List<Ticket> findAllByEventId(Long id) {
         return ticketRepository.findTicketsByEventId(id);
@@ -57,6 +57,8 @@ public class TicketService {
         List<Ticket> resultTickets = new ArrayList<>();
         Optional<Ticket> dbTicket;
 
+        List<PdfTicket> pdfTickets = new ArrayList<>();
+
         for(Long ticketID : ticketIDS) {
             dbTicket = ticketRepository.findOneById(ticketID);
 
@@ -68,8 +70,18 @@ public class TicketService {
                     dbTicket.get().setStatus(0);
                 }
                 resultTickets.add(dbTicket.get());
+                pdfTickets.add(new PdfTicket(dbTicket.get()));
             }
         }
+
+
+
+        try {
+            this.emailService.sendTicketsPurchaseEmail(registeredUser, pdfTickets);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
         return resultTickets;
     }
 

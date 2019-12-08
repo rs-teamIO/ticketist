@@ -1,8 +1,8 @@
 package com.siit.ticketist.service;
 
+import com.siit.ticketist.dto.PdfTicket;
 import com.siit.ticketist.model.Event;
 import com.siit.ticketist.model.RegisteredUser;
-import com.siit.ticketist.model.Ticket;
 import com.siit.ticketist.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +28,7 @@ import java.util.*;
 @Service
 public class EmailService {
 
-    private final int DEADLINE_NOTIFICATIONS_RATE = 86400000;
+    private static final int DEADLINE_NOTIFICATIONS_RATE = 86400000;
 
     @Value("${spring.mail.username}")
     private String email;
@@ -45,17 +45,17 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine springTemplateEngine;
     private final PdfService pdfService;
-    private final TicketRepository ticketRepository;
     private final EventService eventService;
+    private final TicketRepository ticketRepository;
 
     @Autowired
     public EmailService(JavaMailSender mailSender, SpringTemplateEngine springTemplateEngine, PdfService pdfService,
-                        TicketRepository ticketRepository, EventService eventService) {
+                        EventService eventService, TicketRepository ticketRepository) {
         this.mailSender = mailSender;
         this.springTemplateEngine = springTemplateEngine;
         this.pdfService = pdfService;
-        this.ticketRepository = ticketRepository;
         this.eventService = eventService;
+        this.ticketRepository = ticketRepository;
     }
 
     /**
