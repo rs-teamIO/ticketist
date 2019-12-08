@@ -1,8 +1,6 @@
 package com.siit.ticketist.config;
 
 import com.paypal.base.rest.APIContext;
-import com.paypal.base.rest.PayPalRESTException;
-import com.siit.ticketist.controller.exceptions.PayPalException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  * Provides configuration for Paypal payment API.
  */
 @Configuration
-public class PayPalConfig {
+public class PayPalConfiguration {
 
     @Value("${paypal.client.id}")
     private String clientId;
@@ -24,7 +22,6 @@ public class PayPalConfig {
 
     @Bean
     public APIContext apiContext() {
-        APIContext apiContext = new APIContext(clientId, clientSecret, mode);
-        return apiContext;
+        return new APIContext(clientId, clientSecret, mode);
     }
 }

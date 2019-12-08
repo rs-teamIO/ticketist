@@ -4,6 +4,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 
+/**
+ * Represents the system administrator.
+ */
 @Entity
 @NoArgsConstructor
 public class Admin extends User {
