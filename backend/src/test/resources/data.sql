@@ -30,7 +30,7 @@ VALUES
     (8, 'Spens event 4', 'Opis spens eventa 4', 'CULTURAL', '2019-07-10', '2019-07-11', '2019-07-5', 3, 1),
     (9, 'Spens event 5', 'Opis spens eventa 5', 'CULTURAL', '2019-06-10', '2019-06-11', '2019-06-5', 3, 1),
     (10, 'Spens event 6', 'Opis spens eventa 6', 'ENTERTAINMENT', '2019-06-12', '2019-06-13', '2019-06-5', 3, 1),
-    (11, 'Spens event 7', 'Opis spens eventa 7', 'ENTERTAINMENT', '2019-06-14', '2019-06-15', '2019-06-5', 3, 1),
+    (11, 'Spens event 7', 'Opis spens eventa 7', 'ENTERTAINMENT', '2020-03-14', '2020-03-15', '2019-06-5', 3, 1),
     (12, 'Spens event 8', 'Opis spens eventa 8', 'ENTERTAINMENT', '2020-06-14', '2020-06-15', '2020-06-5', 3, 1),
     (13, 'Spens event 9', 'Opis spens eventa 9', 'ENTERTAINMENT', '2020-07-14', '2020-07-15', '2020-07-5', 3, 1);
 
@@ -40,7 +40,9 @@ VALUES
     (1, 4, '2020-06-14', 1, 35.00, 12, 1),
     (2, 4, '2020-06-15', 0, 35.00, 12, 2),
     (3, 4, '2020-07-14', 1, 35.00, 13, 1),
-    (4, 4, '2020-07-15', 0, 35.00, 13, 2);
+    (4, 4, '2020-07-15', 0, 35.00, 13, 2),
+    (5, 4, '2020-03-14', 1, 35.00, 11, 1),
+    (6, 4, '2020-03-15', 0, 35.00, 11, 2);
 
 INSERT INTO tickets (id, number_column, number_row, price, status, event_id, event_sector_id, user_id)
 VALUES
@@ -59,13 +61,22 @@ VALUES
     (13,-1,-1,35.00,0,13,2,1),
     (14,-1,-1,35.00,1,13,2,1),
     (15,-1,-1,35.00,-1,13,2,null),
-    (16,-1,-1,35.00,-1,13,2,null);
+    (16,-1,-1,35.00,-1,13,2,null),
+    (17,1,1,35.00,1,11,1,3),
+    (18,1,2,35.00,0,11,1,3),
+    (19,2,1,35.00,-1,11,1,null),
+    (20,2,2,35.00,-1,11,1,null),
+    (21,-1,-1,35.00,0,11,2,3),
+    (22,-1,-1,35.00,1,11,2,3),
+    (23,-1,-1,35.00,-1,11,2,null),
+    (24,-1,-1,35.00,-1,11,2,null);
 
 INSERT INTO users
     (dtype, id, email, first_name, last_name, password, username, is_verified, verification_code)
 VALUES
     ('REGISTERED_USER', 1, 'kacjica+1@gmail.com', 'Katarina', 'Tukelic', 'kaca', 'kaca', 1, null),
-    ('REGISTERED_USER', 3, 'rocky+1@gmail.com', 'Rocky', 'Balboa', 'rocky', 'rocky123', 1, null);
+    ('REGISTERED_USER', 3, 'rocky+1@gmail.com', 'Rocky', 'Balboa', 'rocky', 'rocky123', 1, null),
+    ('REGISTERED_USER', 4, 'pip+1@gmail.com', 'Mark', 'Fly', 'pip', 'pip123', 1, null);
 
 INSERT INTO users
     (dtype, id, email, first_name, last_name, password, username)
