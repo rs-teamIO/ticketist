@@ -1,6 +1,6 @@
 package com.siit.ticketist.controller;
 
-import com.siit.ticketist.controller.exceptions.NotFoundException;
+import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.dto.EventDTO;
 import com.siit.ticketist.dto.SearchDTO;
 import com.siit.ticketist.model.Event;
@@ -8,12 +8,10 @@ import com.siit.ticketist.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

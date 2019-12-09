@@ -1,7 +1,7 @@
 package com.siit.ticketist.service;
 
-import com.siit.ticketist.controller.exceptions.BadRequestException;
-import com.siit.ticketist.controller.exceptions.NotFoundException;
+import com.siit.ticketist.exceptions.BadRequestException;
+import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.model.Venue;
 import com.siit.ticketist.repository.SectorRepository;
@@ -11,11 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 
 @Service
 public class VenueService {

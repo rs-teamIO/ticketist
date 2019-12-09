@@ -1,12 +1,11 @@
 package com.siit.ticketist.service;
 
-import com.siit.ticketist.controller.exceptions.BadRequestException;
-import com.siit.ticketist.controller.exceptions.NotFoundException;
+import com.siit.ticketist.exceptions.BadRequestException;
+import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
 import com.siit.ticketist.service.interfaces.StorageService;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.SectorRepository;
-import com.siit.ticketist.service.interfaces.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

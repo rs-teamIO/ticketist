@@ -1,7 +1,7 @@
 package com.siit.ticketist.service;
 
-import com.siit.ticketist.controller.exceptions.BadRequestException;
-import com.siit.ticketist.controller.exceptions.OptimisticLockException;
+import com.siit.ticketist.exceptions.BadRequestException;
+import com.siit.ticketist.exceptions.OptimisticLockException;
 import com.siit.ticketist.dto.PdfTicket;
 import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.TicketRepository;

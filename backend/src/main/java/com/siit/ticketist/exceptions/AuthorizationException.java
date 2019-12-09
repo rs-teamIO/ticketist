@@ -1,4 +1,4 @@
-package com.siit.ticketist.controller.exceptions;
+package com.siit.ticketist.exceptions;
 
 import lombok.NoArgsConstructor;
 

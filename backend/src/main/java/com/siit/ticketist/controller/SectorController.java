@@ -1,7 +1,7 @@
 package com.siit.ticketist.controller;
 
 
-import com.siit.ticketist.controller.exceptions.NotFoundException;
+import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.dto.SectorDTO;
 import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.service.SectorService;

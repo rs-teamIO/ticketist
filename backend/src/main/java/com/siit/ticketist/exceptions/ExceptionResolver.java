@@ -1,4 +1,4 @@
-package com.siit.ticketist.controller.exceptions;
+package com.siit.ticketist.exceptions;
 
 import com.paypal.base.rest.PayPalRESTException;
 import com.siit.ticketist.dto.ErrorResponse;

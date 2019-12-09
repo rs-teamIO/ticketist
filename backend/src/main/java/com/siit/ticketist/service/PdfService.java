@@ -1,7 +1,7 @@
 package com.siit.ticketist.service;
 
 import com.itextpdf.text.DocumentException;
-import com.siit.ticketist.controller.exceptions.BadRequestException;
+import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.dto.PdfTicket;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;

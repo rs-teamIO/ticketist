@@ -1,13 +1,12 @@
 package com.siit.ticketist.controller;
 
-import com.siit.ticketist.controller.exceptions.NotFoundException;
+import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.dto.VenueDTO;
 import com.siit.ticketist.model.Venue;
 import com.siit.ticketist.service.VenueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
