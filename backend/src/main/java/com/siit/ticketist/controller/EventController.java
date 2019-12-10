@@ -38,23 +38,17 @@ public class EventController {
 
     @GetMapping(value="/{id}")
     public ResponseEntity<Object> getEvent(@PathVariable long id) {
-        try {
             Event event = eventService.findOne(id);
             return new ResponseEntity<>(new EventDTO(event), HttpStatus.OK);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
     }
 
 //    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(consumes = {"application/octet-stream", "multipart/form-data"})
     public ResponseEntity<Object> createEvent(@RequestPart("event") @Valid EventDTO eventDTO, @RequestPart("mediaFiles") MultipartFile[] mediaFiles){
-        try{
+
             Event event = eventDTO.convertToEntity();
             return new ResponseEntity<>(new EventDTO(eventService.save(event, mediaFiles)),HttpStatus.OK);
-        }catch(Exception e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
-        }
+
     }
 
     @PostMapping(value = "/search")

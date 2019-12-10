@@ -44,12 +44,10 @@ public class VenueController {
 //    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping()
     public ResponseEntity<Object> createVenue(@Valid @RequestBody VenueDTO venueDTO) {
-        try {
+
             Venue venue = venueDTO.convertToEntity();
             return new ResponseEntity<>(new VenueDTO(venueService.save(venue)), HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+
     }
 
 
