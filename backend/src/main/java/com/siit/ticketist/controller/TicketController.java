@@ -65,13 +65,23 @@ public class TicketController {
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping()
     public ResponseEntity<Object> buyTickets(@Valid @RequestBody List<Long> tickets) {
-        return new ResponseEntity<>(ticketService.buyTickets(tickets, true), HttpStatus.OK);
+        List<Ticket> ticket = ticketService.buyTickets(tickets,true);
+        List<TicketDTO> ticketsDTO = new ArrayList<>();
+        for (Ticket t : ticket) {
+            ticketsDTO.add(new TicketDTO(t));
+        }
+        return new ResponseEntity<>(ticketsDTO, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping(value = "/reservations")
     public ResponseEntity<Object> makeReservations(@Valid @RequestBody List<Long> tickets) {
-        return new ResponseEntity<>(ticketService.buyTickets(tickets, false), HttpStatus.OK);
+        List<Ticket> ticket = ticketService.buyTickets(tickets,false);
+        List<TicketDTO> ticketsDTO = new ArrayList<>();
+        for (Ticket t : ticket) {
+            ticketsDTO.add(new TicketDTO(t));
+        }
+        return new ResponseEntity<>(ticketsDTO, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")

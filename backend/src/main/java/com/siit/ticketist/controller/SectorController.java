@@ -25,11 +25,9 @@ public class SectorController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getSector(@PathVariable("id") Long id) {
-        try {
+
             return new ResponseEntity<>(sectorService.findOne(id), HttpStatus.OK);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+
     }
 
     @GetMapping(value="/venue/{venueId}")
