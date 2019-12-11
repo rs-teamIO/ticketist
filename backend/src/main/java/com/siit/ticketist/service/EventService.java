@@ -105,7 +105,7 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    private Set<Ticket> generateTickets(EventSector eventSector) {
+    public Set<Ticket> generateTickets(EventSector eventSector) {
         Set<Ticket> tickets = new HashSet<>();
         if(eventSector.getNumeratedSeats()){
             Optional<Sector> sector = sectorRepository.findById(eventSector.getSector().getId());
@@ -125,7 +125,7 @@ public class EventService {
         return tickets;
     }
 
-    private boolean checkVenueAvailability(Event event) {
+    public boolean checkVenueAvailability(Event event) {
         boolean check = true;
         List<Event> events = eventRepository.findEventsByVenueId(event.getVenue().getId());
 
@@ -137,7 +137,7 @@ public class EventService {
         return check;
     }
 
-    private boolean checkEventDates(Event event) {
+    public boolean checkEventDates(Event event) {
         boolean check = true;
         if(event.getReservationDeadline().after(event.getStartDate()) || event.getStartDate().after(event.getEndDate()) || new Date().after(event.getReservationDeadline())) {
             check = false;
@@ -145,7 +145,7 @@ public class EventService {
         return check;
     }
 
-    private boolean checkSectorMaxCapacity(Long sectorID, int capacity) {
+    public boolean checkSectorMaxCapacity(Long sectorID, int capacity) {
         Optional<Sector> sector = sectorRepository.findById(sectorID);
         boolean check = true;
 
@@ -158,13 +158,13 @@ public class EventService {
         return check;
     }
 
-    private List<Date> datesBetween(Date startDate, Date endDate) {
+    public List<Date> datesBetween(Date startDate, Date endDate) {
         List<Date> datesInRange = new ArrayList<>();
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(startDate);
         Calendar endCalendar = new GregorianCalendar();
         endCalendar.setTime(endDate);
-        if(startDate.getHours()*60 + startDate.getMinutes() >
+        if(startDate.getHours()*60 + startDate.getMinutes() >=
                 endDate.getHours()*60 + endDate.getMinutes()) {
             endCalendar.add(Calendar.DATE, 1);
         }
@@ -191,7 +191,7 @@ public class EventService {
         return eventRepository.findAllEventReportsByVenue(venueId);
     }
 
-    private Map<Integer, Float> getVenueTicketReports(Long venueId) {
+    public Map<Integer, Float> getVenueTicketReports(Long venueId) {
         List<Object[]> lista = eventRepository.getVenueTicketsReport(venueId);
         Map<Integer, Float> venueTicketSales =
                 eventRepository.getVenueTicketsReport(venueId)
@@ -202,7 +202,7 @@ public class EventService {
         return venueTicketSales;
     }
 
-    private Map<Integer, Float> getVenueRevenueReport(Long venueId){
+    public Map<Integer, Float> getVenueRevenueReport(Long venueId){
         List<Object[]> lista = eventRepository.getVenueRevenueReport(venueId);
 
         Map<Integer, Float> venueRevenues =
@@ -232,7 +232,7 @@ public class EventService {
                 convertMillisToDate(millisecondsFrom), convertMillisToDate(millisecondsTo));
     }
 
-    private Date convertMillisToDate(Long millisecondsFrom){
+    public Date convertMillisToDate(Long millisecondsFrom){
         //ToDo konvertuje u CET (local timezone), mozda bude problema
         Date date = millisecondsFrom == null ? null : new Date(millisecondsFrom);
         return date;
@@ -254,7 +254,7 @@ public class EventService {
         return filteredEvents;
     }
 
-    private Date addDays(Date date, int days) {
+    public Date addDays(Date date, int days) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.add(Calendar.DATE, days); //minus number would decrement the days
