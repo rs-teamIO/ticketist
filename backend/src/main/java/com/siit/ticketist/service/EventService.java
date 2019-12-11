@@ -127,7 +127,7 @@ public class EventService {
 
     private boolean checkVenueAvailability(Event event) {
         boolean check = true;
-        List<Event> events = eventRepository.findEventsByVenueId(event.getVenue().getId());
+        List<Event> events = eventRepository.findByVenueId(event.getVenue().getId());
 
         for(Event e : events){
             check = event.getEndDate().before(e.getStartDate()) || event.getStartDate().after(e.getEndDate());

@@ -25,10 +25,10 @@ public class ReportDTO {
 
         public String name;
         public String venueName;
-        public Long ticketsSold;
+        public BigInteger ticketsSold;
         public BigDecimal totalRevenue;
 
-        public EventReportDTO(String name, String venueName, Long ticketsSold, BigDecimal totalRevenue){
+        public EventReportDTO(String name, String venueName, BigInteger ticketsSold, BigDecimal totalRevenue){
             this.name = name;
             this.venueName = venueName;
             this.ticketsSold = ticketsSold;
@@ -40,7 +40,7 @@ public class ReportDTO {
         this.allVenuesChart = allVenuesChart;
         this.events = events
                 .stream()
-                .map(obj -> new EventReportDTO((String)obj[0], (String)obj[1], ((BigInteger)obj[2]).longValue(), (BigDecimal)obj[3]))
+                .map(obj -> new EventReportDTO((String)obj[0], (String)obj[1], ((BigInteger)obj[2]), (BigDecimal)obj[3]))
                 .collect(Collectors.toList());
         this.singleVenueChart = null;
         return this;
@@ -50,7 +50,7 @@ public class ReportDTO {
         this.singleVenueChart = singleVenueChart;
         this.events = events
                 .stream()
-                .map(obj -> new EventReportDTO((String)obj[0], (String)obj[1], (Long)obj[2], (BigDecimal)obj[3]))
+                .map(obj -> new EventReportDTO((String)obj[0], (String)obj[1], (BigInteger)obj[2], (BigDecimal)obj[3]))
                 .collect(Collectors.toList());
         this.allVenuesChart = null;
         return this;
