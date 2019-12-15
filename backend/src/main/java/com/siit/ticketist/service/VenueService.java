@@ -4,31 +4,48 @@ import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.model.Venue;
-import com.siit.ticketist.repository.SectorRepository;
 import com.siit.ticketist.repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Venue service layer.
+ */
 @Service
 public class VenueService {
 
-    @Autowired
-    private VenueRepository venueRepository;
+    private final VenueRepository venueRepository;
 
     @Autowired
-    private SectorRepository sectorRepository;
-
-    public List<Venue> findAll() {
-        return venueRepository.findAll();
+    public VenueService(VenueRepository venueRepository) {
+        this.venueRepository = venueRepository;
     }
 
+    /**
+     * Returns a list of all available venues
+     *
+     * @return {@link List} of all {@link Venue} objects
+     */
+    public List<Venue> findAll() {
+        return this.venueRepository.findAll();
+    }
+
+    /**
+     * Finds a {@link Venue} with given ID.
+     * If no such venue is found, the method throws a {@link NotFoundException}
+     *
+     * @param id ID of the venue
+     * @return {@link Venue} instance
+     * @throws NotFoundException Exception thrown in case no venue with given ID is found.
+     */
     public Venue findOne(Long id) throws NotFoundException {
-        return venueRepository.findById(id).orElseThrow(() -> new NotFoundException("Venue not found"));
+        return this.venueRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Venue not found."));
     }
 
     public Venue save(Venue venue) {
@@ -47,26 +64,23 @@ public class VenueService {
     }
 
     private boolean sectorCanBeDrawn(Sector sector, Sector sectorSave) {
-        if(sector.getStartRow()>sectorSave.getStartRow()+sectorSave.getRowsCount()) return true;
-        else if(sector.getStartRow()+sector.getRowsCount()<sectorSave.getStartRow()) return true;
-        else if(sector.getStartColumn()>sectorSave.getStartColumn()+sectorSave.getColumnsCount()) return true;
-        else if(sector.getStartColumn()+sector.getColumnsCount()<sectorSave.getStartColumn()) return true;
+        if(sector.getStartRow() > sectorSave.getStartRow() + sectorSave.getRowsCount()) return true;
+        else if(sector.getStartRow() + sector.getRowsCount() < sectorSave.getStartRow()) return true;
+        else if(sector.getStartColumn() > sectorSave.getStartColumn() + sectorSave.getColumnsCount()) return true;
+        else if(sector.getStartColumn() + sector.getColumnsCount() < sectorSave.getStartColumn()) return true;
         else return false;
     }
 
-    /*
-    --------------------
-        Reports
-    --------------------
-    */
-    public Map<String, BigDecimal> getAllVenueRevenues(){
-        Map<String, BigDecimal> venueRevenue =
-                venueRepository.getAllVenueRevenues()
-                        .stream()
-                        .collect(Collectors.toMap(
-                                obj -> (String)obj[0],
+    /**
+     * Returns revenues for all venues in the system
+     *
+     * @return Map<String, BigDecimal> where key is the venue name, and value is the revenue of the venue
+     */
+    public Map<String, BigDecimal> getAllVenueRevenues() {
+        return this.venueRepository.getAllVenueRevenues()
+                .stream()
+                .collect(Collectors.toMap(
+                                obj -> (String) obj[0],
                                 obj -> (BigDecimal) obj[1]));
-        return venueRevenue;
     }
-
 }

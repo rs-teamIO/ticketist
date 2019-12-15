@@ -1,6 +1,7 @@
 package com.siit.ticketist.controller;
 
 import com.siit.ticketist.dto.RegisterUserDto;
+import com.siit.ticketist.dto.SuccessResponse;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.service.RegisteredUserService;
 import com.siit.ticketist.service.UserService;
@@ -33,10 +34,10 @@ public class RegisteredUserController {
 
     /**
      * POST /api/users
-     * Registers a new user.
+     * Registers a new {@link RegisteredUser}.
      *
      * @param RegisterUserDto DTO containing User info
-     * @return ResponseEntity containing the ID of created User
+     * @return {@link ResponseEntity} containing the ID of created User
      */
     @PostMapping
     public ResponseEntity handleCreate(@Valid @RequestBody RegisterUserDto dto) throws MessagingException {
@@ -47,15 +48,15 @@ public class RegisteredUserController {
     }
 
     /**
-     * GET /api/users/{verificationCode}
-     * Endpoint used for user account verification.
+     * GET /api/users/verify/{verificationCode}
+     * Endpoint used for {@link RegisteredUser} account verification.
      *
      * @param verificationCode Verification code string
-     * @return ResponseEntity containing HttpStatus and message of the operation result
+     * @return {@link ResponseEntity} containing HttpStatus and message of the operation result
      */
-    @GetMapping(value="{verificationCode}")
+    @GetMapping(value="verify/{verificationCode}")
     public ResponseEntity handleVerify(@PathVariable("verificationCode") String verificationCode) {
         registeredUserService.verify(verificationCode);
-        return new ResponseEntity("User verified successfully.", HttpStatus.OK);
+        return new ResponseEntity(new SuccessResponse("User verified successfully."), HttpStatus.OK);
     }
 }

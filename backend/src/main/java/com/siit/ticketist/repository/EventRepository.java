@@ -10,15 +10,13 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-    @Query(value = "select * from events e where e.venue_id = ?1",nativeQuery = true)
+    @Query(value = "select * from events e where e.venue_id = ?1", nativeQuery = true)
     List<Event> findEventsByVenueId(Long id);
 
-    /*
-        Returns all events,
-        venue in which that event is happening,
-        number of sold tickets for the event and
-        total revenue.
-        Used for initial report.
+    /**
+     * Return all events, venue in which the event is happening, number of sold tickets for the event and total revenue.
+     * Used for initial report
+     * @return List of result objects
      */
     @Query( value =
             "SELECT e.name, venue_name, COUNT(t.id), COALESCE(SUM(t.price), 0) " +
@@ -30,24 +28,25 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "ORDER BY SUM(t.price) desc", nativeQuery = true)
     List<Object[]> findAllEventsReport();
 
-    /*  TODO
-        Returns all events for wanted venue,
-        number of sold tickets for the event and
-        total revenue.
-        Used for specific venue report.
-    */
+    /**
+     * TODO: findAllEventReportsByVenue
+     * Returns all events for wanted venue, number of sold tickets for the event and total revenue.
+     * Used for specific venue report.
+     * @param venueId ID of the Venue
+     * @return List of result objects
+     */
     @Query( "SELECT e.name, v.name, COUNT(t.id), COALESCE(SUM(t.price), 0) " +
             "FROM Event e JOIN e.venue as v JOIN e.tickets as t " +
             "WHERE v.id = ?1 AND t.status = 1 " +
             "GROUP BY e.id")
     List<Object[]> findAllEventReportsByVenue(Long venueId);
 
-
-    /*  TODO
-        Returns month (in last 12 months) and
-        number of tickets sold in that month
-        for wanted venue.
-        Used for specific venue report.
+    /**
+     * TODO: getVenueTicketsReport
+     * Returns month (in the last 12 months) and number of tickets sold in that month for wanted venue.
+     * Used for specific venue report.
+     * @param venueId ID of the Venue
+     * @return List of result objects
      */
     @Query(value =
             "SELECT MONTH(e.start_date), COUNT(t.id) " +
@@ -58,35 +57,43 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "GROUP BY MONTH(e.start_date)", nativeQuery = true)
     List<Object[]> getVenueTicketsReport(@Param("venueId") Long venueId);
 
-    /*  TODO
-        Returns month (in last 12 months) and
-        total revenue for that month
-        for wanted venue.
-        Used for specific venue report.
+    /**
+     * TODO: getVenueRevenueReport
+     * Returns month (in the last 12 months) and total revenue for that month for wanted venue.
+     * Used for specific venue report.
+     * @param venueId ID of the Venue
+     * @return List of result objects
      */
     @Query(value =
             "SELECT MONTH(e.start_date), SUM(t.price) " +
-                    "FROM events e JOIN tickets t ON e.id = t.event_id " +
-                    "WHERE e.venue_id = :venueId " +
+            "FROM events e JOIN tickets t ON e.id = t.event_id " +
+            "WHERE e.venue_id = :venueId " +
                     "AND e.start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 12 MONTH) " +
                     "AND CURDATE() AND t.status = 1 " +
-                    "GROUP BY MONTH(e.start_date)", nativeQuery = true)
+            "GROUP BY MONTH(e.start_date)", nativeQuery = true)
     List<Object[]> getVenueRevenueReport(@Param("venueId") Long venueId);
 
-    //TODO
+    /**
+     * TODO: search
+     * Used to search events by specific parameters.
+     * @param eventName Name of the event
+     * @param category Category of the event
+     * @param venueName Name of the Venue
+     * @param startDate Start date of the event
+     * @param endDate End date of the event
+     * @return List of Event objects that satisfy search criteria
+     */
     @Query(value =
             "SELECT * " +
             "FROM events e JOIN venues v ON e.venue_id = v.id " +
             "WHERE LOWER(e.name) LIKE concat('%', LOWER(:eventName), '%') " +
-            "AND IFNULL(LOWER(e.category), '') LIKE concat('%', LOWER(:category), '%') " +
-            "AND LOWER(v.name) LIKE concat('%', LOWER(:venueName), '%') " +
-            "AND COALESCE( (e.start_date >= :startDate), true) AND COALESCE( (e.start_date <= :endDate), true)",
+                    "AND IFNULL(LOWER(e.category), '') LIKE concat('%', LOWER(:category), '%') " +
+                    "AND LOWER(v.name) LIKE concat('%', LOWER(:venueName), '%') " +
+                    "AND COALESCE( (e.start_date >= :startDate), true) AND COALESCE( (e.start_date <= :endDate), true)",
             nativeQuery = true)
     List<Event> search(@Param("eventName") String eventName,
                        @Param("category") String category,
                        @Param("venueName") String venueName,
                        @Param("startDate") Date startDate,
                        @Param("endDate") Date endDate);
-
-
 }

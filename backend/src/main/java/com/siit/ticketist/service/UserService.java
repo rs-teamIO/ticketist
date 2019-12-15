@@ -62,6 +62,7 @@ public class UserService {
      * If no user is logged in, the method throws a {@link ForbiddenException}.
      *
      * @return Currently active {@link User}
+     * @throws ForbiddenException Exception thrown in case the authentication fails.
      */
     public User findCurrentUser() {
         final UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();

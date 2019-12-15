@@ -6,7 +6,6 @@ import com.siit.ticketist.model.*;
 import com.siit.ticketist.service.interfaces.StorageService;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.SectorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,27 +16,45 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Event service layer.
+ */
 @Service
 public class EventService {
 
     @Value("${allowed-content-types}")
     private String[] contentTypes;
 
-    @Autowired
-    private StorageService storageService;
+    private final StorageService storageService;
+    private final EventRepository eventRepository;
+    private final SectorRepository sectorRepository;
 
-    @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
-    private SectorRepository sectorRepository;
-
-    public List<Event> findAll() {
-        return eventRepository.findAll();
+    public EventService(StorageService storageService, EventRepository eventRepository, SectorRepository sectorRepository) {
+        this.storageService = storageService;
+        this.eventRepository = eventRepository;
+        this.sectorRepository = sectorRepository;
     }
 
+    /**
+     * Returns a list of all available events
+     *
+     * @return {@link List} of all {@link Event} objects
+     */
+    public List<Event> findAll() {
+        return this.eventRepository.findAll();
+    }
+
+    /**
+     * Finds a {@link Event} with given ID.
+     * If no such event is found, the method throws a {@link NotFoundException}
+     *
+     * @param id ID of the event
+     * @return {@link Event} instance
+     * @throws NotFoundException Exception thrown in case no event with given ID is found.
+     */
     public Event findOne(Long id) throws NotFoundException {
-        return eventRepository.findById(id).orElseThrow(() -> new NotFoundException("Event not found"));
+        return this.eventRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Event not found."));
     }
 
     public Event save(Event event, MultipartFile[] mediaFiles){

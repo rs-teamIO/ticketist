@@ -35,12 +35,17 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query(value = "select * from tickets t where t.id in :ids and t.user_id = :userId and t.status = 0", nativeQuery = true)
     List<Ticket> findTicketsByIdGroup(@Param("ids") List<Long> ticketIds, @Param("userId") Long userId);
 
-    //TODO
+    /**
+     * TODO: findEmailsToBeNotified
+     * Retreives a list of e-mails that should be notified about the expiration of their ticket reservation.
+     * @param eventId ID of the event whose reserved ticket users should be notified
+     * @return List of strings containing emails
+     */
     @Query(value =
             "SELECT u.email " +
-                    "FROM tickets t JOIN users u " +
-                    "ON t.user_id = u.id " +
-                    "WHERE t.event_id = :eventId  AND t.status = 0 " +
-                    "GROUP BY u.id", nativeQuery = true)
+            "FROM tickets t JOIN users u " +
+            "ON t.user_id = u.id " +
+            "WHERE t.event_id = :eventId AND t.status = 0 " +
+            "GROUP BY u.id", nativeQuery = true)
     Set<String> findEmailsToBeNotified(Long eventId);
 }
