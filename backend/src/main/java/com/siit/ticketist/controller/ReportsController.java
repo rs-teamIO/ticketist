@@ -1,12 +1,11 @@
 package com.siit.ticketist.controller;
 
-import com.siit.ticketist.dto.ReportDTO;
-import com.siit.ticketist.service.EventService;
-import com.siit.ticketist.service.VenueService;
+import com.siit.ticketist.dto.InitialReportDTO;
+import com.siit.ticketist.dto.VenueReportDTO;
+import com.siit.ticketist.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,17 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReportsController {
 
     @Autowired
-    private EventService eventService;
-
-    @Autowired
-    private VenueService venueService;
+    private ReportService reportService;
 
 
     @GetMapping
     //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity generateInitialReport(){
-        ReportDTO dto = new ReportDTO();
-        return new ResponseEntity<>(dto.generateInitialReport(venueService.getAllVenueRevenues(), eventService.findAllEventsReport()),
+        return new ResponseEntity<>(new InitialReportDTO(reportService.getAllVenueRevenues(), reportService.findAllEventsReport()),
                 HttpStatus.OK);
     }
 
@@ -35,8 +30,7 @@ public class ReportsController {
     //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity generateVenueReport(@PathVariable("venueId") Long venueId,
                                               @PathVariable("criteria") String criteria){
-        ReportDTO dto = new ReportDTO();
-        return new ResponseEntity(dto.generateSpecificReport(eventService.getVenueChart(criteria, venueId), eventService.findAllEventReportsByVenue(venueId)),
+        return new ResponseEntity(new VenueReportDTO(reportService.getVenueChart(criteria, venueId), reportService.findAllEventReportsByVenue(venueId)),
                 HttpStatus.OK);
     }
 

@@ -127,7 +127,7 @@ public class EventService {
 
     private boolean checkVenueAvailability(Event event) {
         boolean check = true;
-        List<Event> events = eventRepository.findEventsByVenueId(event.getVenue().getId());
+        List<Event> events = eventRepository.findByVenueId(event.getVenue().getId());
 
         for(Event e : events){
             check = event.getEndDate().before(e.getStartDate()) || event.getStartDate().after(e.getEndDate());
@@ -178,51 +178,6 @@ public class EventService {
         return datesInRange;
     }
 
-    /*
-    --------------------
-        Reports
-    --------------------
-    */
-    public List<Object[]> findAllEventsReport() {
-        return eventRepository.findAllEventsReport();
-    }
-
-    public List<Object[]> findAllEventReportsByVenue(Long venueId) {
-        return eventRepository.findAllEventReportsByVenue(venueId);
-    }
-
-    private Map<Integer, Float> getVenueTicketReports(Long venueId) {
-        List<Object[]> lista = eventRepository.getVenueTicketsReport(venueId);
-        Map<Integer, Float> venueTicketSales =
-                eventRepository.getVenueTicketsReport(venueId)
-                        .stream()
-                        .collect(Collectors.toMap(
-                                obj -> (Integer)obj[0],
-                                obj -> ((BigInteger)obj[1]).floatValue()));
-        return venueTicketSales;
-    }
-
-    private Map<Integer, Float> getVenueRevenueReport(Long venueId){
-        List<Object[]> lista = eventRepository.getVenueRevenueReport(venueId);
-
-        Map<Integer, Float> venueRevenues =
-                eventRepository.getVenueRevenueReport(venueId)
-                        .stream()
-                        .collect(Collectors.toMap(
-                                obj -> (Integer)obj[0],
-                                obj -> ((BigDecimal)obj[1]).floatValue()));
-        return venueRevenues;
-    }
-
-    public Map<Integer, Float> getVenueChart(String criteria, Long venueId) {
-        //TODO napisi metodu koja proverava da li venue sa tim id postoji
-        if(criteria.toUpperCase().equals("TICKETS"))
-            return getVenueTicketReports(venueId);
-        else if(criteria.toUpperCase().equals("REVENUE"))
-            return getVenueRevenueReport(venueId);
-        else
-            throw new BadRequestException("Invalid criteria");
-    }
 
     /*
         Search
@@ -233,24 +188,23 @@ public class EventService {
     }
 
     private Date convertMillisToDate(Long millisecondsFrom){
-        //ToDo konvertuje u CET (local timezone), mozda bude problema
         Date date = millisecondsFrom == null ? null : new Date(millisecondsFrom);
         return date;
     }
 
     /*
-        Helper methods for
+        Helper method for email notifications
      */
     public List<Event> filterEventsByDeadline(){
-        List<Event> allEvents = eventRepository.findAll();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String threeDaysFromNow = sdf.format(addDays(new Date(), 3));
 
         List<Event> filteredEvents = new ArrayList<>();
-        for(Event e : allEvents){
-            if(sdf.format(e.getReservationDeadline()).equals(threeDaysFromNow))
-                filteredEvents.add(e);
-        }
+        eventRepository.findAll().stream().forEach(event -> {
+            if(sdf.format(event.getReservationDeadline()).equals(threeDaysFromNow))
+                filteredEvents.add(event);
+        });
+
         return filteredEvents;
     }
 
