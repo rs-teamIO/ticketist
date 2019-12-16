@@ -27,20 +27,6 @@ public class EventRepositoryTest {
     @Autowired
     private EventRepository eventRepository;
 
-//    @Test
-//    public void findEventsByVenueId_ShouldReturnEmptyList_whenVenueIdIsWrong(){
-//        List<Event> eventList = eventRepository.findByVenueId(12l);
-//        assertEquals("event list is empty (0 elements)",0,eventList.size());
-//
-//    }
-//
-//    @Test
-//    public void findEventsByVenueId_ShouldReturnEventList_whenVenueIdIsCorrect(){
-//        List<Event> eventList = eventRepository.findByVenueId(2l);
-//        assertEquals("event list is not empty (2 elements)",2,eventList.size());
-//    }
-
-    //---------------------------------------------------------------------------------------------
     @Test
     public void findAllEventsReport_ReturnsListOfEventsItsVenueSoldTicketsAndTotalRevenue() {
         List<Object[]> events = eventRepository.findAllEventsReport();
@@ -244,8 +230,5 @@ public class EventRepositoryTest {
                 hasProperty("name", is("Event 4"))
         ));
     }
-    //TODO Search with partial params
-
-    //ToDo DOdati u skriptu karte sa statusom -1 i refaktorisati testove
 
 }

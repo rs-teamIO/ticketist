@@ -9,10 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
-
-//    @Query(value = "select * from events e where e.venue_id = ?1",nativeQuery = true)
-//    List<Event> findEventsByVenueId(Long id);
-
+    
     List<Event> findByVenueId(Long id);
 
     /*
