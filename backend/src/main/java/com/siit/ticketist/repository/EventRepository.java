@@ -80,13 +80,14 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Object[]> getVenueRevenueReport(@Param("venueId") Long venueId);
 
     //TODO
+    //Na enddate se dodaje jedan dan da bi bilo inkluzivno
     @Query(value =
             "SELECT * " +
             "FROM events e JOIN venues v ON e.venue_id = v.id " +
             "WHERE LOWER(e.name) LIKE concat('%', LOWER(:eventName), '%') " +
             "AND IFNULL(LOWER(e.category), '') LIKE concat('%', LOWER(:category), '%') " +
             "AND LOWER(v.name) LIKE concat('%', LOWER(:venueName), '%') " +
-            "AND COALESCE( (e.start_date >= :startDate), true) AND COALESCE( (e.start_date <= :endDate), true)",
+            "AND COALESCE( (e.start_date >= :startDate), true) AND COALESCE( (e.start_date <= ((:endDate)+INTERVAL 1 DAY)), true)",
             nativeQuery = true)
     List<Event> search(@Param("eventName") String eventName,
                        @Param("category") String category,

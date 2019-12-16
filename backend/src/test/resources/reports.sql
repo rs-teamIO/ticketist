@@ -28,7 +28,12 @@ VALUES
     (5,1,1,50,0,2,1),
 
     (6,1,1,50,0,3,1),		-- third event has two reservations
-    (7,1,1,60,0,3,1);
+    (7,1,1,60,0,3,1),
+
+    (8,1,1,60,-1,3,1),      -- fourth event has no tickets or reservations
+    (9,1,1,60,-1,3,1);
+
+
 
 INSERT INTO users
     (dtype, id, email, first_name, last_name, password, username, is_verified, verification_code)

@@ -11,6 +11,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -139,13 +142,109 @@ public class EventRepositoryTest {
     public void searchWithEmptyParamsShouldReturnAllEvents(){
        List<Event> events = eventRepository.search("","","", null, null);
        assertThat("All events are returned", events, hasSize(4));
-       assertThat(events, containsInAnyOrder(
-               hasProperty("name", is("Event 1")),
-               hasProperty("name", is("Event 2")),
-               hasProperty("name", is("Event 3")),
-               hasProperty("name", is("Event 4"))
-       ));
+       assertAllEventsInList(events);
     }
+
+    @Test
+    public void searchWithNameParamShouldReturnEventsWhichNameContainsWantedParam(){
+        //Full name
+        List<Event> events = eventRepository.search("event 1", "", "", null, null);
+        assertThat(events, hasSize(1));
+        assertThat(events, containsInAnyOrder(hasProperty("name", is("Event 1"))));
+
+        //Partial name
+        events = eventRepository.search("event", "", "", null, null);
+        assertThat(events, hasSize(4));
+        assertAllEventsInList(events);
+    }
+
+    @Test
+    public void searchWithCategoryParamShouldReturnEventsWhichCategoryContainsWantedParam(){
+        //Full name
+        List<Event> events = eventRepository.search("", "entertainment", "", null, null);
+        assertThat(events, hasSize(1));
+        assertThat(events, containsInAnyOrder(
+                hasProperty("name", is("Event 3"))
+        ));
+
+        //Partial name
+        events = eventRepository.search("", "enter", "", null, null);
+        assertThat(events, hasSize(1));
+        assertThat(events, containsInAnyOrder(
+                hasProperty("name", is("Event 3"))
+        ));
+    }
+
+    @Test
+    public void searchWithVenueNameParamShouldReturnEventsWhichVenueNameContainsWantedParam(){
+        //Full name
+        List<Event> events = eventRepository.search("", "", "spens", null, null);
+        assertThat(events, hasSize(2));
+        assertThat(events, containsInAnyOrder(
+                hasProperty("name", is("Event 1")),
+                hasProperty("name", is("Event 2"))
+        ));
+
+        //Partial name
+        events = eventRepository.search("", "", "sp", null, null);
+        assertThat(events, hasSize(2));
+        assertThat(events, containsInAnyOrder(
+                hasProperty("name", is("Event 1")),
+                hasProperty("name", is("Event 2"))
+        ));
+    }
+
+    @Test
+    public void searchWithStartDateParamShouldReturnEventsWhichStartDateIsBiggerOrEqualToWantedDateParam() throws ParseException {
+        //Full name
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = sdf.parse(sdf.format(new Date(Long.valueOf("1573516800000")))); // 2019-11-12 00:00:00
+        List<Event> events = eventRepository.search("", "", "", date, null);
+        assertThat(events, hasSize(2));
+        assertThat(events, containsInAnyOrder(
+                hasProperty("name", is("Event 3")),
+                hasProperty("name", is("Event 4"))
+        ));
+    }
+
+    @Test
+    public void searchWithEndDateParamShouldReturnEventsWhichStartDateIsLessOrEqualToWantedDateParam() throws ParseException {
+        //Full name
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = sdf.parse(sdf.format(new Date(Long.valueOf("1583362800000")))); // 2019-03-05 00:00:00
+        List<Event> events = eventRepository.search("", "", "", null, date);
+        assertThat(events, hasSize(4));
+        assertAllEventsInList(events);
+    }
+
+    //Combined Search
+    @Test
+    public void searchWithAllParamsShouldReturnEventsWhichPropertiesSatisfyAllWantedSearchParams() throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date startDate = sdf.parse(sdf.format(new Date(Long.valueOf("1573340400000")))); // 2019-11-10 00:00:00
+        Date endDate = sdf.parse(sdf.format(new Date(Long.valueOf("1583362800000")))); // 2019-03-05 00:00:00
+        List<Event> events = eventRepository.search("event", "sports", "spens", startDate, endDate);
+        assertThat("Only 'Event 1' satisfies every search param", events, hasSize(1));
+        assertThat(events, containsInAnyOrder(
+                hasProperty("name", is("Event 1"))
+        ));
+    }
+
+    @Test
+    public void searchWithParamsThatNoneOfTheEventsSatifyShouldReturnEmptyList(){
+        List<Event> events = eventRepository.search("event", "cultural", "spens", null, null);
+        assertTrue(events.isEmpty());
+    }
+
+    private void assertAllEventsInList(List<Event> events){
+        assertThat(events, containsInAnyOrder(
+                hasProperty("name", is("Event 1")),
+                hasProperty("name", is("Event 2")),
+                hasProperty("name", is("Event 3")),
+                hasProperty("name", is("Event 4"))
+        ));
+    }
+    //TODO Search with partial params
 
     //ToDo DOdati u skriptu karte sa statusom -1 i refaktorisati testove
 
