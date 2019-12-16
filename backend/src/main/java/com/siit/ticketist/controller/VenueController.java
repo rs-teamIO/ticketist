@@ -48,7 +48,7 @@ public class VenueController {
      * @param id ID of the {@link Venue}
      * @return {@link ResponseEntity} containing HttpStatus and content
      */
-    @GetMapping(value="/{id}")
+    @GetMapping(value="{id}")
     public ResponseEntity<Object> getVenue(@PathVariable("id") Long id) {
         Venue venue = venueService.findOne(id);
         return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.OK);

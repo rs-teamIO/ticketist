@@ -38,7 +38,7 @@ public class SectorController {
      */
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getSector(@PathVariable("id") Long id) {
-        Sector sector = sectorService.findOne(id);
+        Sector sector = this.sectorService.findOne(id);
         return new ResponseEntity<>(sector, HttpStatus.OK);
     }
 
@@ -51,11 +51,10 @@ public class SectorController {
      */
     @GetMapping(value="/venue/{venueId}")
     public ResponseEntity<List<SectorDTO>> getSectorsByVenueId(@PathVariable("venueId") Long venueId) {
-        List<Sector> sectors = sectorService.findSectorsByVenueId(venueId);
-        List<SectorDTO> sectorsDTO = new ArrayList<>();
-        for(Sector sector : sectors) {
-            sectorsDTO.add(new SectorDTO(sector));
-        }
-        return new ResponseEntity<>(sectorsDTO, HttpStatus.OK);
+        List<SectorDTO> sectors = new ArrayList<>();
+        this.sectorService.findSectorsByVenueId(venueId).stream()
+                .map(SectorDTO::new)
+                .forEachOrdered(sectors::add);
+        return new ResponseEntity<>(sectors, HttpStatus.OK);
     }
 }

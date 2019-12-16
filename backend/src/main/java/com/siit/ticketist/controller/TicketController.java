@@ -111,5 +111,4 @@ public class TicketController {
     public ResponseEntity<Boolean> cancelReservations(@Valid @RequestBody List<Long> reservations) {
         return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, -1), HttpStatus.OK);
     }
-
 }
