@@ -1,6 +1,7 @@
 package com.siit.ticketist.repository;
 
 
+import com.siit.ticketist.model.Event;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
-import static org.hamcrest.Matchers.comparesEqualTo;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
@@ -134,4 +134,19 @@ public class EventRepositoryTest {
         List<Object[]> venues = eventRepository.getVenueTicketsReport(Long.valueOf(-1));
         assertTrue(venues.isEmpty());
     }
+    //---------------------------------------------------------------------------------------------
+    @Test
+    public void searchWithEmptyParamsShouldReturnAllEvents(){
+       List<Event> events = eventRepository.search("","","", null, null);
+       assertThat("All events are returned", events, hasSize(4));
+       assertThat(events, containsInAnyOrder(
+               hasProperty("name", is("Event 1")),
+               hasProperty("name", is("Event 2")),
+               hasProperty("name", is("Event 3")),
+               hasProperty("name", is("Event 4"))
+       ));
+    }
+
+    //ToDo DOdati u skriptu karte sa statusom -1 i refaktorisati testove
+
 }

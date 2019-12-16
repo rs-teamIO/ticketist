@@ -24,7 +24,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      */
     @Query( value =
             "SELECT e.name, venue_name, COUNT(t.id), COALESCE(SUM(t.price), 0) " +
-            "FROM events as e LEFT OUTER JOIN (SELECT t.id, t.price, t.event_id FROM tickets as t where t.status) as t " +
+            "FROM events as e LEFT OUTER JOIN (SELECT t.id, t.price, t.event_id FROM tickets as t where t.status = 1) as t " +
             "ON e.id = t.event_id " +
             "LEFT OUTER JOIN (SELECT v.name as venue_name, v.id from venues as v) as v " +
             "ON e.venue_id = v.id " +

@@ -56,20 +56,4 @@ public class VenueService {
         else if(sector.getStartColumn()+sector.getColumnsCount()<sectorSave.getStartColumn()) return true;
         else return false;
     }
-
-    /*
-    --------------------
-        Reports
-    --------------------
-    */
-    public Map<String, BigDecimal> getAllVenueRevenues(){
-        Map<String, BigDecimal> venueRevenue =
-                venueRepository.getAllVenueRevenues()
-                        .stream()
-                        .collect(Collectors.toMap(
-                                obj -> (String)obj[0],
-                                obj -> (BigDecimal) obj[1]));
-        return venueRevenue;
-    }
-
 }
