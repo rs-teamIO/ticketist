@@ -31,6 +31,13 @@ public class Event {
    private String name;
 
    /**
+    * Holds the information whether the event has been cancelled or not.
+    * In case the event is cancelled, users cannot buy any tickets for that event.
+    */
+   @Column(nullable = false)
+   private Boolean isCancelled = false;
+
+   /**
     * Event {@link Category}
     */
    @Enumerated(EnumType.STRING)

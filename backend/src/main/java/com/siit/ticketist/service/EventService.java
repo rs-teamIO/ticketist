@@ -3,9 +3,9 @@ package com.siit.ticketist.service;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
-import com.siit.ticketist.service.interfaces.StorageService;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.SectorRepository;
+import com.siit.ticketist.service.interfaces.StorageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +15,7 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Event service layer.
@@ -57,7 +58,7 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException("Event not found."));
     }
 
-    public Event save(Event event, MultipartFile[] mediaFiles){
+    public Event save(Event event) {
 
         if(!checkEventDates(event)) {
             throw new BadRequestException("Dates are invalid");
@@ -103,20 +104,6 @@ public class EventService {
             eventSector.setTickets(generateTickets(eventSector));
             eventSector.getEvent().getTickets().addAll(eventSector.getTickets());
         }
-
-        List<MediaFile> eventMediaFiles = new ArrayList<>();
-        Arrays.asList(mediaFiles).stream().forEach((mf) -> {
-            if (!Arrays.asList(contentTypes).contains(mf.getContentType()))
-                throw new BadRequestException(String.format("File %s is not a valid media file.", mf.getOriginalFilename()));
-        });
-
-        Arrays.asList(mediaFiles).stream().forEach((mf) -> {
-            String fileName = UUID.randomUUID().toString();
-            storageService.write(fileName, mf);
-            eventMediaFiles.add(new MediaFile(fileName, mf.getContentType()));
-        });
-
-        event.getMediaFiles().addAll(eventMediaFiles);
 
         return eventRepository.save(event);
     }
@@ -192,6 +179,66 @@ public class EventService {
         }
 
         return datesInRange;
+    }
+
+    /**
+     * Adds media files (images, videos) to {@link Event} with specified ID.
+     * If no such event is found, the method throws a {@link NotFoundException}
+     *
+     * @param eventId ID of the event
+     * @param mediaFiles List of media files
+     * @return {@link Event} instance
+     * @throws NotFoundException Exception thrown in case no event with given ID is found.
+     * @throws BadRequestException Exception thrown in case one of the submitted files is not valid.
+     */
+    public Event addMediaFiles(Long eventId, MultipartFile[] mediaFiles) {
+        Event event = this.findOne(eventId);
+
+        Stream.of(mediaFiles).forEach((mf) -> {
+            if (!Arrays.asList(contentTypes).contains(mf.getContentType()))
+                throw new BadRequestException(String.format("File %s is not a valid media file.", mf.getOriginalFilename()));
+        });
+
+        ArrayList<MediaFile> eventMediaFiles = new ArrayList<>();
+        Stream.of(mediaFiles).forEach((mf) -> {
+            String fileName = UUID.randomUUID().toString();
+            this.storageService.write(fileName, mf);
+            eventMediaFiles.add(new MediaFile(fileName, mf.getContentType()));
+        });
+
+        event.getMediaFiles().addAll(eventMediaFiles);
+
+        return this.eventRepository.save(event);
+    }
+
+    /**
+     * Returns a collection of all {@link MediaFile} instances associated with the requested {@link Event}
+     *
+     * @param eventId ID of the event the media files are requested for
+     * @return Set<MediaFile> Collection of media files
+     */
+    public Set<MediaFile> getMediaFiles(Long eventId) {
+        return this.findOne(eventId).getMediaFiles();
+    }
+
+    /**
+     * Returns the byte representation of the requested file.
+     *
+     * @param eventId ID of the event the media files are requested for
+     * @param fileName Name of the requested file
+     * @return Byte array representation of the requested file
+     * @throws BadRequestException Exception thrown in case the file cannot be found
+     * TODO: IOException
+     */
+    public byte[] getMediaFile(Long eventId, String fileName) {
+        Event event = this.findOne(eventId);
+        List<MediaFile> mediaFiles = event.getMediaFiles().stream()
+                .filter(mediaFile -> mediaFile.getFileName().equals(fileName))
+                .collect(Collectors.toList());
+        if(mediaFiles.isEmpty())
+            throw new BadRequestException("Event does not have a file with given name.");
+
+        return this.storageService.read(mediaFiles.get(0).getFileName());
     }
 
     /*

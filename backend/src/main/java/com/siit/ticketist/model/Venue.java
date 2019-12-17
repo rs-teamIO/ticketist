@@ -30,10 +30,12 @@ public class Venue {
    private String name;
 
    /**
-    * Holds the information whether the venue is currently active or not
+    * Holds the information whether the venue is currently active or not.
+    * In case the venue is not active, it cannot accept hosting new events.
+    * Events that have been registered before setting the Venue to inactive are left untouched.
     */
    @Column(nullable = false)
-   private Boolean isActive;
+   private Boolean isActive = true;
 
    /**
     * Street where the venue is located at
