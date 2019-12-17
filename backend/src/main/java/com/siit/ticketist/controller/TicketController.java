@@ -1,6 +1,9 @@
 package com.siit.ticketist.controller;
 
+import com.siit.ticketist.dto.SuccessResponse;
+import com.siit.ticketist.model.Ticket;
 import com.siit.ticketist.dto.TicketDTO;
+import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.service.TicketService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -103,12 +106,25 @@ public class TicketController {
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping(value="/reservations/accept")
     public ResponseEntity<Boolean> acceptReservations(@Valid @RequestBody List<Long> reservations) {
-        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, 1), HttpStatus.OK);
+        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, TicketStatus.PAID), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping(value="/reservations/cancel")
     public ResponseEntity<Boolean> cancelReservations(@Valid @RequestBody List<Long> reservations) {
-        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, -1), HttpStatus.OK);
+        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, TicketStatus.FREE), HttpStatus.OK);
+    }
+
+    /**
+     * GET /api/tickets/scan?ticketId=1
+     * Endpoint used for {@link Ticket} scanning
+     *
+     * @param ticketId ID of the ticket
+     * @return {@link ResponseEntity} containing HttpStatus and message of the operation result
+     */
+    @GetMapping(value="scan")
+    public ResponseEntity scanTicket(@RequestParam("ticketId") Long ticketId) {
+        this.ticketService.scanTicket(ticketId);
+        return new ResponseEntity<>(new SuccessResponse("Ticket scanned successfully."), HttpStatus.OK);
     }
 }

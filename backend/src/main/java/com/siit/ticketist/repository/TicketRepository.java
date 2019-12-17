@@ -45,7 +45,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "SELECT u.email " +
             "FROM tickets t JOIN users u " +
             "ON t.user_id = u.id " +
-            "WHERE t.event_id = :eventId AND t.status = 0 " +
+            "WHERE t.event_id = :eventId AND t.status = 1 " +
             "GROUP BY u.id", nativeQuery = true)
     Set<String> findEmailsToBeNotified(Long eventId);
 }

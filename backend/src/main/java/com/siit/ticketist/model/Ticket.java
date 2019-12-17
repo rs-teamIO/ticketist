@@ -42,10 +42,10 @@ public class Ticket {
    private BigDecimal price;
 
    /**
-    * TODO: This should be replaced with an Enumeration
+    * Ticket status
     */
    @Column(nullable = false)
-   private Integer status;
+   private TicketStatus status;
 
    @Version
    private Long version;
