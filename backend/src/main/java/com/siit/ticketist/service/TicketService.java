@@ -75,7 +75,7 @@ public class TicketService {
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public Boolean acceptOrCancelReservations (List<Long> reservations, Integer newStatus) {
         checkNumberOfTickets(reservations);
-
+        checkStatusIsValid(newStatus);
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
         List<Ticket> tickets = ticketRepository.findTicketsByIdGroup(reservations, registeredUser.getId());
 
@@ -96,6 +96,11 @@ public class TicketService {
         return true;
     }
 
+    public void checkStatusIsValid(Integer newStatus) {
+        if(newStatus!=-1 && newStatus!=1)
+            throw new BadRequestException("Status is not valid");
+    }
+
     public List<Ticket> getUsersReservations() {
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
         return ticketRepository.findAllReservationsByUser(registeredUser.getId());
@@ -106,11 +111,11 @@ public class TicketService {
         return ticketRepository.findUsersTickets(registeredUser.getId());
     }
 
-    private void checkNumberOfTickets(List<Long> tickets) {
+    public void checkNumberOfTickets(List<Long> tickets) {
         if(tickets.size() == 0) throw new BadRequestException("Ticket array is empty!");
     }
 
-    private void checkMaxNumberOfReservationsPerUser(List<Long> reservations) {
+    public void checkMaxNumberOfReservationsPerUser(List<Long> reservations) {
         Optional<Ticket> ticket = ticketRepository.findById(reservations.get(0));
         if(ticket.isPresent()) {
             int numberOfReservations = ticketRepository.findUsersReservationsByEvent(userService.findCurrentUser().getId(), ticket.get().getEvent().getId()).size() + reservations.size();
@@ -120,7 +125,7 @@ public class TicketService {
         }
     }
 
-    private void checkReservationDate(Long reservationID) {
+    public void checkReservationDate(Long reservationID) {
         Optional<Ticket> ticket = ticketRepository.findById(reservationID);
         if(ticket.isPresent()) {
             if(new Date().after(ticket.get().getEvent().getReservationDeadline())) {
@@ -129,7 +134,7 @@ public class TicketService {
         }
     }
 
-    private void checkBuyTicketsDate(Long ticketID) {
+    public void checkBuyTicketsDate(Long ticketID) {
         Optional<Ticket> ticket = ticketRepository.findById(ticketID);
         if(ticket.isPresent()) {
             if(new Date().after(ticket.get().getEvent().getStartDate())) {
@@ -138,7 +143,7 @@ public class TicketService {
         }
     }
 
-    private void checkTicketDuplicates(List<Long> ticketIDS) {
+    public void checkTicketDuplicates(List<Long> ticketIDS) {
         int num = 0;
         for(Long t1 : ticketIDS) {
             num = 0;
@@ -153,7 +158,7 @@ public class TicketService {
         }
     }
 
-    private void checkTicketsAndReservationsAvailability(List<Long> ticketIDS) {
+    public void checkTicketsAndReservationsAvailability(List<Long> ticketIDS) {
         Optional<Ticket> ticket;
         for(Long ticketID : ticketIDS) {
             ticket = ticketRepository.findById(ticketID);
