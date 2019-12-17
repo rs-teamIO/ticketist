@@ -22,7 +22,7 @@ public class TicketDTO {
 
     private BigDecimal price;
 
-    private Integer status;
+    private TicketStatus status;
 
     @NotBlank(message = "event sector id cannot be blank")
     private Long eventSectorId;

@@ -17,7 +17,7 @@ public class UserDetailsFactory {
      * Creates SpringSecurityUser from a User instance.
      *
      * @param user User instance
-     * @return SpringSecurityUser Instance
+     * @return {@link SpringSecurityUser} Instance
      */
     public static SpringSecurityUser create(User user) {
         Collection<? extends GrantedAuthority> authorities;

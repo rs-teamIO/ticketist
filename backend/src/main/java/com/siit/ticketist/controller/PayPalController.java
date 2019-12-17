@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
+/**
+ * PayPal REST controller.
+ */
 @Controller
 @RequestMapping(value="/api/paypal")
 public class PayPalController {

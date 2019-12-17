@@ -1,6 +1,6 @@
 package com.siit.ticketist.service;
 
-import com.siit.ticketist.controller.exceptions.BadRequestException;
+import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.Role;
 import com.siit.ticketist.repository.RegisteredUserRepository;
@@ -31,15 +31,15 @@ public class RegisteredUserService {
     /**
      * Creates a new Registered User and sends verification email
      *
-     * @param registeredUser RegisteredUser instance to be created
-     * @return created RegisteredUser
+     * @param registeredUser {@link RegisteredUser} instance to be created
+     * @return created {@link RegisteredUser} instance
      */
     public RegisteredUser create(RegisteredUser registeredUser) throws MessagingException {
         registeredUser.setIsVerified(false);
         registeredUser.setVerificationCode(UUID.randomUUID().toString());
 
-        userRepository.save(registeredUser);
-        emailService.sendVerificationEmail(registeredUser);
+        this.userRepository.save(registeredUser);
+        this.emailService.sendVerificationEmail(registeredUser);
 
         return registeredUser;
     }
@@ -47,8 +47,8 @@ public class RegisteredUserService {
     /**
      * Verifies the user's account and removes previously generated verification code.
      *
-     * @param registeredUser RegisteredUser instance to be verified
-     * @return verified RegisteredUser
+     * @param verificationCode verification code of the user to be verified
+     * @return verified {@link RegisteredUser}
      */
     public RegisteredUser verify(String verificationCode) {
 
@@ -58,7 +58,7 @@ public class RegisteredUserService {
         registeredUser.setIsVerified(true);
         registeredUser.getAuthorities().add(Role.REGISTERED_USER);
         registeredUser.setVerificationCode(null);
-        userRepository.save(registeredUser);
+        this.userRepository.save(registeredUser);
 
         return registeredUser;
     }

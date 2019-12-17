@@ -1,54 +1,71 @@
 package com.siit.ticketist.controller;
 
-import com.siit.ticketist.controller.exceptions.NotFoundException;
 import com.siit.ticketist.dto.VenueDTO;
 import com.siit.ticketist.model.Venue;
 import com.siit.ticketist.service.VenueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Venues REST controller.
+ */
 @RestController
 @RequestMapping("/api/venues")
 public class VenueController {
 
+    private final VenueService venueService;
+
     @Autowired
-    private VenueService venueService;
+    public VenueController(VenueService venueService) {
+        this.venueService = venueService;
+    }
 
-    @GetMapping()
+    /**
+     * GET /api/venues
+     * Returns all venues
+     *
+     * @return {@link ResponseEntity} containing HttpStatus and a list of venues
+     */
+    @GetMapping
     public ResponseEntity<List<VenueDTO>> getVenues() {
-        List<Venue> venues = venueService.findAll();
-        List<VenueDTO> venuesDTO = new ArrayList<>();
-        for(Venue venue : venues) {
-            venuesDTO.add(new VenueDTO(venue));
-        }
-        return new ResponseEntity<>(venuesDTO, HttpStatus.OK);
+        List<VenueDTO> venues = new ArrayList<>();
+        venueService.findAll().stream()
+                .map(VenueDTO::new)
+                .forEachOrdered(venues::add);
+        return new ResponseEntity<>(venues, HttpStatus.OK);
     }
 
-    @GetMapping(value="/{id}")
+    /**
+     * GET /api/venues/{id}
+     * Returns a {@link Venue} with the requested ID
+     *
+     * @param id ID of the {@link Venue}
+     * @return {@link ResponseEntity} containing HttpStatus and content
+     */
+    @GetMapping(value="{id}")
     public ResponseEntity<Object> getVenue(@PathVariable("id") Long id) {
-        try {
-            Venue venue = venueService.findOne(id);
-            return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.OK);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        Venue venue = venueService.findOne(id);
+        return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.OK);
     }
 
-//    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping()
-    public ResponseEntity<Object> createVenue(@Valid @RequestBody VenueDTO venueDTO) {
-
-            Venue venue = venueDTO.convertToEntity();
-            return new ResponseEntity<>(new VenueDTO(venueService.save(venue)), HttpStatus.CREATED);
-
+    /**
+     * POST /api/venues
+     * Creates a new {@link Venue}.
+     *
+     * @param venueDto DTO containing venue info.
+     * @return {@link ResponseEntity} containing the info about the created Venue
+     */
+    @PostMapping
+    //@PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Object> createVenue(@Valid @RequestBody VenueDTO venueDto) {
+        Venue venueToBeCreated = venueDto.convertToEntity();
+        Venue venue = venueService.save(venueToBeCreated);
+        return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.CREATED);
     }
-
-
 }

@@ -26,32 +26,16 @@
                                         </tr>
                                         <tr>
                                             <td style="text-align:left;padding:33px 20px 26px">
-                                                <font style="font-family:Helvetica Neue,Arial,sans-serif;font-size:15px;line-height:22px;font-weight:normal;color:#333333">
+                                                <span style="font-family:Helvetica Neue,Arial,sans-serif;font-size:15px;line-height:22px;font-weight:normal;color:#333333">
                                                     Hi <b data-th-text="${recipient}"></b>,
-                                                </font>
+                                                </span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td style="text-align:left;padding:0px 20px 20px">
-                                                <font style="font-family:Helvetica Neue,Arial,sans-serif;font-size:15px;line-height:22px;font-weight:normal;color:#666666">
-                                                    You've successfully signed up for Ticketist. We just need to verify the email address associated with your account before you can start using all the awesome features. To verify your email address, click the following link:
-                                                </font>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td align="center" style="padding:20px 20px 37px">
-                                                <table style="margin:0px" border="0" cellpadding="0" cellspacing="0">
-                                                    <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <a style="white-space:nowrap;display:block;padding:10px 25px;background:#fb4b4f;color:#ffffff;font-family:Helvetica Neue,Arial,sans-serif;font-size:15px;line-height:15px;font-weight:bold;text-decoration:none;border-collapse:collapse;border-color:#82a313;border-style:1px solid;border-radius:3px"
-                                                               th:href="@{'http://localhost:8080/api/users/verify/'+${code}}" target="_blank">
-                                                                Confirm my email
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
+                                                <span style="font-family:Helvetica Neue,Arial,sans-serif;font-size:15px;line-height:22px;font-weight:normal;color:#666666">
+                                                Thank you for using Ticketist for your purchase. The tickets you've purchased can be found in the attachment. We hope you'll have a good time!
+                                                </span>
                                             </td>
                                         </tr>
                                         </tbody>

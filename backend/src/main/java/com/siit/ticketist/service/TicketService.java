@@ -1,18 +1,16 @@
 package com.siit.ticketist.service;
 
-import com.siit.ticketist.controller.exceptions.BadRequestException;
-import com.siit.ticketist.controller.exceptions.OptimisticLockException;
+import com.siit.ticketist.exceptions.BadRequestException;
+import com.siit.ticketist.exceptions.OptimisticLockException;
+import com.siit.ticketist.dto.PdfTicket;
 import com.siit.ticketist.model.*;
-import com.siit.ticketist.repository.EventRepository;
-import com.siit.ticketist.repository.EventSectorRepository;
-import com.siit.ticketist.repository.SectorRepository;
 import com.siit.ticketist.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Array;
+import javax.mail.MessagingException;
 import java.util.*;
 
 @Service
@@ -24,6 +22,9 @@ public class TicketService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private EmailService emailService;
 
     public List<Ticket> findAllByEventId(Long id) {
         return ticketRepository.findTicketsByEventId(id);
@@ -56,24 +57,36 @@ public class TicketService {
         List<Ticket> resultTickets = new ArrayList<>();
         Optional<Ticket> dbTicket;
 
+        List<PdfTicket> pdfTickets = new ArrayList<>();
+
         for(Long ticketID : ticketIDS) {
             dbTicket = ticketRepository.findOneById(ticketID);
 
             if (dbTicket.isPresent()) {
                 dbTicket.get().setUser(registeredUser);
                 if (isBuy) {
-                    dbTicket.get().setStatus(1);
+                    dbTicket.get().setStatus(TicketStatus.PAID);
                 } else {
-                    dbTicket.get().setStatus(0);
+                    dbTicket.get().setStatus(TicketStatus.RESERVED);
                 }
                 resultTickets.add(dbTicket.get());
+                pdfTickets.add(new PdfTicket(dbTicket.get()));
             }
         }
+
+
+
+        try {
+            this.emailService.sendTicketsPurchaseEmail(registeredUser, pdfTickets);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
         return resultTickets;
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public Boolean acceptOrCancelReservations (List<Long> reservations, Integer newStatus) {
+    public Boolean acceptOrCancelReservations (List<Long> reservations, TicketStatus newStatus) {
         checkNumberOfTickets(reservations);
         checkStatusIsValid(newStatus);
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
@@ -87,7 +100,7 @@ public class TicketService {
             ticket = ticketRepository.findOneById(ticketId);
             if(ticket.isPresent()) {
                 ticket.get().setStatus(newStatus);
-                if(newStatus == -1) {
+                if(newStatus == TicketStatus.FREE) {
                     ticket.get().setUser(null);
                 }
             }
@@ -163,7 +176,7 @@ public class TicketService {
         for(Long ticketID : ticketIDS) {
             ticket = ticketRepository.findById(ticketID);
             if(ticket.isPresent()) {
-                if(ticket.get().getStatus() != -1) {
+                if(!ticket.get().getStatus().equals(TicketStatus.FREE)) {
                     System.out.println(ticket.get().getStatus());
                     throw new BadRequestException("Tickets are already taken");
                 }
@@ -171,5 +184,24 @@ public class TicketService {
                 throw new BadRequestException("Ticket not found!");
             }
         }
+    }
+
+    /**
+     * Changes the status of the {@link Ticket} with given ID to USED
+     *
+     * @param id Unique identifier of the ticket
+     * @return {@link Ticket} with changed status
+     */
+    public Ticket scanTicket(Long id) {
+        final Ticket ticket = ticketRepository.findOneById(id)
+                .orElseThrow(() -> new BadRequestException("No ticket found with specified id."));
+
+        if(!ticket.getStatus().equals(TicketStatus.PAID))
+            throw new BadRequestException("Unable to scan ticket with requested ID.");
+
+        ticket.setStatus(TicketStatus.USED);
+        this.ticketRepository.save(ticket);
+
+        return ticket;
     }
 }

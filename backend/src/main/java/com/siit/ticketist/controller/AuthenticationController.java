@@ -1,6 +1,6 @@
 package com.siit.ticketist.controller;
 
-import com.siit.ticketist.controller.exceptions.AuthorizationException;
+import com.siit.ticketist.exceptions.AuthorizationException;
 import com.siit.ticketist.dto.AuthenticationRequest;
 import com.siit.ticketist.dto.AuthenticationResponse;
 import com.siit.ticketist.model.User;

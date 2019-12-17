@@ -11,27 +11,42 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Reports REST controller.
+ */
 @RestController
 @RequestMapping("api/reports")
 public class ReportsController {
 
+    // TODO: Change do constructor DI
     @Autowired
     private ReportService reportService;
 
 
+    /**
+     * GET /api/reports
+     * TODO: generateInitialReport
+     *
+     * @return TODO
+     */
     @GetMapping
     //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity generateInitialReport(){
-        return new ResponseEntity<>(new InitialReportDTO(reportService.getAllVenueRevenues(), reportService.findAllEventsReport()),
-                HttpStatus.OK);
+        InitialReportDTO dto = new InitialReportDTO(reportService.getAllVenueRevenues(), reportService.findAllEventsReport());
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    /**
+     * GET /api/reports/{venueId}/{criteria}
+     * TODO: generateVenueReport
+     *
+     * @return TODO
+     */
     @GetMapping(value="/{venueId}/{criteria}")
     //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity generateVenueReport(@PathVariable("venueId") Long venueId,
-                                              @PathVariable("criteria") String criteria){
-        return new ResponseEntity(new VenueReportDTO(reportService.getVenueChart(criteria, venueId), reportService.findAllEventReportsByVenue(venueId)),
-                HttpStatus.OK);
+                                              @PathVariable("criteria") String criteria) {
+        VenueReportDTO dto = new VenueReportDTO(reportService.getVenueChart(criteria, venueId), reportService.findAllEventReportsByVenue(venueId));
+        return new ResponseEntity(dto, HttpStatus.OK);
     }
-
 }
