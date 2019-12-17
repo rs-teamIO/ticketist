@@ -108,7 +108,7 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    private Set<Ticket> generateTickets(EventSector eventSector) {
+    public Set<Ticket> generateTickets(EventSector eventSector) {
         Set<Ticket> tickets = new HashSet<>();
         if(eventSector.getNumeratedSeats()){
             Optional<Sector> sector = sectorRepository.findById(eventSector.getSector().getId());
@@ -128,9 +128,9 @@ public class EventService {
         return tickets;
     }
 
-    private boolean checkVenueAvailability(Event event) {
+    public boolean checkVenueAvailability(Event event) {
         boolean check = true;
-        List<Event> events = eventRepository.findEventsByVenueId(event.getVenue().getId());
+        List<Event> events = eventRepository.findByVenueId(event.getVenue().getId());
 
         for(Event e : events){
             check = event.getEndDate().before(e.getStartDate()) || event.getStartDate().after(e.getEndDate());
@@ -140,7 +140,7 @@ public class EventService {
         return check;
     }
 
-    private boolean checkEventDates(Event event) {
+    public boolean checkEventDates(Event event) {
         boolean check = true;
         if(event.getReservationDeadline().after(event.getStartDate()) || event.getStartDate().after(event.getEndDate()) || new Date().after(event.getReservationDeadline())) {
             check = false;
@@ -148,7 +148,7 @@ public class EventService {
         return check;
     }
 
-    private boolean checkSectorMaxCapacity(Long sectorID, int capacity) {
+    public boolean checkSectorMaxCapacity(Long sectorID, int capacity) {
         Optional<Sector> sector = sectorRepository.findById(sectorID);
         boolean check = true;
 
@@ -161,13 +161,13 @@ public class EventService {
         return check;
     }
 
-    private List<Date> datesBetween(Date startDate, Date endDate) {
+    public List<Date> datesBetween(Date startDate, Date endDate) {
         List<Date> datesInRange = new ArrayList<>();
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(startDate);
         Calendar endCalendar = new GregorianCalendar();
         endCalendar.setTime(endDate);
-        if(startDate.getHours()*60 + startDate.getMinutes() >
+        if(startDate.getHours()*60 + startDate.getMinutes() >=
                 endDate.getHours()*60 + endDate.getMinutes()) {
             endCalendar.add(Calendar.DATE, 1);
         }
@@ -242,52 +242,6 @@ public class EventService {
     }
 
     /*
-    --------------------
-        Reports
-    --------------------
-    */
-    public List<Object[]> findAllEventsReport() {
-        return eventRepository.findAllEventsReport();
-    }
-
-    public List<Object[]> findAllEventReportsByVenue(Long venueId) {
-        return eventRepository.findAllEventReportsByVenue(venueId);
-    }
-
-    private Map<Integer, Float> getVenueTicketReports(Long venueId) {
-        List<Object[]> lista = eventRepository.getVenueTicketsReport(venueId);
-        Map<Integer, Float> venueTicketSales =
-                eventRepository.getVenueTicketsReport(venueId)
-                        .stream()
-                        .collect(Collectors.toMap(
-                                obj -> (Integer)obj[0],
-                                obj -> ((BigInteger)obj[1]).floatValue()));
-        return venueTicketSales;
-    }
-
-    private Map<Integer, Float> getVenueRevenueReport(Long venueId){
-        List<Object[]> lista = eventRepository.getVenueRevenueReport(venueId);
-
-        Map<Integer, Float> venueRevenues =
-                eventRepository.getVenueRevenueReport(venueId)
-                        .stream()
-                        .collect(Collectors.toMap(
-                                obj -> (Integer)obj[0],
-                                obj -> ((BigDecimal)obj[1]).floatValue()));
-        return venueRevenues;
-    }
-
-    public Map<Integer, Float> getVenueChart(String criteria, Long venueId) {
-        //TODO napisi metodu koja proverava da li venue sa tim id postoji
-        if(criteria.toUpperCase().equals("TICKETS"))
-            return getVenueTicketReports(venueId);
-        else if(criteria.toUpperCase().equals("REVENUE"))
-            return getVenueRevenueReport(venueId);
-        else
-            throw new BadRequestException("Invalid criteria");
-    }
-
-    /*
         Search
      */
     public List<Event> search(String eventName, String category, String venueName, Long millisecondsFrom, Long millisecondsTo){
@@ -295,29 +249,29 @@ public class EventService {
                 convertMillisToDate(millisecondsFrom), convertMillisToDate(millisecondsTo));
     }
 
-    private Date convertMillisToDate(Long millisecondsFrom){
+    public Date convertMillisToDate(Long millisecondsFrom){
         //ToDo konvertuje u CET (local timezone), mozda bude problema
         Date date = millisecondsFrom == null ? null : new Date(millisecondsFrom);
         return date;
     }
 
     /*
-        Helper methods for
+        Helper method for email notifications
      */
     public List<Event> filterEventsByDeadline(){
-        List<Event> allEvents = eventRepository.findAll();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String threeDaysFromNow = sdf.format(addDays(new Date(), 3));
 
         List<Event> filteredEvents = new ArrayList<>();
-        for(Event e : allEvents){
-            if(sdf.format(e.getReservationDeadline()).equals(threeDaysFromNow))
-                filteredEvents.add(e);
-        }
+        eventRepository.findAll().stream().forEach(event -> {
+            if(sdf.format(event.getReservationDeadline()).equals(threeDaysFromNow))
+                filteredEvents.add(event);
+        });
+
         return filteredEvents;
     }
 
-    private Date addDays(Date date, int days) {
+    public Date addDays(Date date, int days) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.add(Calendar.DATE, days); //minus number would decrement the days

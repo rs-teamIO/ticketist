@@ -1,8 +1,8 @@
 package com.siit.ticketist.controller;
 
-import com.siit.ticketist.dto.ReportDTO;
-import com.siit.ticketist.service.EventService;
-import com.siit.ticketist.service.VenueService;
+import com.siit.ticketist.dto.InitialReportDTO;
+import com.siit.ticketist.dto.VenueReportDTO;
+import com.siit.ticketist.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,27 +18,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/reports")
 public class ReportsController {
 
-    private final EventService eventService;
-    private final VenueService venueService;
-
+    // TODO: Change do constructor DI
     @Autowired
-    public ReportsController(EventService eventService, VenueService venueService) {
-        this.eventService = eventService;
-        this.venueService = venueService;
-    }
+    private ReportService reportService;
+
 
     /**
      * GET /api/reports
-     * TODO generateInitialReport
+     * TODO: generateInitialReport
      *
      * @return TODO
      */
     @GetMapping
     //@PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity generateInitialReport() {
-        ReportDTO dto = new ReportDTO();
-        return new ResponseEntity<>(dto.generateInitialReport(venueService.getAllVenueRevenues(), eventService.findAllEventsReport()),
-                HttpStatus.OK);
+    public ResponseEntity generateInitialReport(){
+        InitialReportDTO dto = new InitialReportDTO(reportService.getAllVenueRevenues(), reportService.findAllEventsReport());
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     /**
@@ -51,8 +46,7 @@ public class ReportsController {
     //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity generateVenueReport(@PathVariable("venueId") Long venueId,
                                               @PathVariable("criteria") String criteria) {
-        ReportDTO dto = new ReportDTO();
-        return new ResponseEntity<>(dto.generateSpecificReport(eventService.getVenueChart(criteria, venueId),
-                eventService.findAllEventReportsByVenue(venueId)), HttpStatus.OK);
+        VenueReportDTO dto = new VenueReportDTO(reportService.getVenueChart(criteria, venueId), reportService.findAllEventReportsByVenue(venueId));
+        return new ResponseEntity(dto, HttpStatus.OK);
     }
 }
