@@ -1,7 +1,6 @@
 package com.siit.ticketist.security;
 
 import com.siit.ticketist.model.User;
-import com.siit.ticketist.security.SpringSecurityUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -12,6 +11,13 @@ import java.util.stream.Collectors;
  * UserDetails Factory class used for creating SpringSecurityUser objects
  */
 public class UserDetailsFactory {
+
+    /**
+     * Private constructor created to hide the implicit public constructor
+     */
+    private UserDetailsFactory() {
+        throw new IllegalStateException("This class shouldn't be instantiated.");
+    }
 
     /**
      * Creates SpringSecurityUser from a User instance.

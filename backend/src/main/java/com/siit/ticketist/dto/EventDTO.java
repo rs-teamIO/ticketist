@@ -45,9 +45,9 @@ public class EventDTO {
     @NotNull(message = "media files cannot be null")
     private Set<MediaFile> mediaFiles;
 
-    public EventDTO(){
-        mediaFiles = new HashSet<>();
-        eventSectors = new HashSet<>();
+    public EventDTO() {
+        this.eventSectors = new HashSet<>();
+        this.mediaFiles = new HashSet<>();
     }
 
     public EventDTO(Event event) {
@@ -61,14 +61,14 @@ public class EventDTO {
         this.description = event.getDescription();
         this.mediaFiles = event.getMediaFiles();
         this.venueId = event.getVenue().getId();
-        Set<EventSectorDTO> eventSectors = new HashSet<>();
-        for(EventSector eventSector : event.getEventSectors()) {
-            eventSectors.add(new EventSectorDTO(eventSector));
-        }
-        this.eventSectors = eventSectors;
+        this.eventSectors = new HashSet<>();
+        event.getEventSectors().stream()
+                .map(EventSectorDTO::new)
+                .forEach(this.eventSectors::add);
     }
 
     public Event convertToEntity() {
+
         Event event = new Event();
         event.setId(this.id);
         event.setName(this.name);
@@ -84,11 +84,9 @@ public class EventDTO {
         venue.setId(this.venueId);
         event.setVenue(venue);
 
-        Set<EventSector> eventSectors = new HashSet<>();
-        for(EventSectorDTO eventSector : this.eventSectors) {
-            eventSectors.add(eventSector.convertToEntity());
-        }
-        event.setEventSectors(eventSectors);
+        this.eventSectors.stream()
+                .map(EventSectorDTO::convertToEntity)
+                .forEach(event.getEventSectors()::add);
 
         return event;
     }

@@ -39,7 +39,7 @@ public class EventController {
      * @return {@link ResponseEntity} containing HttpStatus and a list of events
      */
     @GetMapping
-    public ResponseEntity<List<EventDTO>> getEvents(){
+    public ResponseEntity<List<EventDTO>> getEvents() {
         List<EventDTO> events = new ArrayList<>();
         eventService.findAll().stream()
                 .map(EventDTO::new)
@@ -68,8 +68,8 @@ public class EventController {
      * @return {@link ResponseEntity} containing the info about the created Event
      */
     //@PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping(consumes = {"application/octet-stream", "multipart/form-data"})
-    public ResponseEntity<Object> createEvent(@RequestPart("event") @Valid EventDTO eventDTO) {
+    @PostMapping
+    public ResponseEntity<Object> createEvent(@Valid @RequestBody EventDTO eventDTO) {
         Event eventToBeCreated = eventDTO.convertToEntity();
         Event event = eventService.save(eventToBeCreated);
         return new ResponseEntity<>(new EventDTO(event), HttpStatus.OK);

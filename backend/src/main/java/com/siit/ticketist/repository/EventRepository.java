@@ -59,9 +59,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Object[]> getVenueTicketsReport(@Param("venueId") Long venueId);
 
     /**
-     * TODO: getVenueRevenueReport
      * Returns month (in the last 12 months) and total revenue for that month for wanted venue.
      * Used for specific venue report.
+     *
      * @param venueId ID of the Venue
      * @return List of result objects
      */
@@ -75,8 +75,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Object[]> getVenueRevenueReport(@Param("venueId") Long venueId);
 
     /**
-     * TODO: Na enddate se dodaje jedan dan da bi bilo inkluzivno
      * Used to search events by specific parameters.
+     *
      * @param eventName Name of the event
      * @param category Category of the event
      * @param venueName Name of the Venue

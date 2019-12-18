@@ -3,7 +3,6 @@ package com.siit.ticketist.controller;
 import com.siit.ticketist.dto.InitialReportDTO;
 import com.siit.ticketist.dto.VenueReportDTO;
 import com.siit.ticketist.service.ReportService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,16 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/reports")
 public class ReportsController {
 
-    // TODO: Change do constructor DI
-    @Autowired
-    private ReportService reportService;
+    private final ReportService reportService;
 
+    public ReportsController(ReportService reportService) {
+        this.reportService = reportService;
+    }
 
     /**
      * GET /api/reports
-     * TODO: generateInitialReport
      *
-     * @return TODO
+     * Returns the initial report
+     * @return {@link ResponseEntity} containing HttpStatus and message of the operation result
      */
     @GetMapping
     //@PreAuthorize("hasAuthority('ADMIN')")
@@ -38,15 +38,15 @@ public class ReportsController {
 
     /**
      * GET /api/reports/{venueId}/{criteria}
-     * TODO: generateVenueReport
+     * Returns the report for a specific venue by given criteria
      *
-     * @return TODO
+     * @return {@link ResponseEntity} containing HttpStatus and message of the operation result
      */
     @GetMapping(value="/{venueId}/{criteria}")
     //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity generateVenueReport(@PathVariable("venueId") Long venueId,
                                               @PathVariable("criteria") String criteria) {
         VenueReportDTO dto = new VenueReportDTO(reportService.getVenueChart(criteria, venueId), reportService.findAllEventReportsByVenue(venueId));
-        return new ResponseEntity(dto, HttpStatus.OK);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 }

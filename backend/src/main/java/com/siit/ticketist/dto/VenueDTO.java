@@ -1,9 +1,7 @@
 package com.siit.ticketist.dto;
 
-import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.model.Venue;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
@@ -45,11 +43,10 @@ public class VenueDTO {
         this.city = venue.getCity();
         this.latitude = venue.getLatitude();
         this.longitude = venue.getLongitude();
-        Set<SectorDTO> sectors = new HashSet<>();
-        for(Sector sector : venue.getSectors()) {
-            sectors.add(new SectorDTO(sector));
-        }
-        this.setSectors(sectors);
+        this.sectors = new HashSet<>();
+        venue.getSectors().stream()
+                .map(SectorDTO::new)
+                .forEach(this.sectors::add);
     }
 
     public Venue convertToEntity() {
@@ -61,12 +58,11 @@ public class VenueDTO {
         venue.setLongitude(this.longitude);
         venue.setLatitude(this.latitude);
         venue.setIsActive(true);
-        Set<Sector> sectors = new HashSet<>();
-        for(SectorDTO sector : this.sectors) {
-            sectors.add(sector.convertToEntity());
-        }
-        venue.setSectors(sectors);
+
+        this.sectors.stream()
+                .map(SectorDTO::convertToEntity)
+                .forEach(venue.getSectors()::add);
+
         return venue;
     }
-
 }

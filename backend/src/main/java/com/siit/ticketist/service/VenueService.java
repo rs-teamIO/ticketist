@@ -8,10 +8,7 @@ import com.siit.ticketist.repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Venue service layer.
@@ -43,7 +40,7 @@ public class VenueService {
      * @return {@link Venue} instance
      * @throws NotFoundException Exception thrown in case no venue with given ID is found.
      */
-    public Venue findOne(Long id) throws NotFoundException {
+    public Venue findOne(Long id) {
         return this.venueRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Venue not found."));
     }
@@ -65,9 +62,9 @@ public class VenueService {
 
     private boolean sectorCanBeDrawn(Sector sector, Sector sectorSave) {
         if(sector.getStartRow() > sectorSave.getStartRow() + sectorSave.getRowsCount()) return true;
-        else if(sector.getStartRow() + sector.getRowsCount() < sectorSave.getStartRow()) return true;
-        else if(sector.getStartColumn() > sectorSave.getStartColumn() + sectorSave.getColumnsCount()) return true;
-        else if(sector.getStartColumn() + sector.getColumnsCount() < sectorSave.getStartColumn()) return true;
-        else return false;
+        if(sector.getStartRow() + sector.getRowsCount() < sectorSave.getStartRow()) return true;
+        if(sector.getStartColumn() > sectorSave.getStartColumn() + sectorSave.getColumnsCount()) return true;
+        if(sector.getStartColumn() + sector.getColumnsCount() < sectorSave.getStartColumn()) return true;
+        return false;
     }
 }

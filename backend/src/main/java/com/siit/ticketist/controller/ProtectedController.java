@@ -22,7 +22,7 @@ public class ProtectedController {
      */
     @GetMapping(value = "/user")
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
-    public ResponseEntity<?> registeredUserTest() {
+    public ResponseEntity registeredUserTest() {
         return new ResponseEntity<>("REGISTERED_USER Test successful.", HttpStatus.OK);
     }
 
@@ -34,7 +34,7 @@ public class ProtectedController {
      */
     @GetMapping(value = "/admin")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> adminTest() {
+    public ResponseEntity adminTest() {
         return new ResponseEntity<>("ADMIN Test successful.", HttpStatus.OK);
     }
 }

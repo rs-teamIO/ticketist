@@ -15,8 +15,6 @@ import javax.mail.MessagingException;
 @ControllerAdvice
 public class ExceptionResolver {
 
-    // TODO: Add exception handlers here
-
     @ExceptionHandler(AuthorizationException.class)
     public ResponseEntity handleAuthorizationException(AuthorizationException e) {
         return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.UNAUTHORIZED);
@@ -43,7 +41,7 @@ public class ExceptionResolver {
     }
 
     @ExceptionHandler(OptimisticLockException.class)
-    public ResponseEntity handleOptimisticLockException(MessagingException e) {
+    public ResponseEntity handleOptimisticLockException(OptimisticLockException e) {
         return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.LOCKED);
     }
 

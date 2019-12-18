@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public class AuthenticationResponse {
 
-    private final String message = "Authentication successful.";
+    private static String message = "Authentication successful.";
     private String token;
 
     public AuthenticationResponse(String token) {

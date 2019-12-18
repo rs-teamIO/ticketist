@@ -74,8 +74,6 @@ public class TicketService {
             }
         }
 
-
-
         try {
             this.emailService.sendTicketsPurchaseEmail(registeredUser, pdfTickets);
         } catch (MessagingException e) {
@@ -109,8 +107,8 @@ public class TicketService {
         return true;
     }
 
-    public void checkStatusIsValid(Integer newStatus) {
-        if(newStatus!=-1 && newStatus!=1)
+    public void checkStatusIsValid(TicketStatus newStatus) {
+        if(newStatus!=TicketStatus.FREE && newStatus!=TicketStatus.PAID)
             throw new BadRequestException("Status is not valid");
     }
 
@@ -125,7 +123,7 @@ public class TicketService {
     }
 
     public void checkNumberOfTickets(List<Long> tickets) {
-        if(tickets.size() == 0) throw new BadRequestException("Ticket array is empty!");
+        if(tickets.isEmpty()) throw new BadRequestException("Ticket array is empty!");
     }
 
     public void checkMaxNumberOfReservationsPerUser(List<Long> reservations) {
@@ -140,19 +138,14 @@ public class TicketService {
 
     public void checkReservationDate(Long reservationID) {
         Optional<Ticket> ticket = ticketRepository.findById(reservationID);
-        if(ticket.isPresent()) {
-            if(new Date().after(ticket.get().getEvent().getReservationDeadline())) {
-                throw new BadRequestException("Reservation deadline passed! Now you can only buy a ticket");
-            }
-        }
+        if(ticket.isPresent() && new Date().after(ticket.get().getEvent().getReservationDeadline()))
+            throw new BadRequestException("Reservation deadline passed! Now you can only buy a ticket");
     }
 
     public void checkBuyTicketsDate(Long ticketID) {
         Optional<Ticket> ticket = ticketRepository.findById(ticketID);
-        if(ticket.isPresent()) {
-            if(new Date().after(ticket.get().getEvent().getStartDate())) {
-                throw new BadRequestException("Event already started!");
-            }
+        if(ticket.isPresent() && new Date().after(ticket.get().getEvent().getStartDate())) {
+            throw new BadRequestException("Event already started!");
         }
     }
 
@@ -161,7 +154,7 @@ public class TicketService {
         for(Long t1 : ticketIDS) {
             num = 0;
             for(Long t2 : ticketIDS) {
-                if(t1 == t2) {
+                if(t1.equals(t2)) {
                     num++;
                 }
             }
@@ -177,7 +170,6 @@ public class TicketService {
             ticket = ticketRepository.findById(ticketID);
             if(ticket.isPresent()) {
                 if(!ticket.get().getStatus().equals(TicketStatus.FREE)) {
-                    System.out.println(ticket.get().getStatus());
                     throw new BadRequestException("Tickets are already taken");
                 }
             } else {

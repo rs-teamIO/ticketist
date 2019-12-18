@@ -1,6 +1,7 @@
 package com.siit.ticketist.service;
 
-import com.siit.ticketist.controller.exceptions.BadRequestException;
+import com.siit.ticketist.exceptions.BadRequestException;
+import com.siit.ticketist.model.TicketStatus;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
@@ -34,14 +35,14 @@ public class TicketServiceTest {
 
     @Test
     public void checkStatusIsValid_ShouldPass_whenStatusIsValid(){
-        ticketService.checkStatusIsValid(-1);
-        ticketService.checkStatusIsValid(1);
+        ticketService.checkStatusIsValid(TicketStatus.FREE);
+        ticketService.checkStatusIsValid(TicketStatus.PAID);
     }
 
 
     @Test(expected = BadRequestException.class)
     public void checkStatusIsValid_ShouldThrowException_whenStatusIsInvalid(){
-        ticketService.checkStatusIsValid(10);
+        ticketService.checkStatusIsValid(TicketStatus.USED);
     }
 
     @Test(expected = BadRequestException.class)
@@ -49,7 +50,7 @@ public class TicketServiceTest {
         List<Long> tickets = new ArrayList();
         tickets.add(2l);
         tickets.add(100l);
-        ticketService.acceptOrCancelReservations(tickets,1);
+        ticketService.acceptOrCancelReservations(tickets,TicketStatus.PAID);
     }
 
     @Test(expected = BadRequestException.class)
@@ -57,7 +58,7 @@ public class TicketServiceTest {
         List<Long> tickets = new ArrayList();
         tickets.add(1l);
         tickets.add(2l);
-        ticketService.acceptOrCancelReservations(tickets,1);
+        ticketService.acceptOrCancelReservations(tickets, TicketStatus.PAID);
     }
 
     @Test
@@ -65,7 +66,7 @@ public class TicketServiceTest {
         List<Long> tickets = new ArrayList();
         tickets.add(2l);
         tickets.add(5l);
-        Boolean rez = ticketService.acceptOrCancelReservations(tickets,1);
+        Boolean rez = ticketService.acceptOrCancelReservations(tickets, TicketStatus.PAID);
         assertTrue(rez);
     }
 }

@@ -60,8 +60,6 @@ public class AuthenticationController {
                     )
             );
 
-            // SecurityContextHolder.getContext().setAuthentication(authentication);
-
             final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
             final User user = userService.findByUsername(userDetails.getUsername());
 

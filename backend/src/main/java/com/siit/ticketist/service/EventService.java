@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -53,26 +51,22 @@ public class EventService {
      * @return {@link Event} instance
      * @throws NotFoundException Exception thrown in case no event with given ID is found.
      */
-    public Event findOne(Long id) throws NotFoundException {
+    public Event findOne(Long id) {
         return this.eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Event not found."));
     }
 
     public Event save(Event event) {
-
-        if(!checkEventDates(event)) {
+        if(!checkEventDates(event))
             throw new BadRequestException("Dates are invalid");
-        }
-
-        if(!checkVenueAvailability(event)){
+        if(!checkVenueAvailability(event))
             throw new BadRequestException("There is already an event at that time");
-        }
 
         boolean capacityCheck = true;
         Optional<Sector> sector;
 
         for(EventSector eventSector : event.getEventSectors()) {
-            if(eventSector.getNumeratedSeats()) {
+            if(eventSector.getNumeratedSeats().booleanValue()) {
                 sector = sectorRepository.findById(eventSector.getSector().getId());
                 sector.ifPresent(value -> eventSector.setCapacity(value.getMaxCapacity()));
             } else {
@@ -89,28 +83,28 @@ public class EventService {
         List<Date> datesInRange = datesBetween(event.getStartDate(), event.getEndDate());
         Set<EventSector> eventSectorList = new HashSet<>();
 
-        for(Date date : datesInRange) {
-            for(EventSector eventSector : event.getEventSectors()) {
+        datesInRange.forEach(date ->
+            event.getEventSectors().forEach(eventSector -> {
                 EventSector newEventSector = new EventSector(eventSector.getId(), eventSector.getTicketPrice(), eventSector.getNumeratedSeats(),
                         date, eventSector.getCapacity(), eventSector.getTickets(), eventSector.getSector(), eventSector.getEvent());
                 eventSectorList.add(newEventSector);
-            }
-        }
+            })
+        );
 
         event.setEventSectors(eventSectorList);
 
-        for(EventSector eventSector : event.getEventSectors()) {
+        event.getEventSectors().forEach(eventSector -> {
             eventSector.setEvent(event);
             eventSector.setTickets(generateTickets(eventSector));
             eventSector.getEvent().getTickets().addAll(eventSector.getTickets());
-        }
+        });
 
         return eventRepository.save(event);
     }
 
     public Set<Ticket> generateTickets(EventSector eventSector) {
         Set<Ticket> tickets = new HashSet<>();
-        if(eventSector.getNumeratedSeats()){
+        if(eventSector.getNumeratedSeats().booleanValue()) {
             Optional<Sector> sector = sectorRepository.findById(eventSector.getSector().getId());
             if(sector.isPresent()) {
                 for (int row = 1; row <= sector.get().getRowsCount(); row++) {
@@ -152,25 +146,30 @@ public class EventService {
         Optional<Sector> sector = sectorRepository.findById(sectorID);
         boolean check = true;
 
-        if(sector.isPresent()) {
-            if(capacity > sector.get().getMaxCapacity()) {
-                check = false;
-            }
-        }
+        if(sector.isPresent() && capacity > sector.get().getMaxCapacity())
+            check = false;
 
         return check;
     }
 
     public List<Date> datesBetween(Date startDate, Date endDate) {
         List<Date> datesInRange = new ArrayList<>();
+
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(startDate);
         Calendar endCalendar = new GregorianCalendar();
         endCalendar.setTime(endDate);
-        if(startDate.getHours()*60 + startDate.getMinutes() >=
-                endDate.getHours()*60 + endDate.getMinutes()) {
+
+        Calendar startDateCalendar = Calendar.getInstance();
+        startDateCalendar.setTime(startDate);
+        int startDateMinutes = startDateCalendar.get(Calendar.HOUR_OF_DAY) * 60 + startDateCalendar.get(Calendar.MINUTE);
+
+        Calendar endDateCalendar = Calendar.getInstance();
+        endDateCalendar.setTime(endDate);
+        int endDateMinutes = endDateCalendar.get(Calendar.HOUR_OF_DAY) * 60 + endDateCalendar.get(Calendar.MINUTE);
+
+        if(startDateMinutes >= endDateMinutes)
             endCalendar.add(Calendar.DATE, 1);
-        }
 
         while (calendar.before(endCalendar)) {
             Date result = calendar.getTime();
@@ -194,13 +193,13 @@ public class EventService {
     public Event addMediaFiles(Long eventId, MultipartFile[] mediaFiles) {
         Event event = this.findOne(eventId);
 
-        Stream.of(mediaFiles).forEach((mf) -> {
+        Stream.of(mediaFiles).forEach(mf -> {
             if (!Arrays.asList(contentTypes).contains(mf.getContentType()))
                 throw new BadRequestException(String.format("File %s is not a valid media file.", mf.getOriginalFilename()));
         });
 
         ArrayList<MediaFile> eventMediaFiles = new ArrayList<>();
-        Stream.of(mediaFiles).forEach((mf) -> {
+        Stream.of(mediaFiles).forEach(mf -> {
             String fileName = UUID.randomUUID().toString();
             this.storageService.write(fileName, mf);
             eventMediaFiles.add(new MediaFile(fileName, mf.getContentType()));
@@ -250,9 +249,8 @@ public class EventService {
     }
 
     public Date convertMillisToDate(Long millisecondsFrom){
-        //ToDo konvertuje u CET (local timezone), mozda bude problema
-        Date date = millisecondsFrom == null ? null : new Date(millisecondsFrom);
-        return date;
+        // TODO: konvertuje u CET (local timezone), mozda bude problema
+        return millisecondsFrom == null ? null : new Date(millisecondsFrom);
     }
 
     /*
@@ -263,7 +261,7 @@ public class EventService {
         String threeDaysFromNow = sdf.format(addDays(new Date(), 3));
 
         List<Event> filteredEvents = new ArrayList<>();
-        eventRepository.findAll().stream().forEach(event -> {
+        eventRepository.findAll().forEach(event -> {
             if(sdf.format(event.getReservationDeadline()).equals(threeDaysFromNow))
                 filteredEvents.add(event);
         });

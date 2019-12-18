@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.persistence.LockModeType;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,8 +35,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     List<Ticket> findTicketsByIdGroup(@Param("ids") List<Long> ticketIds, @Param("userId") Long userId);
 
     /**
-     * TODO: findEmailsToBeNotified
-     * Retreives a list of e-mails that should be notified about the expiration of their ticket reservation.
+     * Retrieves a list of e-mails that should be notified about the expiration of their ticket reservation.
+     *
      * @param eventId ID of the event whose reserved ticket users should be notified
      * @return List of strings containing emails
      */

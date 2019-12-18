@@ -68,13 +68,12 @@ public class TokenUtils {
      * @return Username
      */
     public String getUsernameFromToken(String token) {
-        String username;
-        try {
-            final Claims claims = this.getClaimsFromToken(token);
+        String username = null;
+
+        final Claims claims = this.getClaimsFromToken(token);
+        if(claims != null)
             username = claims.getSubject();
-        } catch (Exception e) {
-            username = null;
-        }
+
         return username;
     }
 
@@ -85,14 +84,13 @@ public class TokenUtils {
      * @return Token expiration date
      */
     private Date getExpirationDateFromToken(String token) {
-        Date expiration;
-        try {
-            final Claims claims = this.getClaimsFromToken(token);
-            expiration = claims.getExpiration();
-        } catch (Exception e) {
-            expiration = null;
-        }
-        return expiration;
+        Date expirationDate = null;
+
+        final Claims claims = this.getClaimsFromToken(token);
+        if(claims != null)
+            expirationDate = claims.getExpiration();
+
+        return expirationDate;
     }
 
     /**
@@ -121,8 +119,8 @@ public class TokenUtils {
      * @return True if token is expired, otherwise false
      */
     private boolean isTokenExpired(String token) {
-        final Date expiration = this.getExpirationDateFromToken(token);
-        return expiration == null || expiration.before(this.getCurrentDate());
+        final Date expirationDate = this.getExpirationDateFromToken(token);
+        return expirationDate == null || expirationDate.before(this.getCurrentDate());
     }
 
     /**

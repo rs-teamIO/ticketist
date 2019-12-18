@@ -47,7 +47,7 @@ public class SectorController {
      * Returns a list of sectors that are related to a {@link Venue} with given ID
      *
      * @param venueId ID of the {@link Venue}
-     * @return TODO
+     * @return {@link ResponseEntity} containing HttpStatus and list of sectors
      */
     @GetMapping(value="/venue/{venueId}")
     public ResponseEntity<List<SectorDTO>> getSectorsByVenueId(@PathVariable("venueId") Long venueId) {

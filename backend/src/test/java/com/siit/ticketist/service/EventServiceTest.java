@@ -1,8 +1,8 @@
 package com.siit.ticketist.service;
 import static org.junit.Assert.*;
 
-import com.siit.ticketist.controller.exceptions.BadRequestException;
-import com.siit.ticketist.controller.exceptions.NotFoundException;
+import com.siit.ticketist.exceptions.BadRequestException;
+import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -109,8 +109,8 @@ public class EventServiceTest {
         event.setStartDate(new Timestamp(time));
         event.setEndDate(new Timestamp(time2));
         event.setReservationDeadline(new Timestamp(time3));
-        MultipartFile[] m = new MultipartFile[0];
-        eventService.save(event,m);
+
+        eventService.save(event);
     }
 
     @Test
@@ -193,8 +193,8 @@ public class EventServiceTest {
         event.setStartDate(new Timestamp(time));
         event.setEndDate(new Timestamp(time2));
         event.setReservationDeadline(new Timestamp(time3));
-        MultipartFile[] m = new MultipartFile[0];
-        eventService.save(event,m);
+
+        eventService.save(event);
     }
 
     @Test
@@ -293,8 +293,7 @@ public class EventServiceTest {
         eventSectors.add(eSector);
         event.setEventSectors(eventSectors);
 
-        MultipartFile[] m = new MultipartFile[0];
-        eventService.save(event,m);
+        eventService.save(event);
     }
 
     @Test(expected = BadRequestException.class)
@@ -333,7 +332,6 @@ public class EventServiceTest {
         sec.setId(1l);
         eSector.setSector(sec);
 
-        MultipartFile[] m = new MultipartFile[0];
-        eventService.save(event,m);
+        eventService.save(event);
     }
 }

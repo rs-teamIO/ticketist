@@ -28,7 +28,7 @@ public class SectorService {
      * @return {@link Sector} instance
      * @throws NotFoundException Exception thrown in case no sector with given ID is found.
      */
-    public Sector findOne(Long id) throws NotFoundException {
+    public Sector findOne(Long id) {
         return this.sectorRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Sector not found."));
     }

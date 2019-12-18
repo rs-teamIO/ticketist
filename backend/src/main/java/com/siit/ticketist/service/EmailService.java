@@ -141,8 +141,8 @@ public class EmailService {
         List<Event> events = this.eventService.filterEventsByDeadline();
         Set<String> emailsToBeNotified = new LinkedHashSet<>();
         events.forEach(event -> emailsToBeNotified.addAll(this.ticketRepository.findEmailsToBeNotified(event.getId())));
-        for (String email : emailsToBeNotified) {
-            this.sendEmail(email, "Your reservation is about to expire", this.generateDeadlineNotificationMail());
+        for (String emailAddress : emailsToBeNotified) {
+            this.sendEmail(emailAddress, "Your reservation is about to expire", this.generateDeadlineNotificationMail());
         }
     }
 

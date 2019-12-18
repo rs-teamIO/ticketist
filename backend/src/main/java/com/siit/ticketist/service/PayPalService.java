@@ -27,7 +27,7 @@ public class PayPalService {
         Transaction transaction = new Transaction();
         transaction.setAmount(amount);
 
-        List<Transaction> transactions = new ArrayList<Transaction>();
+        List<Transaction> transactions = new ArrayList<>();
         transactions.add(transaction);
 
         Payer payer = new Payer();
@@ -48,7 +48,7 @@ public class PayPalService {
     }
 
     private Map<String, Object> createResponse(Payment createdPayment) {
-        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> response = new HashMap<>();
         String redirectUrl = "";
 
         if (createdPayment != null) {
@@ -66,7 +66,7 @@ public class PayPalService {
 
 
     public Map<String, Object> completePayment(HttpServletRequest req) throws PayPalRESTException {
-        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> response = new HashMap<>();
 
         Payment payment = new Payment();
         payment.setId(req.getParameter("paymentId"));
