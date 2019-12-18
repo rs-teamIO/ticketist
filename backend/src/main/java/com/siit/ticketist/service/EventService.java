@@ -1,15 +1,21 @@
 package com.siit.ticketist.service;
 
 import com.siit.ticketist.exceptions.BadRequestException;
+import com.siit.ticketist.exceptions.ForbiddenException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.SectorRepository;
+import com.siit.ticketist.repository.TicketRepository;
 import com.siit.ticketist.service.interfaces.StorageService;
+import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,15 +30,20 @@ public class EventService {
     @Value("${allowed-content-types}")
     private String[] contentTypes;
 
-    private final StorageService storageService;
-    private final EventRepository eventRepository;
-    private final SectorRepository sectorRepository;
+    @Autowired
+    private StorageService storageService;
 
-    public EventService(StorageService storageService, EventRepository eventRepository, SectorRepository sectorRepository) {
-        this.storageService = storageService;
-        this.eventRepository = eventRepository;
-        this.sectorRepository = sectorRepository;
-    }
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private SectorRepository sectorRepository;
+
+    @Autowired
+    private TicketRepository ticketRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     /**
      * Returns a list of all available events
@@ -240,6 +251,19 @@ public class EventService {
         return this.storageService.read(mediaFiles.get(0).getFileName());
     }
 
+    @Transactional
+    public void cancelEvent(Long eventId) throws MessagingException {
+        Event event = findOne(eventId);
+        if(event.getStartDate().before(new Date(System.currentTimeMillis())))
+            throw new BadRequestException("Only events in the future can be cancelled");
+        else if(event.getIsCancelled())
+            throw new ForbiddenException("Wanted event is already cancelled");
+        event.setIsCancelled(true);
+        emailService.sendEventCancelledEmails(event);
+        ticketRepository.deactivateTickets(event);
+        eventRepository.save(event);
+    }
+
     /*
         Search
      */
@@ -249,7 +273,6 @@ public class EventService {
     }
 
     public Date convertMillisToDate(Long millisecondsFrom){
-        // TODO: konvertuje u CET (local timezone), mozda bude problema
         return millisecondsFrom == null ? null : new Date(millisecondsFrom);
     }
 

@@ -22,13 +22,13 @@ public class TicketRepositoryTest {
 
     @Test
     public void findTicketsByEventId_ShouldReturnEmptyList_whenEventIDisInvalid() {
-        List<Ticket> foundTickets = ticketRepository.findTicketsByEventId(88L);
+        List<Ticket> foundTickets = ticketRepository.findByEventId(88L);
         assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
     }
 
     @Test
     public void findTicketsByEventId_ShouldReturnListWithTickets_whenEventIDisValid() {
-        List<Ticket> foundTickets = ticketRepository.findTicketsByEventId((12L));
+        List<Ticket> foundTickets = ticketRepository.findByEventId((12L));
         assertEquals("ticket list is not empty (8 elements)", 8, foundTickets.size());
     }
 

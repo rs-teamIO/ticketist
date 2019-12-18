@@ -3,6 +3,7 @@ package com.siit.ticketist.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -34,7 +35,7 @@ public class Event {
     * Holds the information whether the event has been cancelled or not.
     * In case the event is cancelled, users cannot buy any tickets for that event.
     */
-   @Column(nullable = false)
+   @Column(nullable = false, columnDefinition = "boolean default false")
    private Boolean isCancelled = false;
 
    /**

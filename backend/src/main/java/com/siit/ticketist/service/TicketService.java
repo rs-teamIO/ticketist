@@ -27,7 +27,7 @@ public class TicketService {
     private EmailService emailService;
 
     public List<Ticket> findAllByEventId(Long id) {
-        return ticketRepository.findTicketsByEventId(id);
+        return ticketRepository.findByEventId(id);
     }
 
     public List<Ticket> findAllByEventSectorId(Long id) {

@@ -13,8 +13,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByVenueId(Long id);
 
     /**
-     * Return all events, venue in which the event is happening, number of sold tickets for the event and total revenue.
+     * Return all non-cancelled events, venue in which the event is happening, number of sold tickets for the event and total revenue.
      * Used for initial report
+     *
      * @return List of result objects
      */
     @Query( value =
@@ -23,13 +24,15 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "ON e.id = t.event_id " +
             "LEFT OUTER JOIN (SELECT v.name as venue_name, v.id from venues as v) as v " +
             "ON e.venue_id = v.id " +
+            "WHERE e.is_cancelled = 0 " +
             "GROUP BY e.id " +
             "ORDER BY SUM(t.price) desc", nativeQuery = true)
     List<Object[]> findAllEventsReport();
 
     /**
-     * Returns all events for wanted venue, number of sold tickets for the event and total revenue.
+     * Returns all non-cancelled events for wanted venue, number of sold tickets for the event and total revenue.
      * Used for specific venue report.
+     *
      * @param venueId ID of the Venue
      * @return List of result objects
      */
@@ -39,13 +42,14 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "ON e.venue_id = v.id " +
             "LEFT OUTER JOIN (SELECT id, price, event_id FROM tickets WHERE status = 2) as t " +
             "ON e.id = t.event_id " +
-            "WHERE v.id = :venueId " +
+            "WHERE v.id = :venueId AND e.is_cancelled = 0 " +
             "GROUP BY e.id", nativeQuery = true)
     List<Object[]> findAllEventReportsByVenue(@Param("venueId") Long venueId);
 
     /**
      * Returns month (in the last 12 months) and number of tickets sold in that month for wanted venue.
      * Used for specific venue report.
+     *
      * @param venueId ID of the Venue
      * @return List of result objects
      */
@@ -53,8 +57,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "SELECT MONTH(e.start_date), COUNT(t.id) " +
             "FROM events e JOIN tickets t ON e.id = t.event_id " +
             "WHERE e.venue_id = :venueId " +
-            "AND e.start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 12 MONTH) " +
-            "AND CURDATE() AND t.status = 2 " +
+            "AND e.start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 12 MONTH) AND CURDATE() " +
+            "AND t.status = 2 " +
             "GROUP BY MONTH(e.start_date)", nativeQuery = true)
     List<Object[]> getVenueTicketsReport(@Param("venueId") Long venueId);
 
@@ -69,8 +73,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "SELECT MONTH(e.start_date), SUM(t.price) " +
             "FROM events e JOIN tickets t ON e.id = t.event_id " +
             "WHERE e.venue_id = :venueId " +
-            "AND e.start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 12 MONTH) " +
-            "AND CURDATE() AND t.status = 2 " +
+            "AND e.start_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 12 MONTH) AND CURDATE() " +
+            "AND t.status = 2 " +
             "GROUP BY MONTH(e.start_date)", nativeQuery = true)
     List<Object[]> getVenueRevenueReport(@Param("venueId") Long venueId);
 
