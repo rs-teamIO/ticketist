@@ -117,6 +117,20 @@ public class EventController {
     }
 
     /**
+     * DELETE /api/events/1/media/test.jpg
+     * Deletes the requested file.
+     *
+     * @param eventId ID of the event the media file is bound to
+     * @param fileName Name of the file to be deleted
+     * @return {@link ResponseEntity} containing HttpStatus and content
+     */
+    @DeleteMapping(value = "{eventId}/media/{fileName}")
+    public ResponseEntity<Object> deleteMediaFile(@PathVariable("eventId") Long eventId, @PathVariable("fileName") String fileName) {
+        eventService.deleteMediaFile(eventId, fileName);
+        return new ResponseEntity<>("Removed successfully", HttpStatus.OK);
+    }
+
+    /**
      * POST /api/events/search
      * Performs a search based on given criteria
      *
