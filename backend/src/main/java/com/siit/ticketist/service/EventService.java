@@ -4,6 +4,7 @@ import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.EventRepository;
+import com.siit.ticketist.repository.EventSectorRepository;
 import com.siit.ticketist.repository.MediaFileRepository;
 import com.siit.ticketist.repository.SectorRepository;
 import com.siit.ticketist.service.interfaces.StorageService;
@@ -12,13 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Event service layer.
+ * {@link Event} service layer.
  */
 @Service
 public class EventService {
@@ -31,7 +33,8 @@ public class EventService {
     private final SectorRepository sectorRepository;
     private final MediaFileRepository mediaFileRepository;
 
-    public EventService(StorageService storageService, EventRepository eventRepository, SectorRepository sectorRepository, MediaFileRepository mediaFileRepository) {
+    public EventService(StorageService storageService, EventRepository eventRepository,
+                        SectorRepository sectorRepository, MediaFileRepository mediaFileRepository) {
         this.storageService = storageService;
         this.eventRepository = eventRepository;
         this.sectorRepository = sectorRepository;
@@ -89,7 +92,7 @@ public class EventService {
 
         datesInRange.forEach(date ->
             event.getEventSectors().forEach(eventSector -> {
-                EventSector newEventSector = new EventSector(eventSector.getId(), eventSector.getTicketPrice(), eventSector.getNumeratedSeats(),
+                EventSector newEventSector = new EventSector(eventSector.getId(), true, eventSector.getTicketPrice(), eventSector.getNumeratedSeats(),
                         date, eventSector.getCapacity(), eventSector.getTickets(), eventSector.getSector(), eventSector.getEvent());
                 eventSectorList.add(newEventSector);
             })
@@ -199,7 +202,7 @@ public class EventService {
 
         Stream.of(mediaFiles).forEach(mf -> {
             if (!Arrays.asList(contentTypes).contains(mf.getContentType()))
-                throw new BadRequestException(String.format("File %s is not a valid media file.", mf.getOriginalFilename()));
+                throw new BadRequestException(String.format("Invalid format of file %s.", mf.getOriginalFilename()));
         });
 
         ArrayList<MediaFile> eventMediaFiles = new ArrayList<>();
@@ -278,7 +281,8 @@ public class EventService {
      * @param description updated description
      * @return updated {@link Event} instance
      */
-    public Event updateBasicInformation(Long eventId, String name, Category category, Date reservationDeadline, Integer reservationLimit, String description) {
+    public Event updateBasicInformation(Long eventId, String name, Category category, Date reservationDeadline,
+                                        Integer reservationLimit, String description) {
         Event event = this.findOne(eventId);
 
         event.setName(name);

@@ -27,6 +27,12 @@ public class EventSector {
    private Long id;
 
    /**
+    * True if the event sector is active, otherwise false.
+    */
+   @Column(nullable = false)
+   private Boolean isActive = true;
+
+   /**
     * Ticket price for each {@link Ticket} in this sector for the related {@link Event}
     */
    @Column(nullable = false)
