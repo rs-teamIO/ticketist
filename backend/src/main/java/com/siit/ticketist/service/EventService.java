@@ -271,6 +271,29 @@ public class EventService {
         return mediaFiles.get(0);
     }
 
+    /**
+     * Updates the basic information of the {@link Event} with given ID
+     *
+     * @param eventId unique identifier of the event to be updated
+     * @param name updated event name
+     * @param category updated event category
+     * @param reservationDeadline updated reservation deadline
+     * @param reservationLimit updated reservation limit
+     * @param description updated description
+     * @return updated {@link Event} instance
+     */
+    public Event updateBasicInformation(Long eventId, String name, Category category, Date reservationDeadline, Integer reservationLimit, String description) {
+        Event event = this.findOne(eventId);
+
+        event.setName(name);
+        event.setCategory(category);
+        event.setReservationDeadline(reservationDeadline);
+        event.setReservationLimit(reservationLimit);
+        event.setDescription(description);
+
+        return this.eventRepository.save(event);
+    }
+
     /*
         Search
      */

@@ -1,6 +1,7 @@
 package com.siit.ticketist.controller;
 
 import com.siit.ticketist.dto.EventDTO;
+import com.siit.ticketist.dto.EventUpdateDTO;
 import com.siit.ticketist.dto.SearchDTO;
 import com.siit.ticketist.model.Event;
 import com.siit.ticketist.model.MediaFile;
@@ -55,7 +56,7 @@ public class EventController {
      * @return {@link ResponseEntity} containing HttpStatus and content
      */
     @GetMapping(value="{id}")
-    public ResponseEntity<Object> getEvent(@PathVariable("id") Long id) {
+    public ResponseEntity<EventDTO> getEvent(@PathVariable("id") Long id) {
         Event event = eventService.findOne(id);
         return new ResponseEntity<>(new EventDTO(event), HttpStatus.OK);
     }
@@ -69,7 +70,7 @@ public class EventController {
      */
     //@PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
-    public ResponseEntity<Object> createEvent(@Valid @RequestBody EventDTO eventDTO) {
+    public ResponseEntity<EventDTO> createEvent(@Valid @RequestBody EventDTO eventDTO) {
         Event eventToBeCreated = eventDTO.convertToEntity();
         Event event = eventService.save(eventToBeCreated);
         return new ResponseEntity<>(new EventDTO(event), HttpStatus.OK);
@@ -85,7 +86,7 @@ public class EventController {
      */
     //@PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(value = "{eventId}/media", consumes = {"application/octet-stream", "multipart/form-data"})
-    public ResponseEntity<Object> addMediaFiles(@PathVariable("eventId") Long eventId, @RequestPart("mediaFiles") MultipartFile[] mediaFiles) {
+    public ResponseEntity<EventDTO> addMediaFiles(@PathVariable("eventId") Long eventId, @RequestPart("mediaFiles") MultipartFile[] mediaFiles) {
         Event event = eventService.addMediaFiles(eventId, mediaFiles);
         return new ResponseEntity<>(new EventDTO(event), HttpStatus.OK);
     }
@@ -98,7 +99,7 @@ public class EventController {
      * @return {@link ResponseEntity} containing HttpStatus and content
      */
     @GetMapping(value = "{eventId}/media")
-    public ResponseEntity<Object> getMediaFiles(@PathVariable("eventId") Long eventId) {
+    public ResponseEntity<Set<MediaFile>> getMediaFiles(@PathVariable("eventId") Long eventId) {
         Set<MediaFile> mediaFiles = eventService.getMediaFiles(eventId);
         return new ResponseEntity<>(mediaFiles, HttpStatus.OK);
     }
@@ -128,6 +129,20 @@ public class EventController {
     public ResponseEntity<Object> deleteMediaFile(@PathVariable("eventId") Long eventId, @PathVariable("fileName") String fileName) {
         eventService.deleteMediaFile(eventId, fileName);
         return new ResponseEntity<>("Removed successfully", HttpStatus.OK);
+    }
+
+    /**
+     * POST /api/events/1
+     * Updates basic information of the {@link Event} with given ID
+     *
+     * @param eventId Unique identifier of the event
+     * @param dto {@link EventUpdateDTO} containing updated information
+     * @return Event with updated information
+     */
+    @PostMapping(value="{eventId}")
+    public ResponseEntity<EventDTO> updateBasicInformation(@PathVariable("eventId") Long eventId, @Valid @RequestBody EventUpdateDTO dto) {
+        Event updatedEvent = eventService.updateBasicInformation(eventId, dto.getName(), dto.getCategory(), dto.getReservationDeadline(), dto.getReservationLimit(), dto.getDescription());
+        return new ResponseEntity<>(new EventDTO(updatedEvent), HttpStatus.OK);
     }
 
     /**
