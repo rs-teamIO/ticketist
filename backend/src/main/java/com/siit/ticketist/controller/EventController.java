@@ -126,9 +126,9 @@ public class EventController {
      * @return {@link ResponseEntity} containing HttpStatus and content
      */
     @DeleteMapping(value = "{eventId}/media/{fileName}")
-    public ResponseEntity<Object> deleteMediaFile(@PathVariable("eventId") Long eventId, @PathVariable("fileName") String fileName) {
+    public ResponseEntity deleteMediaFile(@PathVariable("eventId") Long eventId, @PathVariable("fileName") String fileName) {
         eventService.deleteMediaFile(eventId, fileName);
-        return new ResponseEntity<>("Removed successfully", HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     /**

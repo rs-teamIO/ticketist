@@ -9,6 +9,7 @@ import com.siit.ticketist.repository.SectorRepository;
 import com.siit.ticketist.service.interfaces.StorageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.text.SimpleDateFormat;
@@ -232,35 +233,6 @@ public class EventService {
      * @throws BadRequestException Exception thrown in case the file cannot be found
      */
     public byte[] getMediaFile(Long eventId, String fileName) {
-        MediaFile mediaFile = this.getEventMediaFile(eventId, fileName);
-        return this.storageService.read(mediaFile.getFileName());
-    }
-
-    /**
-     * Deletes the requested file.
-     *
-     * @param eventId ID of the event the media file is bound to
-     * @param fileName Name of the file to be deleted
-     * @throws BadRequestException Exception thrown in case an error occurs
-     */
-    public void deleteMediaFile(Long eventId, String fileName) {
-        MediaFile mediaFile = this.getEventMediaFile(eventId, fileName);
-        boolean deletedSuccessfully = this.storageService.delete(mediaFile.getFileName());
-        if(deletedSuccessfully)
-            this.mediaFileRepository.deleteByFileName(mediaFile.getFileName());
-        else
-            throw new BadRequestException("Error occurred while trying to delete media file.");
-    }
-
-    /**
-     * Returns the {@link MediaFile} with given name of the specified {@link Event}
-     *
-     * @param eventId ID of the event the {@link MediaFile} is bound to
-     * @param fileName Name of the file to be deleted
-     * @return {@link MediaFile} instance
-     * @throws BadRequestException Exception thrown in case the file is not found.
-     */
-    private MediaFile getEventMediaFile(Long eventId, String fileName) {
         Event event = this.findOne(eventId);
         List<MediaFile> mediaFiles = event.getMediaFiles().stream()
                 .filter(mediaFile -> mediaFile.getFileName().equals(fileName))
@@ -268,7 +240,31 @@ public class EventService {
         if(mediaFiles.isEmpty())
             throw new BadRequestException("Event does not have a file with given name.");
 
-        return mediaFiles.get(0);
+        return this.storageService.read(mediaFiles.get(0).getFileName());
+    }
+
+    /**
+     * Deletes the requested file.
+     *
+     * @param eventId ID of the event the media file is bound to
+     * @param fileName Name of the file to be deleted
+     * @throws BadRequestException Exception thrown in case the requested media file is not found
+     */
+    @Transactional
+    public void deleteMediaFile(Long eventId, String fileName) {
+        Event event = this.findOne(eventId);
+        List<MediaFile> mediaFiles = event.getMediaFiles().stream()
+                .filter(mediaFile -> mediaFile.getFileName().equals(fileName))
+                .collect(Collectors.toList());
+        if(mediaFiles.isEmpty())
+            throw new BadRequestException("Event does not have a file with given name.");
+
+        MediaFile mediaFileToDelete = mediaFiles.get(0);
+        event.getMediaFiles().remove(mediaFileToDelete);
+        this.mediaFileRepository.deleteById(mediaFileToDelete.getId());
+        this.storageService.delete(mediaFileToDelete.getFileName());
+
+        this.eventRepository.save(event);
     }
 
     /**
