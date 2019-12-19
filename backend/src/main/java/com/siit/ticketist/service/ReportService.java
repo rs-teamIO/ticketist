@@ -1,6 +1,8 @@
 package com.siit.ticketist.service;
 
 import com.siit.ticketist.exceptions.BadRequestException;
+import com.siit.ticketist.exceptions.NotFoundException;
+import com.siit.ticketist.model.Venue;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.VenueRepository;
 import org.springframework.stereotype.Service;
@@ -22,47 +24,45 @@ public class ReportService {
         this.eventRepository = eventRepository;
     }
 
-    /*
-        Initial report
-     */
+    /* Initial report */
+
     public Map<String, BigDecimal> getAllVenueRevenues() {
         return venueRepository.getAllVenueRevenues()
-                        .stream()
-                        .collect(Collectors.toMap(obj -> (String) obj[0], obj -> (BigDecimal) obj[1]));
+                .stream()
+                .collect(Collectors.toMap(obj -> (String) obj[0], obj -> (BigDecimal) obj[1]));
     }
 
     public List<Object[]> findAllEventsReport() {
         return eventRepository.findAllEventsReport();
     }
 
-    /*
-        Specific venue report
-     */
+
+    /* Specific venue report */
 
     public List<Object[]> findAllEventReportsByVenue(Long venueId) {
         return eventRepository.findAllEventReportsByVenue(venueId);
     }
 
     public Map<Integer, Float> getVenueChart(String criteria, Long venueId) {
-        // TODO: Napisi metodu koja proverava da li venue sa tim id postoji
+        Venue venue = venueRepository.findById(venueId).orElseThrow(() -> new NotFoundException(String.format("Venue with id %d doesn't exist", venueId)));
         if (criteria.equalsIgnoreCase("TICKETS"))
-            return getVenueTicketReports(venueId);
+            return getVenueTicketReports(venue.getId());
         else if (criteria.equalsIgnoreCase("REVENUE"))
-            return getVenueRevenueReport(venueId);
+            return getVenueRevenueReport(venue.getId());
         else
             throw new BadRequestException("Invalid venue report criteria [TICKETS|REVENUE]");
     }
 
     private Map<Integer, Float> getVenueTicketReports(Long venueId) {
         return eventRepository.getVenueTicketsReport(venueId)
-                        .stream()
-                        .collect(Collectors.toMap( obj -> (Integer) obj[0], obj -> ((BigInteger) obj[1]).floatValue()));
+                .stream()
+                .collect(Collectors.toMap(obj -> (Integer) obj[0], obj -> ((BigInteger) obj[1]).floatValue()));
     }
 
     private Map<Integer, Float> getVenueRevenueReport(Long venueId) {
         return eventRepository.getVenueRevenueReport(venueId)
-                        .stream()
-                        .collect(Collectors.toMap(obj -> (Integer) obj[0], obj -> ((BigDecimal) obj[1]).floatValue()));
+                .stream()
+                .collect(Collectors.toMap(obj -> (Integer) obj[0], obj -> ((BigDecimal) obj[1]).floatValue()));
     }
 
 

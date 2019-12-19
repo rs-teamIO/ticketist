@@ -19,7 +19,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Lock(LockModeType.OPTIMISTIC)
     Optional<Ticket> findOneById(Long id);
 
-//    @Query(value = "select * from tickets t where t.event_id = ?1", nativeQuery = true)
     List<Ticket> findByEventId(Long id);
 
     @Query(value = "select * from tickets t where t.event_sector_id = ?1", nativeQuery = true)
@@ -53,9 +52,13 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "GROUP BY u.id", nativeQuery = true)
     Set<String> findEmailsToBeNotified(Long eventId, TicketStatus ticketStatus);
 
+    /**
+     * Deactivates tickets by setting their status to EVENT_CANCELLED
+     *
+     * @param event {@link Event} Cancelled event whose tickets are to be deactivated
+     */
     @Modifying
-    @Query("UPDATE Ticket t SET t.status = 0, t.user = null WHERE t.event = :event AND (t.status = 1 OR t.status = 2)")
+    @Query("UPDATE Ticket t SET t.status = 4 WHERE t.event = :event")
     void deactivateTickets(@Param("event") Event event);
-
 
 }

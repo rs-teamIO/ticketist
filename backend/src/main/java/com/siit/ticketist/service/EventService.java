@@ -8,7 +8,6 @@ import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.SectorRepository;
 import com.siit.ticketist.repository.TicketRepository;
 import com.siit.ticketist.service.interfaces.StorageService;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,20 +29,20 @@ public class EventService {
     @Value("${allowed-content-types}")
     private String[] contentTypes;
 
-    @Autowired
-    private StorageService storageService;
-
-    @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
-    private SectorRepository sectorRepository;
-
-    @Autowired
-    private TicketRepository ticketRepository;
+    private final StorageService storageService;
+    private final EventRepository eventRepository;
+    private final SectorRepository sectorRepository;
+    private final TicketRepository ticketRepository;
 
     @Autowired
     private EmailService emailService;
+
+    public EventService(StorageService storageService, EventRepository eventRepository, SectorRepository sectorRepository, TicketRepository ticketRepository) {
+        this.storageService = storageService;
+        this.eventRepository = eventRepository;
+        this.sectorRepository = sectorRepository;
+        this.ticketRepository = ticketRepository;
+    }
 
     /**
      * Returns a list of all available events
@@ -251,33 +250,51 @@ public class EventService {
         return this.storageService.read(mediaFiles.get(0).getFileName());
     }
 
+    /**
+     * Cancels event {@link Event} with given ID.
+     *
+     * @param eventId ID of the event
+     * @return {@link Event} cancelled event
+     * @throws BadRequestException Exception thrown in case event start date is before current date
+     * @throws ForbiddenException Exception thrown in case event is already cancelled
+     */
     @Transactional
-    public void cancelEvent(Long eventId) throws MessagingException {
+    public Event cancelEvent(Long eventId) throws MessagingException {
         Event event = findOne(eventId);
         if(event.getStartDate().before(new Date(System.currentTimeMillis())))
             throw new BadRequestException("Only events in the future can be cancelled");
-        else if(event.getIsCancelled())
+        else if(event.getIsCancelled().booleanValue())
             throw new ForbiddenException("Wanted event is already cancelled");
         event.setIsCancelled(true);
         emailService.sendEventCancelledEmails(event);
         ticketRepository.deactivateTickets(event);
-        eventRepository.save(event);
+        return eventRepository.save(event);
     }
 
-    /*
-        Search
+    /**
+     *  Search events by given parameters
+     *
+     * @param eventName full or partial name of the event
+     * @param category full or partial name of the event category [SPORTS, CULTURAL, ENTERTAINMENT]
+     * @param venueName full or partial name of the venue
+     * @param millisecondsFrom milliseconds to be converted to Date
+     * @param millisecondsTo milliseconds to be converted to Date
+     * @return List<Event> result list
      */
     public List<Event> search(String eventName, String category, String venueName, Long millisecondsFrom, Long millisecondsTo){
         return eventRepository.search(eventName, category, venueName,
                 convertMillisToDate(millisecondsFrom), convertMillisToDate(millisecondsTo));
     }
 
-    public Date convertMillisToDate(Long millisecondsFrom){
+    private Date convertMillisToDate(Long millisecondsFrom){
         return millisecondsFrom == null ? null : new Date(millisecondsFrom);
     }
 
-    /*
-        Helper method for email notifications
+    /**
+     * Helper method for reservation deadline email notifications.
+     * Filters events by reservation deadline
+     *
+     * @return List<Event> list of events which reservation deadline is 3 days from current date
      */
     public List<Event> filterEventsByDeadline(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -288,14 +305,13 @@ public class EventService {
             if(sdf.format(event.getReservationDeadline()).equals(threeDaysFromNow))
                 filteredEvents.add(event);
         });
-
         return filteredEvents;
     }
 
-    public Date addDays(Date date, int days) {
+    private Date addDays(Date date, int days) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        cal.add(Calendar.DATE, days); //minus number would decrement the days
+        cal.add(Calendar.DATE, days);
         return cal.getTime();
     }
 

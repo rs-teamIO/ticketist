@@ -141,7 +141,7 @@ public class EventController {
      */
     @GetMapping(value = "cancel/{eventId}")
     public ResponseEntity cancelEvent(@PathVariable("eventId") Long eventId) throws MessagingException {
-        eventService.cancelEvent(eventId);
-        return new ResponseEntity(HttpStatus.OK);
+        Event event = eventService.cancelEvent(eventId);
+        return new ResponseEntity(new EventDTO(event), HttpStatus.OK);
     }
 }

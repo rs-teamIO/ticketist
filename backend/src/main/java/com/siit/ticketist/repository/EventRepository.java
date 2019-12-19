@@ -16,7 +16,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * Return all non-cancelled events, venue in which the event is happening, number of sold tickets for the event and total revenue.
      * Used for initial report
      *
-     * @return List of result objects
+     * @return List of result objects [{event_name, venue_name, sold_tickets, total_revenue}]
      */
     @Query( value =
             "SELECT e.name, venue_name, COUNT(t.id), COALESCE(SUM(t.price), 0) " +
@@ -34,7 +34,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * Used for specific venue report.
      *
      * @param venueId ID of the Venue
-     * @return List of result objects
+     * @return List of result objects [{event_name, venue_name, sold_tickets, total_revenue}]
      */
     @Query( value =
             "SELECT e.name, v.name as venue_name, COUNT(t.id), COALESCE(SUM(t.price), 0) " +
@@ -51,7 +51,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * Used for specific venue report.
      *
      * @param venueId ID of the Venue
-     * @return List of result objects
+     * @return List of result objects [{month_number, sold_tickets}]
      */
     @Query(value =
             "SELECT MONTH(e.start_date), COUNT(t.id) " +
@@ -67,7 +67,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * Used for specific venue report.
      *
      * @param venueId ID of the Venue
-     * @return List of result objects
+     * @return List of result objects [{month_number, total_revenue}]
      */
     @Query(value =
             "SELECT MONTH(e.start_date), SUM(t.price) " +
@@ -84,8 +84,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * @param eventName Name of the event
      * @param category Category of the event
      * @param venueName Name of the Venue
-     * @param startDate Start date of the event
-     * @param endDate End date of the event
+     * @param startDate Result events must begin after this date
+     * @param endDate Result events must begin before this date
      * @return List of Event objects that satisfy search criteria
      */
     @Query(value =
