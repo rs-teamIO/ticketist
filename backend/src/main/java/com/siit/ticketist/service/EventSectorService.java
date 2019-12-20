@@ -24,6 +24,15 @@ public class EventSectorService {
         this.eventSectorRepository = eventSectorRepository;
     }
 
+    /**
+     * Performs check if the {@link EventSector} with given ID
+     * references an {@link Event} with given ID and returns it.
+     *
+     * @param eventId Unique identifier of the {@link Event}
+     * @param eventSectorId Unique identifier of the {@link EventSector}
+     * @return {@link EventSector} instace
+     * @throws BadRequestException exception thrown in case of an error
+     */
     public EventSector findByEventAndId(Long eventId, Long eventSectorId) {
         Event event = this.eventService.findOne(eventId);
         EventSector eventSector = event.getEventSectors().stream()
@@ -34,6 +43,19 @@ public class EventSectorService {
         return eventSector;
     }
 
+    /**
+     * Performs check if the {@link EventSector} with given ID
+     * references an {@link Event} with given ID.
+     *
+     * If the event sector is present, the ticket price is updated.
+     * The price of free tickets is also updated.
+     *
+     * @param eventId Unique identifier of the {@link Event}
+     * @param eventSectorId Unique identifier of the {@link EventSector}
+     * @param ticketPrice updated ticket price
+     * @return {@link EventSector} instace
+     * @throws BadRequestException exception thrown in case of an error
+     */
     public EventSector updateTicketPrice(Long eventId, Long eventSectorId, BigDecimal ticketPrice) {
         if(ticketPrice.compareTo(BigDecimal.ZERO) < 0)
             throw new BadRequestException("Ticket price invalid.");
@@ -50,6 +72,18 @@ public class EventSectorService {
         return eventSector;
     }
 
+    /**
+     * Performs check if the {@link EventSector} with given ID
+     * references an {@link Event} with given ID.
+     *
+     * If the event sector is present, the status is updated.
+     *
+     * @param eventId Unique identifier of the {@link Event}
+     * @param eventSectorId Unique identifier of the {@link EventSector}
+     * @param isActive new status
+     * @return {@link EventSector} instace
+     * @throws BadRequestException exception thrown in case of an error
+     */
     public EventSector updateStatus(Long eventId, Long eventSectorId, Boolean isActive) {
         EventSector eventSector = this.findByEventAndId(eventId, eventSectorId);
         if(eventSector.getIsActive().equals(isActive))
@@ -60,12 +94,31 @@ public class EventSectorService {
             if(!allTicketsAreFree)
                 throw new BadRequestException("This event sector can't be disabled as there are purchased tickets.");
         }
+
+        // TODO: Videti sta ce biti sa kartama (verovatno treba promeniti status)
+
         eventSector.setIsActive(isActive);
         eventSector = this.eventSectorRepository.save(eventSector);
 
         return eventSector;
     }
 
+    /**
+     * Performs check if the {@link EventSector} with given ID
+     * references an {@link Event} with given ID.
+     *
+     * If the event sector is present, the capacity is updated.
+     *
+     * NOTE: Capacity can only be updated to a number that is below
+     * the maxCapacity of referenced {@link com.siit.ticketist.model.Sector}
+     * and above the number of sold tickets.
+     *
+     * @param eventId Unique identifier of the {@link Event}
+     * @param eventSectorId Unique identifier of the {@link EventSector}
+     * @param capacity new capacity
+     * @return {@link EventSector} instace
+     * @throws BadRequestException exception thrown in case of an error
+     */
     public EventSector updateCapacity(Long eventId, Long eventSectorId, Integer capacity) {
         if(capacity < 1)
             throw new BadRequestException("Invalid capacity.");
