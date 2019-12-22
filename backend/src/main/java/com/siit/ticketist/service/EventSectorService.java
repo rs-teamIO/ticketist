@@ -3,12 +3,18 @@ package com.siit.ticketist.service;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.model.Event;
 import com.siit.ticketist.model.EventSector;
+import com.siit.ticketist.model.Ticket;
 import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.repository.EventSectorRepository;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.lang.Math.abs;
 
 /**
  * {@link EventSector} service layer.
@@ -77,6 +83,7 @@ public class EventSectorService {
      * references an {@link Event} with given ID.
      *
      * If the event sector is present, the status is updated.
+     * (fivkovic) Videti sta ce biti sa kartama (verovatno treba promeniti status)
      *
      * @param eventId Unique identifier of the {@link Event}
      * @param eventSectorId Unique identifier of the {@link EventSector}
@@ -95,7 +102,12 @@ public class EventSectorService {
                 throw new BadRequestException("This event sector can't be disabled as there are purchased tickets.");
         }
 
-        // TODO: Videti sta ce biti sa kartama (verovatno treba promeniti status)
+        if(isActive.booleanValue())
+            eventSector.getTickets().stream()
+                    .forEach(ticket -> ticket.setStatus(TicketStatus.FREE));
+        else
+            eventSector.getTickets().stream()
+                    .forEach(ticket -> ticket.setStatus(TicketStatus.USED));
 
         eventSector.setIsActive(isActive);
         eventSector = this.eventSectorRepository.save(eventSector);
@@ -123,9 +135,14 @@ public class EventSectorService {
         if(capacity < 1)
             throw new BadRequestException("Invalid capacity.");
 
-        EventSector eventSector = this.findByEventAndId(eventId, eventSectorId);
+        final EventSector eventSector = this.findByEventAndId(eventId, eventSectorId);
         if(eventSector.getNumeratedSeats().booleanValue())
             throw new BadRequestException("Can't change capacity. Seats are numerated.");
+
+        Integer capacityDifference = capacity - eventSector.getCapacity();
+
+        if(capacityDifference.intValue() == 0)
+            return eventSector;
 
         boolean exceedsMaxCapacity = capacity > eventSector.getSector().getMaxCapacity();
         if(exceedsMaxCapacity)
@@ -139,11 +156,22 @@ public class EventSectorService {
             throw new BadRequestException(String.format("Can't set the capacity to %d. There are %d tickets already sold for this sector.",
                     capacity, numberOfTakenTickets));
 
-        // TODO: Videti sta ce biti sa kartama u slucaju smanjivanja kapaciteta
+        if(capacityDifference > 0) {
+            Set<Ticket> newTickets = IntStream.range(0, capacityDifference).parallel()
+                    .mapToObj(i -> new Ticket(null, -1, -1, eventSector.getTicketPrice(),
+                            TicketStatus.FREE, 0L, eventSector, eventSector.getEvent(), null))
+                    .collect(Collectors.toSet());
+            eventSector.getTickets().addAll(newTickets);
+        } else {
+            List<Ticket> freeTickets = eventSector.getTickets().stream()
+                    .filter(ticket -> ticket.getStatus().equals(TicketStatus.FREE))
+                    .collect(Collectors.toList());
+            IntStream.rangeClosed(0, abs(capacityDifference) - 1)
+                    .forEach(i -> eventSector.getTickets().remove(freeTickets.get(i)));
+        }
 
         eventSector.setCapacity(capacity);
-        eventSector = this.eventSectorRepository.save(eventSector);
 
-        return eventSector;
+        return this.eventSectorRepository.save(eventSector);
     }
 }

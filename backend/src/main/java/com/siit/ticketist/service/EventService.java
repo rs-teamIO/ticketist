@@ -4,7 +4,6 @@ import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.EventRepository;
-import com.siit.ticketist.repository.EventSectorRepository;
 import com.siit.ticketist.repository.MediaFileRepository;
 import com.siit.ticketist.repository.SectorRepository;
 import com.siit.ticketist.service.interfaces.StorageService;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;

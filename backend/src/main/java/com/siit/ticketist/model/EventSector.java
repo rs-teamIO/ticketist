@@ -62,7 +62,7 @@ public class EventSector {
    /**
     * Collection of tickets available for this sector
     */
-   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "eventSector")
+   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "eventSector")
    @JsonBackReference(value = "eventSector-tickets")
    private Set<Ticket> tickets;
 
