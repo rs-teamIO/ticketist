@@ -4,6 +4,7 @@ import com.siit.ticketist.model.RegisteredUser;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -25,7 +26,20 @@ public class RegisterUserDto {
 
     private String phone;
 
+    private String passwordRepeat;
+
     public RegisteredUser convertToEntity() {
+        RegisteredUser registeredUser = new RegisteredUser();
         return new RegisteredUser(username, password, email, firstName, lastName);
     }
+
+    public RegisterUserDto(RegisteredUser user){
+        this.username = user.getUsername();
+        this.password = user.getPassword();
+        this.email = user.getEmail();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.phone = user.getPhone();
+    }
+
 }

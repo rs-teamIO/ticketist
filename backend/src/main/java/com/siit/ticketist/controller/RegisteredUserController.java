@@ -2,6 +2,7 @@ package com.siit.ticketist.controller;
 
 import com.siit.ticketist.dto.RegisterUserDto;
 import com.siit.ticketist.dto.SuccessResponse;
+import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.service.RegisteredUserService;
 import com.siit.ticketist.service.UserService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import java.util.Objects;
 
 /**
  * Registered User management REST controller.
@@ -58,5 +60,30 @@ public class RegisteredUserController {
     public ResponseEntity handleVerify(@PathVariable("verificationCode") String verificationCode) {
         registeredUserService.verify(verificationCode);
         return new ResponseEntity(new SuccessResponse("User verified successfully."), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{username}")
+    public ResponseEntity findUserByUsername(@PathVariable("username") String username){
+        RegisteredUser user = (RegisteredUser) userService.findByUsername(username);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/save")
+    public ResponseEntity<Object> updateUser(@Valid @RequestBody RegisterUserDto userDto) {
+        RegisteredUser userToUpdate, user;
+        if(!Objects.equals(userDto.getPasswordRepeat(), null)) {
+            if(userDto.getPasswordRepeat().equals(userDto.getPassword())) {
+                userDto.setPassword(userDto.getPasswordRepeat());
+                userToUpdate = userDto.convertToEntity();
+                user = userService.save(userToUpdate, true);
+            } else {
+                throw new BadRequestException("User password doesnt match");
+            }
+        }else{
+            userToUpdate = userDto.convertToEntity();
+            user = userService.save(userToUpdate, false);
+        }
+
+        return new ResponseEntity<>(new RegisterUserDto(user), HttpStatus.OK);
     }
 }

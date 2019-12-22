@@ -3,6 +3,7 @@ package com.siit.ticketist.service;
 import com.siit.ticketist.exceptions.AuthorizationException;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.ForbiddenException;
+import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.Admin;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.User;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,10 +22,12 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -84,5 +88,22 @@ public class UserService {
                 .ifPresent(u -> {
                     throw new BadRequestException(String.format("Username '%s' is already taken", username));
                 });
+    }
+
+
+    public RegisteredUser save(RegisteredUser user, boolean change) {
+        User user1 = userRepository.findByUsernameIgnoreCase(user.getUsername())
+                .orElseThrow(() -> new NotFoundException("User does not exist."));
+
+        if(change || (!change && passwordEncoder.matches(user.getPassword(),user1.getPassword()))){
+            user1.setEmail(user.getEmail());
+            user1.setFirstName(user.getFirstName());
+            user1.setLastName(user.getLastName());
+            user1.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            return (RegisteredUser) userRepository.save(user1);
+        }else{
+            throw new BadRequestException("Password is not the same");
+        }
     }
 }

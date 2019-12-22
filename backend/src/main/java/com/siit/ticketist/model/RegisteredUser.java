@@ -50,4 +50,5 @@ public class RegisteredUser extends User {
    public RegisteredUser(String username, String password, String email, String firstName, String lastName) {
       super(username, password, email, firstName, lastName);
    }
+
 }
