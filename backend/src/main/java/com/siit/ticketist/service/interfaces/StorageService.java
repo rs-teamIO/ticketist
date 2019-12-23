@@ -22,4 +22,12 @@ public interface StorageService {
      * @return Byte array file content
      */
     byte[] read(String fileName);
+
+    /**
+     * Delete file from storage (filesystem, DB, etc.)
+     *
+     * @param fileName Name of the file
+     * @return true if operation was successful, otherwise false
+     */
+    boolean delete(String fileName);
 }
