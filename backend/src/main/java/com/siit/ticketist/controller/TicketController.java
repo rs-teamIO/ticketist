@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +94,7 @@ public class TicketController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
-    public ResponseEntity<Object> buyTickets(@Valid @RequestBody List<Long> tickets) {
+    public ResponseEntity<Object> buyTickets(@Valid @RequestBody List<Long> tickets) throws MessagingException {
         List<Ticket> ticket = ticketService.buyTickets(tickets,true);
         List<TicketDTO> ticketsDTO = new ArrayList<>();
         for (Ticket t : ticket) {
@@ -104,7 +105,7 @@ public class TicketController {
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping(value = "/reservations")
-    public ResponseEntity<Object> makeReservations(@Valid @RequestBody List<Long> tickets) {
+    public ResponseEntity<Object> makeReservations(@Valid @RequestBody List<Long> tickets) throws MessagingException {
         List<Ticket> ticket = ticketService.buyTickets(tickets,false);
         List<TicketDTO> ticketsDTO = new ArrayList<>();
         for (Ticket t : ticket) {

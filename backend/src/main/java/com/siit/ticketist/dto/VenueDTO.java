@@ -2,6 +2,7 @@ package com.siit.ticketist.dto;
 
 import com.siit.ticketist.model.Venue;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
@@ -9,7 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor
 public class VenueDTO {
 
     private Long id;
@@ -31,10 +32,6 @@ public class VenueDTO {
 
     @NotNull(message ="sector list cannot be null")
     private Set<SectorDTO> sectors;
-
-    public VenueDTO() {
-        sectors = new HashSet<>();
-    }
 
     public VenueDTO(Venue venue) {
         this.id = venue.getId();

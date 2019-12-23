@@ -4,10 +4,12 @@ import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.EventRepository;
+import com.siit.ticketist.repository.MediaFileRepository;
 import com.siit.ticketist.repository.SectorRepository;
 import com.siit.ticketist.service.interfaces.StorageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.text.SimpleDateFormat;
@@ -16,7 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Event service layer.
+ * {@link Event} service layer.
  */
 @Service
 public class EventService {
@@ -27,11 +29,14 @@ public class EventService {
     private final StorageService storageService;
     private final EventRepository eventRepository;
     private final SectorRepository sectorRepository;
+    private final MediaFileRepository mediaFileRepository;
 
-    public EventService(StorageService storageService, EventRepository eventRepository, SectorRepository sectorRepository) {
+    public EventService(StorageService storageService, EventRepository eventRepository,
+                        SectorRepository sectorRepository, MediaFileRepository mediaFileRepository) {
         this.storageService = storageService;
         this.eventRepository = eventRepository;
         this.sectorRepository = sectorRepository;
+        this.mediaFileRepository = mediaFileRepository;
     }
 
     /**
@@ -85,7 +90,7 @@ public class EventService {
 
         datesInRange.forEach(date ->
             event.getEventSectors().forEach(eventSector -> {
-                EventSector newEventSector = new EventSector(eventSector.getId(), eventSector.getTicketPrice(), eventSector.getNumeratedSeats(),
+                EventSector newEventSector = new EventSector(eventSector.getId(), true, eventSector.getTicketPrice(), eventSector.getNumeratedSeats(),
                         date, eventSector.getCapacity(), eventSector.getTickets(), eventSector.getSector(), eventSector.getEvent());
                 eventSectorList.add(newEventSector);
             })
@@ -195,7 +200,7 @@ public class EventService {
 
         Stream.of(mediaFiles).forEach(mf -> {
             if (!Arrays.asList(contentTypes).contains(mf.getContentType()))
-                throw new BadRequestException(String.format("File %s is not a valid media file.", mf.getOriginalFilename()));
+                throw new BadRequestException(String.format("Invalid format of file %s.", mf.getOriginalFilename()));
         });
 
         ArrayList<MediaFile> eventMediaFiles = new ArrayList<>();
@@ -227,7 +232,6 @@ public class EventService {
      * @param fileName Name of the requested file
      * @return Byte array representation of the requested file
      * @throws BadRequestException Exception thrown in case the file cannot be found
-     * TODO: IOException
      */
     public byte[] getMediaFile(Long eventId, String fileName) {
         Event event = this.findOne(eventId);
@@ -238,6 +242,54 @@ public class EventService {
             throw new BadRequestException("Event does not have a file with given name.");
 
         return this.storageService.read(mediaFiles.get(0).getFileName());
+    }
+
+    /**
+     * Deletes the requested file.
+     *
+     * @param eventId ID of the event the media file is bound to
+     * @param fileName Name of the file to be deleted
+     * @throws BadRequestException Exception thrown in case the requested media file is not found
+     */
+    @Transactional
+    public void deleteMediaFile(Long eventId, String fileName) {
+        Event event = this.findOne(eventId);
+        List<MediaFile> mediaFiles = event.getMediaFiles().stream()
+                .filter(mediaFile -> mediaFile.getFileName().equals(fileName))
+                .collect(Collectors.toList());
+        if(mediaFiles.isEmpty())
+            throw new BadRequestException("Event does not have a file with given name.");
+
+        MediaFile mediaFileToDelete = mediaFiles.get(0);
+        event.getMediaFiles().remove(mediaFileToDelete);
+        this.mediaFileRepository.deleteById(mediaFileToDelete.getId());
+        this.storageService.delete(mediaFileToDelete.getFileName());
+
+        this.eventRepository.save(event);
+    }
+
+    /**
+     * Updates the basic information of the {@link Event} with given ID
+     *
+     * @param eventId unique identifier of the event to be updated
+     * @param name updated event name
+     * @param category updated event category
+     * @param reservationDeadline updated reservation deadline
+     * @param reservationLimit updated reservation limit
+     * @param description updated description
+     * @return updated {@link Event} instance
+     */
+    public Event updateBasicInformation(Long eventId, String name, Category category, Date reservationDeadline,
+                                        Integer reservationLimit, String description) {
+        Event event = this.findOne(eventId);
+
+        event.setName(name);
+        event.setCategory(category);
+        event.setReservationDeadline(reservationDeadline);
+        event.setReservationLimit(reservationLimit);
+        event.setDescription(description);
+
+        return this.eventRepository.save(event);
     }
 
     /*

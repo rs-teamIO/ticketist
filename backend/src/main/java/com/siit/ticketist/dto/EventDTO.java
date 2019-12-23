@@ -2,6 +2,7 @@ package com.siit.ticketist.dto;
 
 import com.siit.ticketist.model.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
@@ -10,7 +11,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor
 public class EventDTO {
 
     private Long id;
@@ -44,11 +45,6 @@ public class EventDTO {
 
     @NotNull(message = "media files cannot be null")
     private Set<MediaFile> mediaFiles;
-
-    public EventDTO() {
-        this.eventSectors = new HashSet<>();
-        this.mediaFiles = new HashSet<>();
-    }
 
     public EventDTO(Event event) {
         this.id = event.getId();

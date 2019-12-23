@@ -35,7 +35,7 @@ public class TicketService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false, rollbackFor = OptimisticLockException.class)
-    public List<Ticket> buyTickets(List<Long> ticketIDS, boolean isBuy) {
+    public List<Ticket> buyTickets(List<Long> ticketIDS, boolean isBuy) throws MessagingException {
 
         // Basic checks
         checkNumberOfTickets(ticketIDS);
@@ -74,11 +74,7 @@ public class TicketService {
             }
         }
 
-        try {
-            this.emailService.sendTicketsPurchaseEmail(registeredUser, pdfTickets);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        this.emailService.sendTicketsPurchaseEmail(registeredUser, pdfTickets);
 
         return resultTickets;
     }
