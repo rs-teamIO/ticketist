@@ -91,19 +91,37 @@ public class UserService {
     }
 
 
-    public RegisteredUser save(RegisteredUser user, boolean change) {
-        User user1 = userRepository.findByUsernameIgnoreCase(user.getUsername())
-                .orElseThrow(() -> new NotFoundException("User does not exist."));
+    public RegisteredUser update(RegisteredUser updatedUser, String newPassword) {
+        User currentUser = this.findCurrentUser();
+        RegisteredUser registeredUser = this.findRegisteredUserByUsername(updatedUser.getUsername());
+        if(!currentUser.getUsername().equalsIgnoreCase(registeredUser.getUsername()))
+            throw new AuthorizationException("Usernames don't match.");
 
-        if(change || (!change && passwordEncoder.matches(user.getPassword(),user1.getPassword()))){
-            user1.setEmail(user.getEmail());
-            user1.setFirstName(user.getFirstName());
-            user1.setLastName(user.getLastName());
-            user1.setPassword(passwordEncoder.encode(user.getPassword()));
+        // TODO: Check if old password is entered successfully
 
-            return (RegisteredUser) userRepository.save(user1);
-        }else{
-            throw new BadRequestException("Password is not the same");
+        if(newPassword == null) {
+            // TODO: No password change
+
+
+        } else {
+            // TODO: Password changed
+
+
         }
+
+        // TODO
+//        if(changePasswordRequested || (!changePasswordRequested && passwordEncoder.matches(updatedUser.getPassword(), registeredUser.getPassword()))){
+//
+//            registeredUser.setFirstName(updatedUser.getFirstName());
+//            registeredUser.setLastName(updatedUser.getLastName());
+//            registeredUser.setEmail(updatedUser.getEmail());
+//            registeredUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+//
+//            return (RegisteredUser) userRepository.save(registeredUser);
+//        }else{
+//            throw new BadRequestException("Password is not the same");
+//        }
+
+        return null;
     }
 }

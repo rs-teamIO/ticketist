@@ -1,7 +1,6 @@
 package com.siit.ticketist.service;
 
 import com.siit.ticketist.exceptions.BadRequestException;
-import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.Role;
 import com.siit.ticketist.repository.RegisteredUserRepository;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -64,6 +62,4 @@ public class RegisteredUserService {
 
         return registeredUser;
     }
-
-
 }

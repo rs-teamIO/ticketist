@@ -8,6 +8,4 @@ import java.util.Optional;
 public interface RegisteredUserRepository extends JpaRepository<RegisteredUser, Long> {
 
     Optional<RegisteredUser> findByVerificationCode(String verificationCode);
-
-    Optional<RegisteredUser> findByUsername(String username);
 }

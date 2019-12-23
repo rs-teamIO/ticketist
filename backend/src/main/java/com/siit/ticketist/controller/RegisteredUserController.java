@@ -2,6 +2,7 @@ package com.siit.ticketist.controller;
 
 import com.siit.ticketist.dto.RegisterUserDto;
 import com.siit.ticketist.dto.SuccessResponse;
+import com.siit.ticketist.dto.UpdateUserDto;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.service.RegisteredUserService;
@@ -68,22 +69,17 @@ public class RegisteredUserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/save")
-    public ResponseEntity<Object> updateUser(@Valid @RequestBody RegisterUserDto userDto) {
-        RegisteredUser userToUpdate, user;
-        if(!Objects.equals(userDto.getPasswordRepeat(), null)) {
-            if(userDto.getPasswordRepeat().equals(userDto.getPassword())) {
-                userDto.setPassword(userDto.getPasswordRepeat());
-                userToUpdate = userDto.convertToEntity();
-                user = userService.save(userToUpdate, true);
-            } else {
-                throw new BadRequestException("User password doesnt match");
-            }
-        }else{
-            userToUpdate = userDto.convertToEntity();
-            user = userService.save(userToUpdate, false);
-        }
+    @PutMapping
+    //@PreAuthorize("hasAuthority('REGISTERED_USER')")
+    public ResponseEntity<Object> updateUser(@Valid @RequestBody UpdateUserDto dto) {
 
-        return new ResponseEntity<>(new RegisterUserDto(user), HttpStatus.OK);
+        if(!dto.getNewPassword().equals(dto.getNewPasswordRepeat()))
+            throw new BadRequestException("New passwords do not match.");
+
+        RegisteredUser updatedRegisteredUser = dto.convertToEntity();
+        updatedRegisteredUser = this.userService.update(updatedRegisteredUser, dto.getNewPassword());
+
+        // TODO: Convert user to DTO and return
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 }
