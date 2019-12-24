@@ -7,15 +7,14 @@ import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.service.RegisteredUserService;
 import com.siit.ticketist.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
-import java.util.Objects;
 
 /**
  * Registered User management REST controller.
@@ -28,7 +27,6 @@ public class RegisteredUserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    @Autowired
     public RegisteredUserController(RegisteredUserService registeredUserService, UserService userService, PasswordEncoder passwordEncoder) {
         this.registeredUserService = registeredUserService;
         this.userService = userService;
@@ -63,23 +61,29 @@ public class RegisteredUserController {
         return new ResponseEntity(new SuccessResponse("User verified successfully."), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{username}")
-    public ResponseEntity findUserByUsername(@PathVariable("username") String username){
-        RegisteredUser user = (RegisteredUser) userService.findByUsername(username);
+    @GetMapping(value = "/me")
+    public ResponseEntity getCurrentUser() {
+        RegisteredUser user = (RegisteredUser) userService.findCurrentUser();
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
-
+    /**
+     *
+     * @param dto DTO containing updated data
+     * @return
+     */
     @PutMapping
-    //@PreAuthorize("hasAuthority('REGISTERED_USER')")
-    public ResponseEntity<Object> updateUser(@Valid @RequestBody UpdateUserDto dto) {
-
+    @PreAuthorize("hasAuthority('REGISTERED_USER')")
+    public ResponseEntity<RegisterUserDto> updateUser(@Valid @RequestBody UpdateUserDto dto) {
         if(!dto.getNewPassword().equals(dto.getNewPasswordRepeat()))
             throw new BadRequestException("New passwords do not match.");
 
-        RegisteredUser updatedRegisteredUser = dto.convertToEntity();
-        updatedRegisteredUser = this.userService.update(updatedRegisteredUser, dto.getNewPassword());
+        dto.setOldPassword(passwordEncoder.encode(dto.getOldPassword()));
+        dto.setNewPassword(passwordEncoder.encode(dto.getNewPassword()));
+        dto.setNewPasswordRepeat(passwordEncoder.encode(dto.getNewPasswordRepeat()));
 
-        // TODO: Convert user to DTO and return
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        RegisteredUser updatedRegisteredUser = dto.convertToEntity();
+        updatedRegisteredUser = this.registeredUserService.update(updatedRegisteredUser, dto.getNewPassword());
+
+        return new ResponseEntity<>(new RegisterUserDto(updatedRegisteredUser), HttpStatus.OK);
     }
 }

@@ -3,7 +3,6 @@ package com.siit.ticketist.service;
 import com.siit.ticketist.exceptions.AuthorizationException;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.ForbiddenException;
-import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.Admin;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.User;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,12 +20,10 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -90,38 +86,13 @@ public class UserService {
                 });
     }
 
-
-    public RegisteredUser update(RegisteredUser updatedUser, String newPassword) {
-        User currentUser = this.findCurrentUser();
-        RegisteredUser registeredUser = this.findRegisteredUserByUsername(updatedUser.getUsername());
-        if(!currentUser.getUsername().equalsIgnoreCase(registeredUser.getUsername()))
-            throw new AuthorizationException("Usernames don't match.");
-
-        // TODO: Check if old password is entered successfully
-
-        if(newPassword == null) {
-            // TODO: No password change
-
-
-        } else {
-            // TODO: Password changed
-
-
-        }
-
-        // TODO
-//        if(changePasswordRequested || (!changePasswordRequested && passwordEncoder.matches(updatedUser.getPassword(), registeredUser.getPassword()))){
-//
-//            registeredUser.setFirstName(updatedUser.getFirstName());
-//            registeredUser.setLastName(updatedUser.getLastName());
-//            registeredUser.setEmail(updatedUser.getEmail());
-//            registeredUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-//
-//            return (RegisteredUser) userRepository.save(registeredUser);
-//        }else{
-//            throw new BadRequestException("Password is not the same");
-//        }
-
-        return null;
+    /**
+     * Persists the {@link RegisteredUser} entity
+     *
+     * @param registeredUser instance to be saved
+     * @return saved instance
+     */
+    public RegisteredUser save(RegisteredUser registeredUser) {
+        return this.userRepository.save(registeredUser);
     }
 }

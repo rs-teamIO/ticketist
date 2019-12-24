@@ -1,11 +1,11 @@
 package com.siit.ticketist.service;
 
+import com.siit.ticketist.exceptions.AuthorizationException;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.Role;
+import com.siit.ticketist.model.User;
 import com.siit.ticketist.repository.RegisteredUserRepository;
-import com.siit.ticketist.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -17,13 +17,12 @@ import java.util.UUID;
 @Service
 public class RegisteredUserService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final RegisteredUserRepository registeredUserRepository;
     private final EmailService emailService;
 
-    @Autowired
-    public RegisteredUserService(UserRepository userRepository, RegisteredUserRepository registeredUserRepository, EmailService emailService) {
-        this.userRepository = userRepository;
+    public RegisteredUserService(UserService userService, RegisteredUserRepository registeredUserRepository, EmailService emailService) {
+        this.userService = userService;
         this.registeredUserRepository = registeredUserRepository;
         this.emailService = emailService;
     }
@@ -38,10 +37,30 @@ public class RegisteredUserService {
         registeredUser.setIsVerified(false);
         registeredUser.setVerificationCode(UUID.randomUUID().toString());
 
-        this.userRepository.save(registeredUser);
+        this.userService.save(registeredUser);
         this.emailService.sendVerificationEmail(registeredUser);
 
         return registeredUser;
+    }
+
+    public RegisteredUser update(RegisteredUser updatedUser, String newPassword) {
+        User currentUser = this.userService.findCurrentUser();
+        RegisteredUser registeredUser = this.userService.findRegisteredUserByUsername(updatedUser.getUsername());
+        if(!currentUser.getUsername().equalsIgnoreCase(registeredUser.getUsername()))
+            throw new AuthorizationException("Usernames don't match.");
+
+        Boolean oldPasswordCorrect = registeredUser.getPassword().equals(updatedUser.getPassword());
+        if(!oldPasswordCorrect.booleanValue())
+            throw new AuthorizationException("Incorrect password.");
+
+        registeredUser.setFirstName(updatedUser.getFirstName());
+        registeredUser.setLastName(updatedUser.getLastName());
+        registeredUser.setEmail(updatedUser.getEmail());
+
+        if(newPassword != null)
+            registeredUser.setPassword(updatedUser.getPassword());
+
+        return this.userService.save(registeredUser);
     }
 
     /**
@@ -58,7 +77,7 @@ public class RegisteredUserService {
         registeredUser.setIsVerified(true);
         registeredUser.getAuthorities().add(Role.REGISTERED_USER);
         registeredUser.setVerificationCode(null);
-        this.userRepository.save(registeredUser);
+        this.userService.save(registeredUser);
 
         return registeredUser;
     }

@@ -27,6 +27,14 @@ public class RegisterUserDto {
 
     private String phone;
 
+    public RegisterUserDto(RegisteredUser registeredUser) {
+        this.username = registeredUser.getUsername();
+        this.email = registeredUser.getEmail();
+        this.firstName = registeredUser.getFirstName();
+        this.lastName = registeredUser.getLastName();
+        this.phone = registeredUser.getPhone();
+    }
+
     public RegisteredUser convertToEntity() {
         return new RegisteredUser(username, password, email, firstName, lastName);
     }
