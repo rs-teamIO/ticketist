@@ -1,5 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
+import { HttpClientModule } from '@angular/common/http'; 
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -33,6 +34,8 @@ import { CheckoutComponent } from './checkout/checkout.component';
 import { TicketListComponent } from './checkout/ticket-list/ticket-list.component';
 import { TicketItemComponent } from './checkout/ticket-list/ticket-item/ticket-item.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CustomMaterialModule } from './shared/material.module';
 
 @NgModule({
   declarations: [
@@ -65,12 +68,15 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
     CheckoutComponent,
     TicketListComponent,
     TicketItemComponent,
-    UserProfileComponent
+    UserProfileComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    ReactiveFormsModule,
+    CustomMaterialModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
