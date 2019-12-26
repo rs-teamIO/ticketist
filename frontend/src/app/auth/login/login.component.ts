@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { RegisterUser, AuthService } from '../auth.service';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -13,7 +14,7 @@ export class LoginComponent implements OnInit {
   isLoading = false;
   error = '';
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
     this.loginForm = new FormGroup({
@@ -37,6 +38,7 @@ export class LoginComponent implements OnInit {
         console.log(resData);
         this.loginForm.reset();
         this.isLoading = false;
+        this.router.navigate(['/events']);
       },
       error => {
         console.log('Error: ', error);
