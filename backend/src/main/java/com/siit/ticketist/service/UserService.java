@@ -85,4 +85,14 @@ public class UserService {
                     throw new BadRequestException(String.format("Username '%s' is already taken", username));
                 });
     }
+
+    /**
+     * Persists the {@link RegisteredUser} entity
+     *
+     * @param registeredUser instance to be saved
+     * @return saved instance
+     */
+    public RegisteredUser save(RegisteredUser registeredUser) {
+        return this.userRepository.save(registeredUser);
+    }
 }
