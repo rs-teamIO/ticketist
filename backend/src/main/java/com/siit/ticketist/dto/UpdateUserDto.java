@@ -30,6 +30,9 @@ public class UpdateUserDto {
     private String phone;
 
     public RegisteredUser convertToEntity() {
-        return new RegisteredUser(username, oldPassword, email, firstName, lastName);
+        RegisteredUser registeredUser = new RegisteredUser(username, oldPassword, email, firstName, lastName);
+        registeredUser.setPhone(this.getPhone());
+
+        return registeredUser;
     }
 }

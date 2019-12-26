@@ -1,6 +1,5 @@
 package com.siit.ticketist.service;
 
-import com.siit.ticketist.exceptions.AuthorizationException;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.Role;
@@ -43,22 +42,23 @@ public class RegisteredUserService {
         return registeredUser;
     }
 
+    /**
+     * Updates the {@link RegisteredUser} data
+     *
+     * @param updatedUser {@link RegisteredUser} instance containing updated data
+     * @param newPassword new password to replace the old one
+     * @return updated {@link RegisteredUser} instance
+     */
     public RegisteredUser update(RegisteredUser updatedUser, String newPassword) {
-        User currentUser = this.userService.findCurrentUser();
-        RegisteredUser registeredUser = this.userService.findRegisteredUserByUsername(updatedUser.getUsername());
-        if(!currentUser.getUsername().equalsIgnoreCase(registeredUser.getUsername()))
-            throw new AuthorizationException("Usernames don't match.");
-
-        Boolean oldPasswordCorrect = registeredUser.getPassword().equals(updatedUser.getPassword());
-        if(!oldPasswordCorrect.booleanValue())
-            throw new AuthorizationException("Incorrect password.");
+        final RegisteredUser registeredUser = this.userService.findRegisteredUserByUsername(updatedUser.getUsername());
 
         registeredUser.setFirstName(updatedUser.getFirstName());
         registeredUser.setLastName(updatedUser.getLastName());
         registeredUser.setEmail(updatedUser.getEmail());
+        registeredUser.setPhone(updatedUser.getPhone());
 
         if(newPassword != null)
-            registeredUser.setPassword(updatedUser.getPassword());
+            registeredUser.setPassword(newPassword);
 
         return this.userService.save(registeredUser);
     }
