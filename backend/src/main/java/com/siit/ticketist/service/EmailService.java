@@ -3,8 +3,8 @@ package com.siit.ticketist.service;
 import com.siit.ticketist.dto.PdfTicket;
 import com.siit.ticketist.model.Event;
 import com.siit.ticketist.model.RegisteredUser;
+import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.repository.TicketRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -42,15 +42,16 @@ public class EmailService {
     @Value("${templates.html.deadlineNotification}")
     private String deadlineNotificationTemplateName;
 
+    @Value("${templates.html.cancelledEvent}")
+    private String eventCancelledTemplateName;
+
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine springTemplateEngine;
     private final PdfService pdfService;
     private final EventService eventService;
     private final TicketRepository ticketRepository;
 
-    @Autowired
-    public EmailService(JavaMailSender mailSender, SpringTemplateEngine springTemplateEngine, PdfService pdfService,
-                        EventService eventService, TicketRepository ticketRepository) {
+    public EmailService(JavaMailSender mailSender, SpringTemplateEngine springTemplateEngine, PdfService pdfService, EventService eventService, TicketRepository ticketRepository) {
         this.mailSender = mailSender;
         this.springTemplateEngine = springTemplateEngine;
         this.pdfService = pdfService;
@@ -58,13 +59,14 @@ public class EmailService {
         this.ticketRepository = ticketRepository;
     }
 
+
     /**
      * Sends an email.
      * In case an messaging error on the SMTP server occurs, a {@link MessagingException} is thrown.
      *
      * @param emailAddress Recipient's email address
-     * @param subject Email subject
-     * @param content Email content
+     * @param subject      Email subject
+     * @param content      Email content
      * @throws MessagingException Exception thrown in case an error on the SMTP server occurs
      */
     @Async
@@ -85,8 +87,8 @@ public class EmailService {
      * In case an messaging error on the SMTP server occurs, a {@link MessagingException} is thrown.
      *
      * @param emailAddress Recipient's email address
-     * @param subject Email subject
-     * @param content Email content
+     * @param subject      Email subject
+     * @param content      Email content
      * @throws MessagingException Exception thrown in case an error on the SMTP server occurs
      */
     @Async
@@ -140,7 +142,7 @@ public class EmailService {
     public void sendDeadlineNotificationEmails() throws MessagingException {
         List<Event> events = this.eventService.filterEventsByDeadline();
         Set<String> emailsToBeNotified = new LinkedHashSet<>();
-        events.forEach(event -> emailsToBeNotified.addAll(this.ticketRepository.findEmailsToBeNotified(event.getId())));
+        events.forEach(event -> emailsToBeNotified.addAll(this.ticketRepository.findEmailsToBeNotified(event.getId(), TicketStatus.RESERVED)));
         for (String emailAddress : emailsToBeNotified) {
             this.sendEmail(emailAddress, "Your reservation is about to expire", this.generateDeadlineNotificationMail());
         }
@@ -160,10 +162,10 @@ public class EmailService {
 
     /**
      * Sends a ticket purchase confirmation e-mail to the registered user.
-     * In case an messaging error on the SMTP server occurs, a {@link MessagingException} is thrown.
+     * In case a messaging error on the SMTP server occurs, a {@link MessagingException} is thrown.
      *
      * @param registeredUser RegisteredUser instance as recipient
-     * @param tickets List of purchased ticket instances
+     * @param tickets        List of purchased ticket instances
      * @throws MessagingException Exception thrown in case an error on the SMTP server occurs
      */
     @Async
@@ -197,5 +199,31 @@ public class EmailService {
 
         return this.springTemplateEngine
                 .process(this.ticketsPurchaseTemplateName, new Context(Locale.getDefault(), variables));
+    }
+
+    /**
+     * Sends event cancelled e-mail to users that bought or reserved tickets for cancelled event.
+     * In case a messaging error on the SMTP server occurs, a {@link MessagingException} is thrown.
+     *
+     * @param event Cancelled event
+     * @throws MessagingException Exception thrown in case an error on the SMTP server occurs
+     */
+    public void sendEventCancelledEmails(Event event) throws MessagingException {
+        Set<String> emails = ticketRepository.findEmailsToBeNotified(event.getId(), TicketStatus.PAID);
+        for (String userEmail : emails)
+            sendEmail(userEmail, "Event " + event.getName() + " has been cancelled.", generateEventCancelledEmail(event));
+    }
+
+    /**
+     * Generates event cancelled e-mail content using a template, based on the cancelled event's info.
+     *
+     * @param event Cancelled event, used to fill template data
+     * @return Event cancelled email content
+     */
+    private String generateEventCancelledEmail(Event event) {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("eventName", event.getName());
+        return this.springTemplateEngine
+                .process(this.eventCancelledTemplateName, new Context(Locale.getDefault(), variables));
     }
 }

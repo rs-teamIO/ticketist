@@ -45,6 +45,7 @@ public class Ticket {
     * Ticket status
     */
    @Column(nullable = false)
+   @Enumerated
    private TicketStatus status;
 
    @Version

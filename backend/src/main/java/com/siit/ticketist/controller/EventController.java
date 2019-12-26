@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
@@ -222,5 +223,17 @@ public class EventController {
                 .map(EventDTO::new)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(eventDTOs, HttpStatus.OK);
+    }
+
+    /**
+     * GET /api/events/1
+     *
+     * @param eventId ID of the event to be cancelled
+     * @return {@link ResponseEntity} containing HttpStatus and content
+     */
+    @GetMapping(value = "cancel/{eventId}")
+    public ResponseEntity cancelEvent(@PathVariable("eventId") Long eventId) throws MessagingException {
+        Event event = eventService.cancelEvent(eventId);
+        return new ResponseEntity(new EventDTO(event), HttpStatus.OK);
     }
 }
