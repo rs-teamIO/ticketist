@@ -5,8 +5,8 @@
   </button>
   <span class="spacer"></span>
   <div>
-    <button mat-button color="accent">Events</button>
-    <button mat-button color="accent">Venues</button>
-    <button mat-button color="accent">Reports</button>
+    <button mat-button routerLink="/logout" *ngIf="isAuthenticated" (click)="onLogout()">Logout</button>
+    <button mat-button routerLink="/login" *ngIf="!isAuthenticated">Login</button>
+    <button mat-button routerLink="/signup" *ngIf="!isAuthenticated">Sign up</button>
   </div>
 </mat-toolbar>

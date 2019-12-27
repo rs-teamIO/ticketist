@@ -1,1 +1,96 @@
-<p>sign-up works!</p>
+<mat-card class="example-card">
+    <mat-card-header>
+        <mat-card-title>Sign up</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <div *ngIf="isLoading">
+            <p>Loading ...</p>
+        </div>
+        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+            <table class="example-full-width" cellspacing="0">
+                <tr>
+                    <td>
+                        <mat-form-field class="example-full-width">
+                            <input
+                                matInput
+                                placeholder="First name"
+                                formControlName="firstName"
+                            >
+                            <!-- <span *ngIf="!signupForm.get('firstName').valid && signupForm.get('firstName').touched">
+                                Please enter a valid first name!
+                            </span> -->
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="example-full-width">
+                            <input
+                                matInput
+                                placeholder="Last name"
+                                formControlName="lastName"
+                            >
+                            <!-- <span *ngIf="!signupForm.get('lastName').valid && signupForm.get('lastName').touched">
+                                Please enter a valid last name!
+                            </span> -->
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="example-full-width">
+                            <input
+                                matInput
+                                placeholder="Username"
+                                formControlName="username"
+                            >
+                            <!-- <span *ngIf="!signupForm.get('username').valid && signupForm.get('username').touched">
+                                Please enter a valid username!
+                            </span> -->
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="example-full-width">
+                            <input
+                                matInput
+                                placeholder="Password"
+                                formControlName="password"
+                                type="password"
+                            >
+                            <!-- <span *ngIf="!signupForm.get('password').valid && signupForm.get('password').touched">
+                                Please enter a valid password!
+                            </span> -->
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-form-field class="example-full-width">
+                            <input
+                                matInput
+                                placeholder="Email address"
+                                formControlName="email"
+                            >
+                            <!-- <span *ngIf="!signupForm.get('email').valid && signupForm.get('email').touched">
+                                Please enter a valid email address!
+                            </span> -->
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr *ngIf="error">
+                    <td>
+                        <p>{{error}}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button mat-raised-button type="submit" color="primary">Sign up</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </mat-card-content>
+</mat-card>
+
