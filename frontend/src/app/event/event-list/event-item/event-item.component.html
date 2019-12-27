@@ -1,1 +1,24 @@
-<p>event-item works!</p>
+<mat-card class="mat-card-flat">
+  <img mat-card-image
+       src="https://pb2eu.interticket.com/imgs/system-20/program/000/001/334/zdravko-colic-474-279-10882.jpg" alt="aa">
+  <mat-card-title style="font-weight: lighter">
+    {{dogadjaj.name}}
+  </mat-card-title>
+  <mat-card-subtitle fxLayout="column">
+    <span>{{dogadjaj.venueName}}</span>
+    <span>{{dogadjaj.date | date}}</span>
+  </mat-card-subtitle>
+  <mat-divider></mat-divider>
+  <mat-card-actions>
+    <button mat-button color="primary">EDIT</button>
+    <button mat-button color="primary">CANCEL</button>
+  </mat-card-actions>
+
+</mat-card>
+
+
+
+
+
+
+

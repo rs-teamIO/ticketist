@@ -1,1 +1,21 @@
-<p>event-list works!</p>
+<div fxLayoutAlign="center center" fxLayout="column">
+  <mat-card class="mat-card-flat card-deck-container">
+    <mat-card-header>
+        <mat-card-title>Future events</mat-card-title>
+    </mat-card-header>
+
+    <div fxLayout="row wrap" class="card-deck-container" fxLayout.xs="column wrap">
+      <div fxFlex="24" fxFlex.sm="30" fxFlex.xs="80" class="card-item" *ngFor="let eventItem of events">
+        <app-event-item [dogadjaj]="eventItem"></app-event-item>
+      </div>
+    </div>
+  </mat-card>
+
+  <div class="paginator">
+    <mat-paginator length="100"
+                   pageSize="10"
+                   (page)="pageEvent = $event">
+    </mat-paginator>
+  </div>
+</div>
+

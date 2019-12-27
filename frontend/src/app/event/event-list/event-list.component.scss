@@ -1,0 +1,16 @@
+.card-deck-container {
+  width: 100%;
+  max-width: 1000px;
+  position: relative;
+  border-radius: 2px;
+  background-color: whitesmoke;
+}
+
+.card-item {
+  padding: 3px 3px 3px 3px;
+  margin-bottom: 3px;
+}
+
+mat-card-title {
+  font-weight: normal;
+}

@@ -1,1 +1,40 @@
-<p>event-search works!</p>
+<div fxLayout="row" fxLayoutAlign.md="left" fxHide.sm fxHide.xs fxLayoutAlign="center bottom">
+  <form>
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-select placeholder="Category">
+        <mat-option value="ENTERTAINMENT">Entertainment</mat-option>
+        <mat-option value="SPORT">Sport</mat-option>
+        <mat-option value="CULTURAL">Cultural</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-select placeholder="Venue">
+        <mat-option value="primary">Venue 1</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <input matInput [matDatepicker]="pickerAfter" placeholder="Events starting after">
+      <mat-datepicker-toggle matSuffix [for]="pickerAfter"></mat-datepicker-toggle>
+      <mat-datepicker #pickerAfter></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <input matInput [matDatepicker]="pickerBefore" placeholder="Events starting before">
+      <mat-datepicker-toggle matSuffix [for]="pickerBefore"></mat-datepicker-toggle>
+      <mat-datepicker #pickerBefore></mat-datepicker>
+    </mat-form-field>
+
+    <button mat-button color="primary" type="button">
+      <mat-icon>search</mat-icon>
+      <span>Search</span>
+    </button>
+  </form>
+
+</div>
