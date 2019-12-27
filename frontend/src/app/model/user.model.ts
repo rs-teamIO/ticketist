@@ -1,7 +1,5 @@
 export class User {
   constructor(
-    public username: string,
-    public id: string,
     // tslint:disable-next-line:variable-name
     private _token: string,
     // tslint:disable-next-line:variable-name

@@ -273,7 +273,7 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-     * Deletes the requested file.
+     /* Deletes the requested file.
      *
      * @param eventId ID of the event the media file is bound to
      * @param fileName Name of the file to be deleted

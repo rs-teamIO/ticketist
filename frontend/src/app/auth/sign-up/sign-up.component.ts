@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { RegisterUser, AuthService } from '../auth.service';
-import {Router} from "@angular/router";
+import { IUserRegister, AuthService } from '../../services/auth.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-sign-up',
@@ -28,13 +28,14 @@ export class SignUpComponent implements OnInit {
 
   onSubmit() {
     if (!this.signupForm.valid) {
+      this.error = 'Wrong inputs!';
       return;
     }
 
     this.isLoading = true;
 
     const { email, password, lastName, firstName, username } = this.signupForm.value;
-    const newUser: RegisterUser = {
+    const newUser: IUserRegister = {
       email,
       password,
       username,
@@ -49,7 +50,7 @@ export class SignUpComponent implements OnInit {
         console.log(resData);
         this.signupForm.reset();
         this.isLoading = false;
-        this.router.navigate(['/events']);
+        this.router.navigate(['/login']);
       },
       error => {
         console.log('Error: ', error);

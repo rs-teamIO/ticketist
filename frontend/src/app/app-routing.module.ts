@@ -4,6 +4,8 @@ import { EventComponent } from './event/event.component';
 import { VenueComponent } from './venue/venue.component';
 import { LoginComponent } from './auth/login/login.component';
 import { SignUpComponent } from './auth/sign-up/sign-up.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
+import { AuthGuard } from './auth/auth.guard';
 
 
 const routes: Routes = [
@@ -11,7 +13,8 @@ const routes: Routes = [
   { path: 'events', component: EventComponent },
   { path: 'venues', component: VenueComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'signup', component: SignUpComponent }
+  { path: 'signup', component: SignUpComponent },
+  { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] }
 ];
 
 @NgModule({

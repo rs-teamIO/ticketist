@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { RegisterUser, AuthService } from '../auth.service';
-import {Router} from "@angular/router";
+import { AuthService } from '../../services/auth.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -25,6 +25,7 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     if (!this.loginForm.valid) {
+      this.error = 'Wrong inputs!';
       return;
     }
 
@@ -42,7 +43,7 @@ export class LoginComponent implements OnInit {
       },
       error => {
         console.log('Error: ', error);
-        this.error = 'An error occured!';
+        this.error = error.error.message;
         this.isLoading = false;
       }
     );

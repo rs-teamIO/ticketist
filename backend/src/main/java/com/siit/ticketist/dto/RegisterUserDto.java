@@ -15,7 +15,6 @@ public class RegisterUserDto {
     private String username;
     @NotBlank(message = "Password may not be blank")
     private String password;
-    @NotBlank(message = "Repeated password may not be blank")
     private String passwordRepeat;
     @NotBlank(message = "E-mail may not be blank")
     @Email(message = "Invalid E-mail format", regexp = "[A-Za-z0-9._%-+]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}")

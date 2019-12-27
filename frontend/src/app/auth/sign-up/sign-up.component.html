@@ -6,14 +6,14 @@
         <div *ngIf="isLoading">
             <p>Loading ...</p>
         </div>
-        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading">
+        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
             <table class="example-full-width" cellspacing="0">
                 <tr>
                     <td>
                         <mat-form-field class="example-full-width">
-                            <input 
+                            <input
                                 matInput
-                                placeholder="First name" 
+                                placeholder="First name"
                                 formControlName="firstName"
                             >
                             <!-- <span *ngIf="!signupForm.get('firstName').valid && signupForm.get('firstName').touched">
@@ -25,9 +25,9 @@
                 <tr>
                     <td>
                         <mat-form-field class="example-full-width">
-                            <input 
+                            <input
                                 matInput
-                                placeholder="Last name" 
+                                placeholder="Last name"
                                 formControlName="lastName"
                             >
                             <!-- <span *ngIf="!signupForm.get('lastName').valid && signupForm.get('lastName').touched">
@@ -39,9 +39,9 @@
                 <tr>
                     <td>
                         <mat-form-field class="example-full-width">
-                            <input 
+                            <input
                                 matInput
-                                placeholder="Username" 
+                                placeholder="Username"
                                 formControlName="username"
                             >
                             <!-- <span *ngIf="!signupForm.get('username').valid && signupForm.get('username').touched">
@@ -53,10 +53,11 @@
                 <tr>
                     <td>
                         <mat-form-field class="example-full-width">
-                            <input 
+                            <input
                                 matInput
-                                placeholder="Password" 
+                                placeholder="Password"
                                 formControlName="password"
+                                type="password"
                             >
                             <!-- <span *ngIf="!signupForm.get('password').valid && signupForm.get('password').touched">
                                 Please enter a valid password!
@@ -67,9 +68,9 @@
                 <tr>
                     <td>
                         <mat-form-field class="example-full-width">
-                            <input 
+                            <input
                                 matInput
-                                placeholder="Email address" 
+                                placeholder="Email address"
                                 formControlName="email"
                             >
                             <!-- <span *ngIf="!signupForm.get('email').valid && signupForm.get('email').touched">
