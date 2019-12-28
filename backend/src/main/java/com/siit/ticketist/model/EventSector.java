@@ -29,7 +29,7 @@ public class EventSector {
    /**
     * True if the event sector is active, otherwise false.
     */
-   @Column(nullable = false)
+   @Column(nullable = false, columnDefinition = "boolean default true")
    private Boolean isActive = true;
 
    /**

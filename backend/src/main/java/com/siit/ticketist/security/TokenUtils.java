@@ -58,6 +58,9 @@ public class TokenUtils {
         final SpringSecurityUser user = (SpringSecurityUser) userDetails;
         final String username = this.getUsernameFromToken(token);
 
+        if(username == null)
+            return false;
+
         return username.equals(user.getUsername()) && !(isTokenExpired(token));
     }
 

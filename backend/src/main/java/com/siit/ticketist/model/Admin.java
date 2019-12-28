@@ -2,12 +2,14 @@ package com.siit.ticketist.model;
 
 import lombok.NoArgsConstructor;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 /**
  * Represents the system administrator.
  */
 @Entity
+@DiscriminatorValue("ADMIN")
 @NoArgsConstructor
 public class Admin extends User {
 

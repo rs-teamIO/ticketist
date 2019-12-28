@@ -3,6 +3,7 @@ package com.siit.ticketist.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DiscriminatorOptions;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -15,6 +16,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "Users")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorOptions(force=true)
 @Getter @Setter @NoArgsConstructor
 public class User {
 
