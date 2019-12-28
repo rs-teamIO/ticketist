@@ -1,12 +1,13 @@
-<div fxLayout="row" fxLayoutAlign.md="left" fxHide.sm fxHide.xs fxLayoutAlign="center bottom">
-  <form>
+<div class="mat-elevation-z3" fxLayout="row" fxHide.sm fxHide.xs fxLayoutAlign="center bottom">
+  <form [formGroup]="searchForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="outline">
       <mat-label>Name</mat-label>
-      <input matInput>
+      <input matInput formControlName="eventName" type="text">
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-select placeholder="Category">
+      <mat-select placeholder="Category" formControlName="category">
+        <mat-option>All</mat-option>
         <mat-option value="ENTERTAINMENT">Entertainment</mat-option>
         <mat-option value="SPORT">Sport</mat-option>
         <mat-option value="CULTURAL">Cultural</mat-option>
@@ -14,24 +15,28 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-select placeholder="Venue">
-        <mat-option value="primary">Venue 1</mat-option>
+      <mat-select placeholder="Venue" formControlName="venueName">
+        <mat-option value="venue 1">Venue 1</mat-option>
       </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <input matInput [matDatepicker]="pickerAfter" placeholder="Events starting after">
+      <input
+        matInput
+        formControlName="startDate"
+        [matDatepicker]="pickerAfter"
+        placeholder="Events starting after">
       <mat-datepicker-toggle matSuffix [for]="pickerAfter"></mat-datepicker-toggle>
       <mat-datepicker #pickerAfter></mat-datepicker>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <input matInput [matDatepicker]="pickerBefore" placeholder="Events starting before">
+      <input matInput formControlName="endDate" [matDatepicker]="pickerBefore" placeholder="Events starting before">
       <mat-datepicker-toggle matSuffix [for]="pickerBefore"></mat-datepicker-toggle>
       <mat-datepicker #pickerBefore></mat-datepicker>
     </mat-form-field>
 
-    <button mat-button color="primary" type="button">
+    <button mat-button color="primary" type="submit">
       <mat-icon>search</mat-icon>
       <span>Search</span>
     </button>

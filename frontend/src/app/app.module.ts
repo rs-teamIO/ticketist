@@ -35,6 +35,7 @@ import {UserProfileComponent} from './user-profile/user-profile.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {CustomMaterialModule} from './shared/material.module';
 import {AuthInterceptorService} from './services/auth-interceptor.service';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 @NgModule({
   declarations: [
@@ -73,7 +74,8 @@ import {AuthInterceptorService} from './services/auth-interceptor.service';
     BrowserAnimationsModule,
     ReactiveFormsModule,
     CustomMaterialModule,
-    HttpClientModule
+    HttpClientModule,
+    NgxPaginationModule
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }],
   bootstrap: [AppComponent]

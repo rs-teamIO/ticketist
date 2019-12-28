@@ -1,9 +1,9 @@
 .card-deck-container {
   width: 100%;
-  max-width: 1000px;
+  max-width: 1100px;
   position: relative;
-  border-radius: 2px;
   background-color: whitesmoke;
+  margin-top: 7px;
 }
 
 .card-item {
@@ -13,4 +13,8 @@
 
 mat-card-title {
   font-weight: normal;
+}
+
+mat-paginator {
+  color: rebeccapurple;
 }

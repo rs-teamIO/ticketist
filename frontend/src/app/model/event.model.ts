@@ -1,11 +1,14 @@
-export class Dogadjaj {
-  name: string;
-  venueName: string;
-  date: Date;
+export class EventModel {
 
-  constructor(name: string, venueName: string, date: Date) {
-    this.name = name;
-    this.venueName = venueName;
-    this.date = date;
+  constructor(private _id: number,
+              public name: string,
+              public venueName: string,
+              public startDate: Date,
+              public endDate: Date,
+              public description: string) {
+  }
+
+  get id(): number {
+    return this._id;
   }
 }

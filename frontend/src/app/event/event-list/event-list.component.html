@@ -1,21 +1,24 @@
 <div fxLayoutAlign="center center" fxLayout="column">
   <mat-card class="mat-card-flat card-deck-container">
     <mat-card-header>
-        <mat-card-title>Future events</mat-card-title>
+      <mat-card-title>Future events</mat-card-title>
     </mat-card-header>
 
     <div fxLayout="row wrap" class="card-deck-container" fxLayout.xs="column wrap">
       <div fxFlex="24" fxFlex.sm="30" fxFlex.xs="80" class="card-item" *ngFor="let eventItem of events">
-        <app-event-item [dogadjaj]="eventItem"></app-event-item>
+        <app-event-item [eventModel]="eventItem"></app-event-item>
       </div>
     </div>
   </mat-card>
 
-  <div class="paginator">
-    <mat-paginator length="100"
-                   pageSize="10"
-                   (page)="pageEvent = $event">
+  <div class="paginator mat-elevation-z5">
+    <mat-paginator [length]="totalSize"
+                   pageSize="8"
+                   pageIndex="0"
+                   (page)="onPageChanged()">
     </mat-paginator>
   </div>
+
 </div>
+
 

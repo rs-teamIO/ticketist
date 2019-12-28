@@ -1,6 +1,7 @@
 package com.siit.ticketist.controller;
 
 import com.siit.ticketist.dto.EventDTO;
+import com.siit.ticketist.dto.EventPageDTO;
 import com.siit.ticketist.dto.EventUpdateDTO;
 import com.siit.ticketist.dto.SearchDTO;
 import com.siit.ticketist.model.Event;
@@ -9,6 +10,7 @@ import com.siit.ticketist.model.MediaFile;
 import com.siit.ticketist.service.EventSectorService;
 import com.siit.ticketist.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +55,21 @@ public class EventController {
                 .map(EventDTO::new)
                 .forEachOrdered(events::add);
         return new ResponseEntity<>(events, HttpStatus.OK);
+    }
+
+    /**
+     * GET /api/events
+     * Returns event pages
+     *
+     * @return {@link ResponseEntity} containing HttpStatus and a page with a list of events
+     */
+    @GetMapping(value="/paged")
+    public ResponseEntity<EventPageDTO> getEvents(Pageable pageable) {
+        List<EventDTO> events = new ArrayList<>();
+        eventService.findAll(pageable).stream()
+                .map(EventDTO::new)
+                .forEachOrdered(events::add);
+        return new ResponseEntity<>(new EventPageDTO(events, eventService.getTotalNumberOfActiveEvents()), HttpStatus.OK);
     }
 
     /**
@@ -217,12 +234,12 @@ public class EventController {
      * @return {@link ResponseEntity} containing the events that satisfy search criteria
      */
     @PostMapping(value = "/search")
-    public ResponseEntity search(@RequestBody SearchDTO dto) {
-        List<Event> events = eventService.search(dto.getEventName(), dto.getCategory(), dto.getVenueName(), dto.getStartDate(), dto.getEndDate());
+    public ResponseEntity search(@RequestBody SearchDTO dto, Pageable pageable) {
+        List<Event> events = eventService.search(dto.getEventName(), dto.getCategory(), dto.getVenueName(), dto.getStartDate(), dto.getEndDate(), pageable);
         List<EventDTO> eventDTOs = events.stream()
                 .map(EventDTO::new)
                 .collect(Collectors.toList());
-        return new ResponseEntity<>(eventDTOs, HttpStatus.OK);
+        return new ResponseEntity<>(new EventPageDTO(eventDTOs, eventService.getTotalNumberOfActiveEvents()), HttpStatus.OK);
     }
 
     /**
