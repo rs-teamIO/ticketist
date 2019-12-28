@@ -2,7 +2,7 @@ package com.siit.ticketist.security;
 
 import com.siit.ticketist.model.User;
 import com.siit.ticketist.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,14 +14,10 @@ import javax.transaction.Transactional;
  * Implementation of {@link UserDetailsService}.
  */
 @Service
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
-
-    @Autowired
-    public UserDetailsServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     /**
      * Generates a {@link UserDetails} instance for given username
@@ -33,10 +29,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) {
-
-        final User user = userRepository.findByUsernameIgnoreCase(username)
+        final User user = this.userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("No user found with username '%s'.", username)));
-
         return UserDetailsFactory.create(user);
     }
 }

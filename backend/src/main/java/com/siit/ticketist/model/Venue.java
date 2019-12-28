@@ -34,7 +34,7 @@ public class Venue {
     * In case the venue is not active, it cannot accept hosting new events.
     * Events that have been registered before setting the Venue to inactive are left untouched.
     */
-   @Column(nullable = false)
+   @Column(nullable = false, columnDefinition = "boolean default true")
    private Boolean isActive = true;
 
    /**

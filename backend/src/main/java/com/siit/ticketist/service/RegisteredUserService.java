@@ -3,7 +3,6 @@ package com.siit.ticketist.service;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.Role;
-import com.siit.ticketist.model.User;
 import com.siit.ticketist.repository.RegisteredUserRepository;
 import org.springframework.stereotype.Service;
 
@@ -36,10 +35,12 @@ public class RegisteredUserService {
         registeredUser.setIsVerified(false);
         registeredUser.setVerificationCode(UUID.randomUUID().toString());
 
-        this.userService.save(registeredUser);
+        this.userService.checkIfUsernameTaken(registeredUser.getUsername());
+        this.userService.checkIfEmailTaken(registeredUser.getEmail());
+        final RegisteredUser savedUser = this.userService.save(registeredUser);
         this.emailService.sendVerificationEmail(registeredUser);
 
-        return registeredUser;
+        return savedUser;
     }
 
     /**
@@ -60,6 +61,9 @@ public class RegisteredUserService {
         if(newPassword != null)
             registeredUser.setPassword(newPassword);
 
+        this.userService.checkIfUsernameTaken(registeredUser.getUsername());
+        this.userService.checkIfEmailTaken(registeredUser.getEmail());
+
         return this.userService.save(registeredUser);
     }
 
@@ -71,14 +75,13 @@ public class RegisteredUserService {
      */
     public RegisteredUser verify(String verificationCode) {
 
-        final RegisteredUser registeredUser = registeredUserRepository.findByVerificationCode(verificationCode)
+        final RegisteredUser registeredUser = this.registeredUserRepository.findByVerificationCode(verificationCode)
                 .orElseThrow(() -> new BadRequestException("No user found with specified verification code."));
 
         registeredUser.setIsVerified(true);
         registeredUser.getAuthorities().add(Role.REGISTERED_USER);
         registeredUser.setVerificationCode(null);
-        this.userService.save(registeredUser);
 
-        return registeredUser;
+        return this.userService.save(registeredUser);
     }
 }

@@ -53,7 +53,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     Set<String> findEmailsToBeNotified(Long eventId, TicketStatus ticketStatus);
 
     /**
-     * Deactivates tickets by setting their status to EVENT_CANCELLED
+     * Deactivates tickets by setting their status to {@link TicketStatus.EVENT_CANCELLED}
      *
      * @param event {@link Event} Cancelled event whose tickets are to be deactivated
      */
