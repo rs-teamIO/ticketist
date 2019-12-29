@@ -5,38 +5,38 @@ import {User} from '../model/user.model';
 import {tap} from 'rxjs/operators';
 import { Router } from '@angular/router';
 
-export interface IUser {
-  id: string;
+export interface IUserUpdate {
   username: string;
-  password: string;
+  oldPassword: string;
   email: string;
   firstName: string;
   lastName: string;
-  passwordNew: string;
-  passwordNewRepeat: string;
+  newPassword: string;
 }
 
-export interface IUserUpdate {
-  
+export interface IRegisteredUser {
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
 }
 
 @Injectable({providedIn: 'root'})
 export class UserService {
-  user = new BehaviorSubject<IUser>(null);
+  user = new BehaviorSubject<IRegisteredUser>(null);
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  update(user: IUser): Observable<IUser> {
-    return this.http.put<IUser>(
-      'http://localhost:8000/api/users/',
+  update(user: IUserUpdate): Observable<IRegisteredUser> {
+    return this.http.put<IRegisteredUser>(
+      'http://localhost:8000/api/users',
       {
         username: user.username,
         email: user.email,
-        password: user.password,
+        oldPassword: user.oldPassword,
         firstName: user.firstName,
         lastName: user.lastName,
-        passwordNew: user.passwordNew,
-        passwordNewRepeat: user.passwordNewRepeat
+        newPassword: user.newPassword
       }
     );
   }

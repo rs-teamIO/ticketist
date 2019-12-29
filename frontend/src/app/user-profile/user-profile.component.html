@@ -47,7 +47,7 @@
               <input
                 matInput
                 placeholder="Password"
-                formControlName="password"
+                formControlName="oldPassword"
                 type="password"
               >
             </mat-form-field>
@@ -70,19 +70,7 @@
               <input
                 matInput
                 placeholder="New password"
-                formControlName="passwordNew"
-                type="password"
-              >
-            </mat-form-field>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <mat-form-field class="example-full-width">
-              <input
-                matInput
-                placeholder="New password repeat"
-                formControlName="passwordNewRepeat"
+                formControlName="newPassword"
                 type="password"
               >
             </mat-form-field>
@@ -95,7 +83,7 @@
         </tr>
         <tr>
           <td>
-            <button mat-raised-button type="submit" color="primary">Sign up</button>
+            <button mat-raised-button type="submit" color="primary">Update</button>
           </td>
         </tr>
       </table>

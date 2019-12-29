@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
-import {IUser, UserService} from '../services/user.service';
+import {IUserUpdate, IRegisteredUser, UserService} from '../services/user.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -22,13 +22,12 @@ export class UserProfileComponent implements OnInit {
       firstName: new FormControl(null, Validators.required),
       lastName: new FormControl(null, Validators.required),
       email: new FormControl(null, [Validators.required, Validators.email]),
-      password: new FormControl(null, Validators.required),
-      passwordNew : new FormControl(null),
-      passwordNewRepeat : new FormControl(null)
+      oldPassword: new FormControl(null, Validators.required),
+      newPassword : new FormControl(null)
     });
     this.userService.retrieve().subscribe(
       resData => {
-        console.log(resData);
+        this.presetForm(resData);
       },
       error => {
         console.log('Error ', error);
@@ -46,16 +45,14 @@ export class UserProfileComponent implements OnInit {
 
     this.isLoading = true;
 
-    const { id, email, password, lastName, firstName, username, passwordNew, passwordNewRepeat } = this.userForm.value;
-    const User: IUser = {
-      id,
+    const { email, oldPassword, lastName, firstName, username, newPassword } = this.userForm.value;
+    const User: IUserUpdate = {
       email,
-      password,
+      oldPassword,
       username,
       firstName,
       lastName,
-      passwordNew,
-      passwordNewRepeat
+      newPassword
     };
 
     this.error = '';
@@ -63,7 +60,7 @@ export class UserProfileComponent implements OnInit {
     this.userService.update(User).subscribe(
       resData => {
         console.log(resData);
-        this.userForm.reset();
+        this.presetForm(resData);
         this.isLoading = false;
       },
       error => {
@@ -72,5 +69,16 @@ export class UserProfileComponent implements OnInit {
         this.isLoading = false;
       }
     );
+  }
+
+  private presetForm(resData: IRegisteredUser) {
+    this.userForm = new FormGroup({
+      username: new FormControl(resData.username, Validators.required),
+      firstName: new FormControl(resData.firstName, Validators.required),
+      lastName: new FormControl(resData.lastName, Validators.required),
+      email: new FormControl(resData.email, [Validators.required, Validators.email]),
+      oldPassword: new FormControl(null, Validators.required),
+      newPassword : new FormControl(null)
+    });
   }
 }
