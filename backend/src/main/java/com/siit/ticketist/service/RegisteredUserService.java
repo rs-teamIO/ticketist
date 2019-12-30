@@ -61,7 +61,7 @@ public class RegisteredUserService {
         if(newPassword != null)
             registeredUser.setPassword(newPassword);
 
-        this.userService.checkIfUsernameTaken(registeredUser.getUsername());
+       // this.userService.checkIfUsernameTaken(registeredUser.getUsername());
         this.userService.checkIfEmailTaken(registeredUser.getEmail());
 
         return this.userService.save(registeredUser);
