@@ -68,4 +68,15 @@ public class VenueController {
         Venue venue = venueService.save(venueToBeCreated);
         return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.CREATED);
     }
+
+    @GetMapping(value ="activate/{id}")
+    public ResponseEntity<Object> changeState(@PathVariable("id") Long id)
+    {
+        if(venueService.changeState(id)){
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(false,HttpStatus.BAD_REQUEST);
+        }
+
+    }
 }

@@ -1,1 +1,20 @@
-<p>venue-list works!</p>
+<button [routerLink]="['/venue/add']">
+  Add new event
+</button>
+<table>
+  <tr>
+    <td>Venue name</td>
+    <td>City</td>
+    <td>Capacity</td>
+    <td>Status</td>
+    <td></td>
+  </tr>
+  <div *ngFor="let venue of venues">
+    <app-venue-item [venue]="venue"></app-venue-item>
+    <td>
+      <button routerLink='/xyz' >View</button>
+      <button *ngIf="!venue.isActive" (click)="activate(venue.id)">Activate</button>
+      <button *ngIf="venue.isActive" (click)="activate(venue.id)">Deactivate</button>
+    </td>
+  </div>
+</table>

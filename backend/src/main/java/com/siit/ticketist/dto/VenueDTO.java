@@ -33,6 +33,8 @@ public class VenueDTO {
     @NotNull(message ="sector list cannot be null")
     private Set<SectorDTO> sectors;
 
+    private Boolean isActive;
+
     public VenueDTO(Venue venue) {
         this.id = venue.getId();
         this.name = venue.getName();
@@ -44,6 +46,7 @@ public class VenueDTO {
         venue.getSectors().stream()
                 .map(SectorDTO::new)
                 .forEach(this.sectors::add);
+        this.isActive = venue.getIsActive();
     }
 
     public Venue convertToEntity() {

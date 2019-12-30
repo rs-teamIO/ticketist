@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Venue service layer.
@@ -66,5 +67,16 @@ public class VenueService {
         if(sector.getStartColumn() > sectorSave.getStartColumn() + sectorSave.getColumnsCount()) return true;
         if(sector.getStartColumn() + sector.getColumnsCount() < sectorSave.getStartColumn()) return true;
         return false;
+    }
+
+    public boolean changeState(Long id) {
+        Optional<Venue> venue = venueRepository.findById(id);
+        if(venue.isPresent())
+            venue.get().setIsActive(!venue.get().getIsActive());
+        else
+            throw new NotFoundException("Venue was not found");
+
+        venueRepository.save(venue.get());
+        return true;
     }
 }
