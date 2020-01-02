@@ -16,6 +16,7 @@ const routes: Routes = [
   { path: 'venues', component: VenueComponent },
   { path: 'venues/list', component: VenueListComponent },
   { path: 'venues/new', component: VenueFormComponent },
+  { path: 'venues/:id', component: VenueFormComponent},
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignUpComponent },
   { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] }

@@ -9,8 +9,8 @@ export interface Venue {
   name: string;
   street: string;
   city: string;
-  latitude: string;
-  longitude: string;
+  latitude: number;
+  longitude: number;
   sectors: Sector[];
   isActive: boolean;
 }
@@ -29,5 +29,21 @@ export class VenueService {
   activate(id: string) {
     console.log(id);
     return this.http.get<any>('http://localhost:8000/api/venues/activate/' + id);
+  }
+
+  update(venue: Venue): Observable<Venue> {
+    return this.http.post<any>('http://localhost:8000/api/venues/', {
+      name: venue.name,
+      city: venue.city,
+      street: venue.street,
+      longitude: venue.longitude,
+      latitude: venue.latitude,
+      sectors: venue.sectors,
+      isActive: venue.isActive
+    });
+  }
+
+  find(id: string): Observable<Venue> {
+    return this.http.get<Venue>('http://localhost:8000/api/venues/' + id);
   }
 }

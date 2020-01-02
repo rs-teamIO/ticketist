@@ -79,4 +79,8 @@ public class VenueService {
         venueRepository.save(venue.get());
         return true;
     }
+
+    public Venue update(Venue venue) {
+        return venueRepository.save(venue);
+    }
 }

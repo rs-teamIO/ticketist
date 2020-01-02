@@ -1,1 +1,58 @@
-<p>venue-form-basic works!</p>
+<mat-card class="example-card">
+  <mat-card-header>
+    <mat-card-title>Profile</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="venueForm" (ngSubmit)="onSubmit()">
+      <table class="example-full-width" cellspacing="0">
+        <tr>
+          <td>
+            <mat-form-field class="example-full-width">
+              <input
+                matInput
+                placeholder="Name"
+                formControlName="name"
+              >
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field class="example-full-width">
+              <input
+                matInput
+                placeholder="City"
+                formControlName="city"
+              >
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <mat-form-field class="example-full-width">
+              <input
+                matInput
+                placeholder="Street"
+                formControlName="street"
+              >
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr *ngIf="error">
+          <td>
+            <p>{{error}}</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button mat-raised-button type="submit" color="primary">Update</button>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<agm-map *ngIf="!this.new" [latitude]=latitude [longitude]=longitude [zoom]="5">
+  <agm-marker [latitude]=latitude [longitude]=longitude></agm-marker>
+</agm-map>

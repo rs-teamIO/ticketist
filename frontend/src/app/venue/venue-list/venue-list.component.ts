@@ -25,7 +25,6 @@ export class VenueListComponent implements OnInit {
   activate(id: string) {
       this.venueService.activate(id).subscribe( resData => {
       console.log(resData);
-      this.router.navigate(['venues/list']);
       });
   }
 }

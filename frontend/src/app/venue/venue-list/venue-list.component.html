@@ -1,4 +1,4 @@
-<button [routerLink]="['/venue/add']">
+<button [routerLink]="['/venues/new']">
   Add new event
 </button>
 <table>
@@ -12,7 +12,7 @@
   <div *ngFor="let venue of venues">
     <app-venue-item [venue]="venue"></app-venue-item>
     <td>
-      <button routerLink='/xyz' >View</button>
+      <button [routerLink]="['/venues/',venue.id]" >View</button>
       <button *ngIf="!venue.isActive" (click)="activate(venue.id)">Activate</button>
       <button *ngIf="venue.isActive" (click)="activate(venue.id)">Deactivate</button>
     </td>

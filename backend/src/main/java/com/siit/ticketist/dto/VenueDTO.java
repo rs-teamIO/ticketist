@@ -57,7 +57,7 @@ public class VenueDTO {
         venue.setCity(this.city);
         venue.setLongitude(this.longitude);
         venue.setLatitude(this.latitude);
-        venue.setIsActive(true);
+        venue.setIsActive(this.isActive);
 
         this.sectors.stream()
                 .map(SectorDTO::convertToEntity)
