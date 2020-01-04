@@ -9,12 +9,15 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Getter @Setter @NoArgsConstructor
-public class RegisterUserDto {
+public class UpdateUserDTO {
 
     @NotBlank(message = "Username may not be blank")
     private String username;
-    @NotBlank(message = "Password may not be blank")
-    private String password;
+    @NotBlank(message = "Old password may not be blank")
+    private String oldPassword;
+
+    private String newPassword;
+
     @NotBlank(message = "E-mail may not be blank")
     @Email(message = "Invalid E-mail format", regexp = "[A-Za-z0-9._%-+]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}")
     private String email;
@@ -26,6 +29,9 @@ public class RegisterUserDto {
     private String phone;
 
     public RegisteredUser convertToEntity() {
-        return new RegisteredUser(username, password, email, firstName, lastName);
+        RegisteredUser registeredUser = new RegisteredUser(username, oldPassword, email, firstName, lastName);
+        registeredUser.setPhone(this.getPhone());
+
+        return registeredUser;
     }
 }
