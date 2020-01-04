@@ -1,7 +1,9 @@
 package com.siit.ticketist.controller;
 
+import com.siit.ticketist.dto.SectorDTO;
 import com.siit.ticketist.dto.VenueBasicDTO;
 import com.siit.ticketist.dto.VenueDTO;
+import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.model.Venue;
 import com.siit.ticketist.service.VenueService;
 import com.sun.org.apache.xpath.internal.operations.Bool;
@@ -93,4 +95,13 @@ public class VenueController {
         Venue venue = venueService.updateVenue(venueBasic, venueID);
         return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.OK);
     }
+
+    @PostMapping(value = "/sector/{venueID}")
+    public ResponseEntity<VenueDTO> addSectorToVenue(@PathVariable("venueID") Long venueID, @Valid @RequestBody SectorDTO sectorDTO) {
+        Sector sector = sectorDTO.convertToEntity();
+        sector.setId(null);
+        Venue venue = venueService.addSectorToVenue(sector, venueID);
+        return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.OK);
+    }
+
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Venue service layer.
@@ -85,13 +86,28 @@ public class VenueService {
 
     public Venue updateVenue(VenueBasicDTO venueInfo, Long venueID) {
         Optional<Venue> venueOptional = venueRepository.findById(venueID);
-        if(!venueOptional.isPresent()) return null;
+        if(!venueOptional.isPresent()) throw new BadRequestException("Wanted value does not exist!");
         Venue venue = venueOptional.get();
         venue.setCity(venueInfo.getCity());
         venue.setLatitude(venueInfo.getLatitude());
         venue.setLongitude(venueInfo.getLongitude());
         venue.setName(venueInfo.getName());
         venue.setStreet(venueInfo.getStreet());
+        venueRepository.save(venue);
+        return venue;
+    }
+
+    public Venue addSectorToVenue(Sector sector, Long venueID) {
+        Optional<Venue> venueOptional = venueRepository.findById(venueID);
+        if(!venueOptional.isPresent()) throw new BadRequestException("Wanted venue does not exist!");
+        Venue venue = venueOptional.get();
+        if(!checkSectorName(venue.getSectors(), sector.getName())) throw new BadRequestException("Sector name already exists!");
+        for (Sector secondSector: venue.getSectors()) {
+            if (!sectorCanBeDrawn(sector, secondSector)) {
+                throw new BadRequestException("Sectors overlap!");
+            }
+        }
+        venue.getSectors().add(sector);
         venueRepository.save(venue);
         return venue;
     }
@@ -104,5 +120,15 @@ public class VenueService {
         return false;
     }
 
+    private boolean checkSectorName(Set<Sector> sectors, String sectorName) {
+        boolean check = true;
+        for(Sector sec : sectors) {
+            if (sec.getName().equals(sectorName)) {
+                check = false;
+                break;
+            }
+        }
+        return check;
+    }
 
 }
