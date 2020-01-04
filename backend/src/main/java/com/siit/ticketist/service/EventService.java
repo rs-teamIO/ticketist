@@ -7,6 +7,7 @@ import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.MediaFileRepository;
 import com.siit.ticketist.repository.SectorRepository;
+import com.siit.ticketist.repository.VenueRepository;
 import com.siit.ticketist.repository.TicketRepository;
 import com.siit.ticketist.service.interfaces.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,10 @@ public class EventService {
     private final SectorRepository sectorRepository;
     private final TicketRepository ticketRepository;
     private final MediaFileRepository mediaFileRepository;
+    private final VenueService venueService;
+
+    public EventService(StorageService storageService, EventRepository eventRepository,
+                        SectorRepository sectorRepository, MediaFileRepository mediaFileRepository, VenueService venueService) {
     @Autowired
     private EmailService emailService;
 
@@ -44,6 +49,7 @@ public class EventService {
         this.eventRepository = eventRepository;
         this.sectorRepository = sectorRepository;
         this.mediaFileRepository = mediaFileRepository;
+        this.venueService = venueService;
         this.ticketRepository = ticketRepository;
     }
 
@@ -138,6 +144,9 @@ public class EventService {
     public boolean checkVenueAvailability(Event event) {
         boolean check = true;
         List<Event> events = eventRepository.findByVenueId(event.getVenue().getId());
+        if(!venueService.checkIsActive(event.getVenue().getId())) {
+            throw new BadRequestException("Venue is inactive!");
+        }
 
         for(Event e : events){
             check = event.getEndDate().before(e.getStartDate()) || event.getStartDate().after(e.getEndDate());
