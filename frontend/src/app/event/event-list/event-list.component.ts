@@ -11,12 +11,13 @@ import {Subscription} from 'rxjs';
   styleUrls: ['./event-list.component.scss']
 })
 export class EventListComponent implements OnInit, AfterViewInit, OnDestroy {
+  // @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   events: EventModel[] = [];
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   totalSize: number;
   subscription: Subscription;
 
-  constructor(private eventService: EventService) { }
+  constructor(private eventService: EventService) {
+  }
 
   ngOnInit() {
   }
@@ -30,15 +31,14 @@ export class EventListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadData();
   }
 
-  onPageChanged() {
+  onPageChanged(pageEvent: PageEvent) {
+    this.eventService.pageChanged.next(pageEvent);
     this.loadData();
   }
 
   loadData() {
-    this.eventService.getAll(new Page(this.paginator.pageIndex, this.paginator.pageSize)).subscribe(responseData => {
-      this.events = responseData.events;
-      this.totalSize = responseData.totalSize;
-    });
+    // this.eventService.getAll(new Page(this.paginator.pageIndex, this.paginator.pageSize));
+    this.eventService.getEvents();
   }
 
   ngOnDestroy(): void {

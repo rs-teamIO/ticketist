@@ -1,6 +1,6 @@
 export class Page {
 
-  constructor(public page: number, public size: number) {
+  constructor(public page?: number, public size?: number) {
   }
 
 }

@@ -1,5 +1,5 @@
 <div fxLayoutAlign="center center" fxLayout="column">
-  <mat-card class="mat-card-flat card-deck-container">
+  <mat-card class="mat-card-flat card-deck-container" >
     <mat-card-header>
       <mat-card-title>Future events</mat-card-title>
     </mat-card-header>
@@ -15,7 +15,7 @@
     <mat-paginator [length]="totalSize"
                    pageSize="8"
                    pageIndex="0"
-                   (page)="onPageChanged()">
+                   (page)="onPageChanged($event)">
     </mat-paginator>
   </div>
 
