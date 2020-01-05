@@ -7,7 +7,6 @@ import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.MediaFileRepository;
 import com.siit.ticketist.repository.SectorRepository;
-import com.siit.ticketist.repository.VenueRepository;
 import com.siit.ticketist.repository.TicketRepository;
 import com.siit.ticketist.service.interfaces.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +37,11 @@ public class EventService {
     private final MediaFileRepository mediaFileRepository;
     private final VenueService venueService;
 
-    public EventService(StorageService storageService, EventRepository eventRepository,
-                        SectorRepository sectorRepository, MediaFileRepository mediaFileRepository, VenueService venueService) {
     @Autowired
     private EmailService emailService;
 
     public EventService(StorageService storageService, EventRepository eventRepository,
-                        SectorRepository sectorRepository, MediaFileRepository mediaFileRepository, TicketRepository ticketRepository) {
+                        SectorRepository sectorRepository, MediaFileRepository mediaFileRepository, TicketRepository ticketRepository, VenueService venueService) {
         this.storageService = storageService;
         this.eventRepository = eventRepository;
         this.sectorRepository = sectorRepository;
@@ -85,7 +82,7 @@ public class EventService {
         Optional<Sector> sector;
 
         for(EventSector eventSector : event.getEventSectors()) {
-            if(eventSector.getNumeratedSeats().booleanValue()) {
+            if(eventSector.getNumeratedSeats()) {
                 sector = sectorRepository.findById(eventSector.getSector().getId());
                 sector.ifPresent(value -> eventSector.setCapacity(value.getMaxCapacity()));
             } else {
