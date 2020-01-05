@@ -34,13 +34,13 @@ public class TicketRepositoryTest {
 
     @Test
     public void findTicketsByEventSectorId_ShouldReturnEmptyList_whenEventSectorIDisInvalid() {
-        List<Ticket> foundTickets = ticketRepository.findTicketsByEventSectorId(100L);
+        List<Ticket> foundTickets = ticketRepository.findByEventSectorId(100L);
         assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
     }
 
     @Test
     public void findTicketsByEventSectorId_ShouldReturnListWithTickets_whenEventSectorIDisValid() {
-        List<Ticket> foundTickets = ticketRepository.findTicketsByEventSectorId((1L));
+        List<Ticket> foundTickets = ticketRepository.findByEventSectorId((1L));
         assertEquals("ticket list is not empty (12 elements)", 12, foundTickets.size());
     }
 
@@ -84,14 +84,14 @@ public class TicketRepositoryTest {
 
     @Test
     public void findUserTickets_ShouldReturnEmptyList_whenUserIdIsWrong(){
-        List<Ticket> foundTickets = ticketRepository.findUsersTickets(10L);
+        List<Ticket> foundTickets = ticketRepository.findUsersBoughtTickets(10L);
         assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
     }
 
 
     @Test
     public void findUserTickets_ShouldReturnList_whenUserIdIsCorrect(){
-        List<Ticket> foundTickets = ticketRepository.findUsersTickets(1L);
+        List<Ticket> foundTickets = ticketRepository.findUsersBoughtTickets(1L);
         assertEquals("ticket list is not empty (4 elements)", 4, foundTickets.size());
     }
 
