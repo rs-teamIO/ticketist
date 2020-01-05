@@ -51,6 +51,7 @@ public class VenueService {
     public Venue save(Venue venue) {
         int overlap = 0;
         venue.setIsActive(true);
+        checkVenueNameAndLocation(venue.getName(), venue.getStreet(), venue.getCity());
         for (Sector firstSector: venue.getSectors()) {
             overlap = 0;
             for (Sector secondSector: venue.getSectors()) {
@@ -65,19 +66,14 @@ public class VenueService {
     }
 
     public boolean checkIsActive(Long venueID) {
-        Optional<Venue> venue = venueRepository.findById(venueID);
-        if(venue.isPresent()) {
-            return venue.get().getIsActive();
-        } else {
-            return false;
-        }
+        Venue venue = findOne(venueID);
+        return venue.getIsActive();
     }
 
     public Venue changeActiveStatus(Long venueID) {
         Venue venue = findOne(venueID);
         venue.setIsActive(!venue.getIsActive());
-        venueRepository.save(venue);
-        return venue;
+        return venueRepository.save(venue);
     }
 
     public List<Venue> getAllActiveVenues() {
@@ -85,22 +81,18 @@ public class VenueService {
     }
 
     public Venue updateVenue(VenueBasicDTO venueInfo, Long venueID) {
-        Optional<Venue> venueOptional = venueRepository.findById(venueID);
-        if(!venueOptional.isPresent()) throw new BadRequestException("Wanted value does not exist!");
-        Venue venue = venueOptional.get();
+        Venue venue = findOne(venueID);
+        checkVenueNameAndLocation(venueInfo.getName(), venueInfo.getStreet(), venueInfo.getCity());
         venue.setCity(venueInfo.getCity());
         venue.setLatitude(venueInfo.getLatitude());
         venue.setLongitude(venueInfo.getLongitude());
         venue.setName(venueInfo.getName());
         venue.setStreet(venueInfo.getStreet());
-        venueRepository.save(venue);
-        return venue;
+        return venueRepository.save(venue);
     }
 
     public Venue addSectorToVenue(Sector sector, Long venueID) {
-        Optional<Venue> venueOptional = venueRepository.findById(venueID);
-        if(!venueOptional.isPresent()) throw new BadRequestException("Wanted venue does not exist!");
-        Venue venue = venueOptional.get();
+        Venue venue = findOne(venueID);
         if(!checkSectorName(venue.getSectors(), sector.getName())) throw new BadRequestException("Sector name already exists!");
         for (Sector secondSector: venue.getSectors()) {
             if (!sectorCanBeDrawn(sector, secondSector)) {
@@ -108,16 +100,14 @@ public class VenueService {
             }
         }
         venue.getSectors().add(sector);
-        venueRepository.save(venue);
-        return venue;
+        return venueRepository.save(venue);
     }
 
     private boolean sectorCanBeDrawn(Sector fixedSector, Sector newSector) {
         if (fixedSector.getStartRow() >= newSector.getStartRow() + newSector.getRowsCount()) return true;
         if (fixedSector.getStartRow() + fixedSector.getRowsCount() <= newSector.getStartRow()) return true;
         if (fixedSector.getStartColumn() >= newSector.getStartColumn() + newSector.getColumnsCount()) return true;
-        if (fixedSector.getStartColumn() + fixedSector.getColumnsCount() <= newSector.getStartColumn()) return true;
-        return false;
+        return fixedSector.getStartColumn() + fixedSector.getColumnsCount() <= newSector.getStartColumn();
     }
 
     private boolean checkSectorName(Set<Sector> sectors, String sectorName) {
@@ -129,6 +119,16 @@ public class VenueService {
             }
         }
         return check;
+    }
+
+    private void checkVenueNameAndLocation(String name, String street, String city) {
+        List<Venue> venues = findAll();
+        for(Venue ven : venues) {
+            if(ven.getName().equals(name) && ven.getStreet().equals(street) && ven.getCity().equals(city)) {
+                throw new BadRequestException("Venue name, street and city combination must be unique!");
+            }
+        }
+
     }
 
 }

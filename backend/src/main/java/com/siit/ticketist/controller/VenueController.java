@@ -10,6 +10,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -53,6 +54,7 @@ public class VenueController {
      * @return {@link ResponseEntity} containing HttpStatus and content
      */
     @GetMapping(value="{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<VenueDTO> getVenue(@PathVariable("id") Long id) {
         Venue venue = venueService.findOne(id);
         return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.OK);
@@ -66,7 +68,7 @@ public class VenueController {
      * @return {@link ResponseEntity} containing the info about the created Venue
      */
     @PostMapping
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<VenueDTO> createVenue(@Valid @RequestBody VenueDTO venueDto) {
         Venue venueToBeCreated = venueDto.convertToEntity();
         Venue venue = venueService.save(venueToBeCreated);
@@ -74,12 +76,14 @@ public class VenueController {
     }
 
     @PutMapping(value = "/change-status/{venueID}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Boolean> changeActiveStatus(@PathVariable("venueID") Long id) {
         Venue venue = venueService.changeActiveStatus(id);
         return new ResponseEntity<>(venue.getIsActive(), HttpStatus.OK);
     }
 
     @GetMapping(value="/active")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<VenueDTO>> getActiveVenues() {
         List<Venue> venues = venueService.getAllActiveVenues();
         List<VenueDTO> venueDTOS = new ArrayList<>();
@@ -91,12 +95,14 @@ public class VenueController {
     }
 
     @PutMapping(value = "{venueID}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<VenueDTO> updateVenue(@PathVariable("venueID") Long venueID, @Valid @RequestBody VenueBasicDTO venueBasic) {
         Venue venue = venueService.updateVenue(venueBasic, venueID);
         return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.OK);
     }
 
     @PostMapping(value = "/sector/{venueID}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<VenueDTO> addSectorToVenue(@PathVariable("venueID") Long venueID, @Valid @RequestBody SectorDTO sectorDTO) {
         Sector sector = sectorDTO.convertToEntity();
         sector.setId(null);

@@ -37,9 +37,9 @@ public class SectorController {
      * @return Response entity containing sector info
      */
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Object> getSector(@PathVariable("id") Long id) {
+    public ResponseEntity<SectorDTO> getSector(@PathVariable("id") Long id) {
         Sector sector = this.sectorService.findOne(id);
-        return new ResponseEntity<>(sector, HttpStatus.OK);
+        return new ResponseEntity<>(new SectorDTO(sector), HttpStatus.OK);
     }
 
     /**
