@@ -32,19 +32,22 @@ public class EventService {
 
     private final StorageService storageService;
     private final EventRepository eventRepository;
-    private final SectorRepository sectorRepository;
     private final TicketRepository ticketRepository;
     private final MediaFileRepository mediaFileRepository;
+    private final VenueService venueService;
+    private final SectorService sectorService;
+
     @Autowired
     private EmailService emailService;
 
-    public EventService(StorageService storageService, EventRepository eventRepository,
-                        SectorRepository sectorRepository, MediaFileRepository mediaFileRepository, TicketRepository ticketRepository) {
+    public EventService(StorageService storageService, EventRepository eventRepository, MediaFileRepository mediaFileRepository, TicketRepository ticketRepository,
+                        VenueService venueService, SectorService sectorService) {
         this.storageService = storageService;
         this.eventRepository = eventRepository;
-        this.sectorRepository = sectorRepository;
         this.mediaFileRepository = mediaFileRepository;
+        this.venueService = venueService;
         this.ticketRepository = ticketRepository;
+        this.sectorService = sectorService;
     }
 
     /**
@@ -75,23 +78,21 @@ public class EventService {
         if(!checkVenueAvailability(event))
             throw new BadRequestException("There is already an event at that time");
 
-        boolean capacityCheck = true;
-        Optional<Sector> sector;
+        Sector sector;
 
         for(EventSector eventSector : event.getEventSectors()) {
-            if(eventSector.getNumeratedSeats().booleanValue()) {
-                sector = sectorRepository.findById(eventSector.getSector().getId());
-                sector.ifPresent(value -> eventSector.setCapacity(value.getMaxCapacity()));
+            if(eventSector.getNumeratedSeats()) {
+                sector = sectorService.findOne(eventSector.getSector().getId());
+                eventSector.setCapacity(sector.getMaxCapacity());
             } else {
                 if(eventSector.getCapacity() == null) {
                     throw new BadRequestException("Capacity of event sector with innumerable seats cannot be null");
                 }
+                boolean capacityCheck = true;
                 capacityCheck = checkSectorMaxCapacity(eventSector.getSector().getId(), eventSector.getCapacity());
-                if(!capacityCheck) break;
+                if(!capacityCheck) throw new BadRequestException("Capacity is greater than max capacity");
             }
         }
-
-        if(!capacityCheck) throw new BadRequestException("Capacity is greater than max capacity");
 
         List<Date> datesInRange = datesBetween(event.getStartDate(), event.getEndDate());
         Set<EventSector> eventSectorList = new HashSet<>();
@@ -117,17 +118,15 @@ public class EventService {
 
     public Set<Ticket> generateTickets(EventSector eventSector) {
         Set<Ticket> tickets = new HashSet<>();
-        if(eventSector.getNumeratedSeats().booleanValue()) {
-            Optional<Sector> sector = sectorRepository.findById(eventSector.getSector().getId());
-            if(sector.isPresent()) {
-                for (int row = 1; row <= sector.get().getRowsCount(); row++) {
-                    for (int col = 1; col <= sector.get().getColumnsCount(); col++) {
-                        tickets.add(new Ticket(null, row, col, eventSector.getTicketPrice(), TicketStatus.FREE, 0L, eventSector, eventSector.getEvent(), null));
-                    }
+        if (eventSector.getNumeratedSeats()) {
+            Sector sector = sectorService.findOne(eventSector.getSector().getId());
+            for (int row = 1; row <= sector.getRowsCount(); row++) {
+                for (int col = 1; col <= sector.getColumnsCount(); col++) {
+                    tickets.add(new Ticket(null, row, col, eventSector.getTicketPrice(), TicketStatus.FREE, 0L, eventSector, eventSector.getEvent(), null));
                 }
             }
-        }else{
-            for(int cap=0;cap<eventSector.getCapacity();cap++){
+        } else {
+            for(int cap=0; cap < eventSector.getCapacity(); cap++) {
                 tickets.add(new Ticket(null, -1, -1, eventSector.getTicketPrice(), TicketStatus.FREE, 0L, eventSector, eventSector.getEvent(), null));
             }
         }
@@ -138,6 +137,9 @@ public class EventService {
     public boolean checkVenueAvailability(Event event) {
         boolean check = true;
         List<Event> events = eventRepository.findByVenueId(event.getVenue().getId());
+        if(!venueService.checkIsActive(event.getVenue().getId())) {
+            throw new BadRequestException("Venue is inactive!");
+        }
 
         for(Event e : events){
             check = event.getEndDate().before(e.getStartDate()) || event.getStartDate().after(e.getEndDate());
@@ -156,10 +158,10 @@ public class EventService {
     }
 
     public boolean checkSectorMaxCapacity(Long sectorID, int capacity) {
-        Optional<Sector> sector = sectorRepository.findById(sectorID);
+        Sector sector = sectorService.findOne(sectorID);
         boolean check = true;
 
-        if(sector.isPresent() && capacity > sector.get().getMaxCapacity())
+        if(capacity > sector.getMaxCapacity())
             check = false;
 
         return check;

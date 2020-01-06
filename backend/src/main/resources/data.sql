@@ -38,27 +38,23 @@ VALUES
     (1, 4, '2020-06-14', 1, 35.00, 12, 1),
     (2, 4, '2020-06-15', 0, 35.00, 12, 2);
 
-INSERT INTO tickets (id, number_column, number_row, price, status, event_id, event_sector_id, user_id)
+INSERT INTO tickets (id, number_column, number_row, price, status, event_id, event_sector_id, user_id, version)
 VALUES
-    (1,1,1,35.00,2,12,1,1),
-    (2,1,2,35.00,1,12,1,1),
-    (3,2,1,35.00,0,12,1,null),
-    (4,2,2,35.00,0,12,1,null),
-    (5,-1,-1,35.00,1,12,2,1),
-    (6,-1,-1,35.00,2,12,2,1),
-    (7,-1,-1,35.00,0,12,2,null),
-    (8,-1,-1,35.00,0,12,2,null);
+    (1,1,1,35.00,2,12,1,1,0),
+    (2,1,2,35.00,1,12,1,1,0),
+    (3,2,1,35.00,0,12,1,null,0),
+    (4,2,2,35.00,0,12,1,null,0),
+    (5,-1,-1,35.00,1,12,2,1,0),
+    (6,-1,-1,35.00,2,12,2,1,0),
+    (7,-1,-1,35.00,0,12,2,null,0),
+    (8,-1,-1,35.00,0,12,2,null,0);
 
 
 INSERT INTO users
     (dtype, id, email, first_name, last_name, password, username, is_verified, verification_code)
 VALUES
-    ('REGISTERED_USER', 1, 'kacjica+1@gmail.com', 'Katarina', 'Tukelic', 'kaca', 'kaca', 1, null);
-
-INSERT INTO users
-    (dtype, id, email, first_name, last_name, password, username)
-VALUES
-    ('ADMIN', 2, 'f.ivkovic16+1@gmail.com', 'Filip', 'Ivkovic', 'filip', 'filip');
+    ('REGISTERED_USER', 1, 'kacjica+1@gmail.com', 'Katarina', 'Tukelic', '$2a$10$6HhA6auhomFftE468xtynuk40nllNZAbKLkkyyps/uX6QY1YqIbjO', 'kaca', 1, null),
+    ('ADMIN', 2, 'f.ivkovic16+1@gmail.com', 'Filip', 'Ivkovic', '$2a$10$6HhA6auhomFftE468xtynuk40nllNZAbKLkkyyps/uX6QY1YqIbjO', 'filip', 1, null);
 
 INSERT INTO user_role
 VALUES

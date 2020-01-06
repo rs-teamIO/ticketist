@@ -1,6 +1,7 @@
 package com.siit.ticketist.service;
 
 import com.siit.ticketist.exceptions.BadRequestException;
+import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.exceptions.OptimisticLockException;
 import com.siit.ticketist.dto.PdfTicket;
 import com.siit.ticketist.model.*;
@@ -17,21 +18,30 @@ import java.util.*;
 @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 public class TicketService {
 
-    @Autowired
-    private TicketRepository ticketRepository;
+    private final TicketRepository ticketRepository;
+
+    private final UserService userService;
+
+    private final EmailService emailService;
 
     @Autowired
-    private UserService userService;
+    public TicketService(TicketRepository ticketRepository, UserService userService, EmailService emailService) {
+        this.userService = userService;
+        this.emailService = emailService;
+        this.ticketRepository = ticketRepository;
+    }
 
-    @Autowired
-    private EmailService emailService;
+    public Ticket findOne(Long id) {
+        return this.ticketRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Ticket not found."));
+    }
 
     public List<Ticket> findAllByEventId(Long id) {
         return ticketRepository.findByEventId(id);
     }
 
     public List<Ticket> findAllByEventSectorId(Long id) {
-        return ticketRepository.findTicketsByEventSectorId(id);
+        return ticketRepository.findByEventSectorId(id);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false, rollbackFor = OptimisticLockException.class)
@@ -71,6 +81,8 @@ public class TicketService {
                 }
                 resultTickets.add(dbTicket.get());
                 pdfTickets.add(new PdfTicket(dbTicket.get()));
+            } else {
+                throw new BadRequestException("Ticket does not exist!");
             }
         }
 
@@ -82,6 +94,7 @@ public class TicketService {
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public Boolean acceptOrCancelReservations (List<Long> reservations, TicketStatus newStatus) {
         checkNumberOfTickets(reservations);
+        checkTicketDuplicates(reservations);
         checkStatusIsValid(newStatus);
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
         List<Ticket> tickets = ticketRepository.findTicketsByIdGroup(reservations, registeredUser.getId());
@@ -113,9 +126,9 @@ public class TicketService {
         return ticketRepository.findAllReservationsByUser(registeredUser.getId());
     }
 
-    public List<Ticket> getUsersTickets() {
+    public List<Ticket> getUsersBoughtTickets() {
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
-        return ticketRepository.findUsersTickets(registeredUser.getId());
+        return ticketRepository.findUsersBoughtTickets(registeredUser.getId());
     }
 
     public void checkNumberOfTickets(List<Long> tickets) {
@@ -123,24 +136,22 @@ public class TicketService {
     }
 
     public void checkMaxNumberOfReservationsPerUser(List<Long> reservations) {
-        Optional<Ticket> ticket = ticketRepository.findById(reservations.get(0));
-        if(ticket.isPresent()) {
-            int numberOfReservations = ticketRepository.findUsersReservationsByEvent(userService.findCurrentUser().getId(), ticket.get().getEvent().getId()).size() + reservations.size();
-            if(numberOfReservations > ticket.get().getEvent().getReservationLimit()) {
-                throw new BadRequestException("Event limit of reservations is " + ticket.get().getEvent().getReservationLimit());
-            }
+        Ticket ticket = findOne(reservations.get(0));
+        int numberOfReservations = ticketRepository.findUsersReservationsByEvent(userService.findCurrentUser().getId(), ticket.getEvent().getId()).size() + reservations.size();
+        if(numberOfReservations > ticket.getEvent().getReservationLimit()) {
+            throw new BadRequestException("Event limit of reservations is " + ticket.getEvent().getReservationLimit());
         }
     }
 
     public void checkReservationDate(Long reservationID) {
-        Optional<Ticket> ticket = ticketRepository.findById(reservationID);
-        if(ticket.isPresent() && new Date().after(ticket.get().getEvent().getReservationDeadline()))
+        Ticket ticket = findOne(reservationID);
+        if(new Date().after(ticket.getEvent().getReservationDeadline()))
             throw new BadRequestException("Reservation deadline passed! Now you can only buy a ticket");
     }
 
     public void checkBuyTicketsDate(Long ticketID) {
-        Optional<Ticket> ticket = ticketRepository.findById(ticketID);
-        if(ticket.isPresent() && new Date().after(ticket.get().getEvent().getStartDate())) {
+        Ticket ticket = findOne(ticketID);
+        if(new Date().after(ticket.getEvent().getStartDate())) {
             throw new BadRequestException("Event already started!");
         }
     }
@@ -155,21 +166,18 @@ public class TicketService {
                 }
             }
             if(num > 1) {
-                throw new BadRequestException("You cannot buy or reserve same ticket more than once!");
+                throw new BadRequestException("Same tickets detected!");
             }
         }
     }
 
     public void checkTicketsAndReservationsAvailability(List<Long> ticketIDS) {
-        Optional<Ticket> ticket;
+        Ticket ticket;
         for(Long ticketID : ticketIDS) {
-            ticket = ticketRepository.findById(ticketID);
-            if(ticket.isPresent()) {
-                if(!ticket.get().getStatus().equals(TicketStatus.FREE)) {
-                    throw new BadRequestException("Tickets are already taken");
-                }
-            } else {
-                throw new BadRequestException("Ticket not found!");
+            ticket = findOne(ticketID);
+
+            if(!ticket.getStatus().equals(TicketStatus.FREE)) {
+                throw new BadRequestException("Tickets are already taken");
             }
         }
     }

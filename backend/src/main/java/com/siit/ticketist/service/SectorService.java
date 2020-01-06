@@ -4,6 +4,7 @@ import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.model.Venue;
 import com.siit.ticketist.repository.SectorRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class SectorService {
 
     private final SectorRepository sectorRepository;
 
+    @Autowired
     public SectorService(SectorRepository sectorRepository) {
         this.sectorRepository = sectorRepository;
     }

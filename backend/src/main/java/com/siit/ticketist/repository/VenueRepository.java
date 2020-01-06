@@ -23,4 +23,6 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
             "GROUP BY v.id", nativeQuery = true)
     List<Object[]> getAllVenueRevenues();
 
+    List<Venue> findByIsActiveTrue();
+
 }
