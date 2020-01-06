@@ -37,6 +37,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CustomMaterialModule } from './shared/material.module';
 import { AuthInterceptorService } from './services/auth-interceptor.service';
 import {AgmCoreModule} from '@agm/core';
+import {MatDividerModule} from "@angular/material/divider";
 
 @NgModule({
   declarations: [
@@ -81,7 +82,8 @@ import {AgmCoreModule} from '@agm/core';
       apiKey: 'AIzaSyCn40xrisQWoIytZzAEohvAWPQfTIk1SR4',
       libraries: ['places', 'geometry']
       /* apiKey is required, unless you are a premium customer, in which case you can use clientId */
-    })
+    }),
+    MatDividerModule
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }],
   bootstrap: [AppComponent]

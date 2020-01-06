@@ -1,20 +1,20 @@
-<button [routerLink]="['/venues/new']">
-  Add new event
-</button>
-<table>
-  <tr>
-    <td>Venue name</td>
-    <td>City</td>
-    <td>Capacity</td>
-    <td>Status</td>
-    <td></td>
-  </tr>
-  <div *ngFor="let venue of venues">
-    <app-venue-item [venue]="venue"></app-venue-item>
-    <td>
-      <button [routerLink]="['/venues/',venue.id]" >View</button>
-      <button *ngIf="!venue.isActive" (click)="activate(venue.id)">Activate</button>
-      <button *ngIf="venue.isActive" (click)="activate(venue.id)">Deactivate</button>
-    </td>
-  </div>
-</table>
+<div>
+  <mat-card class="mat-card-flat card-deck-container" >
+    <mat-card-header>
+      <mat-card-title>Venues</mat-card-title>
+    </mat-card-header>
+
+    <div>
+      <div *ngFor="let venue of venues" >
+        <app-venue-item [venue]="venue"></app-venue-item>
+      </div>
+    </div>
+  </mat-card>
+
+  <mat-card>
+    <button mat-raised-button color="primary" [routerLink]="['/venues/new']">
+      Add new event
+    </button>
+  </mat-card>
+
+</div>

@@ -4,22 +4,26 @@ import static org.junit.Assert.*;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
+import com.siit.ticketist.repository.EventRepository;
+import com.siit.ticketist.repository.SectorRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.event.annotation.BeforeTestMethod;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -27,6 +31,12 @@ public class EventServiceTest {
 
     @Autowired
     private EventService eventService;
+
+    @MockBean
+    private EventRepository eventRepository;
+
+    @MockBean
+    private SectorRepository sectorRepository;
 
     @Test(expected = NotFoundException.class)
     public void findOne_ShouldThrowException_whenIdIsWrong(){
@@ -62,6 +72,40 @@ public class EventServiceTest {
     }
 
     @Test
+    public void checkVenueAvailability_ShouldReturnTrue_whenVenueIsFreeUnit(){
+        Event event = new Event();
+        Venue ven = new Venue();
+        ven.setId(1l);
+        event.setVenue(ven);
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = null;
+        Date date2 = null;
+        Date dateTest = null;
+        try {
+            date = dateFormat.parse("15/04/2020");
+            date2 = dateFormat.parse("17/04/2020");
+            dateTest = dateFormat.parse("14/09/2020");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long time = date.getTime();
+        long time2 = date2.getTime();
+        event.setStartDate(new Timestamp(time));
+        event.setEndDate(new Timestamp(time2));
+
+        Event ev = new Event();
+        ev.setStartDate(dateTest);
+        ev.setEndDate(dateTest);
+        List<Event> evList = new ArrayList<Event>();
+        evList.add(ev);
+        Mockito.when(eventRepository.findByVenueId(ven.getId())).thenReturn(evList);
+
+        Boolean check = eventService.checkVenueAvailability(event);
+        assertTrue("venue is avaliable for this event",check);
+    }
+
+
+    @Test
     public void checkVenueAvailability_ShouldReturnFalse_whenVenueIsOccupied(){
         Event event = new Event();
         Venue ven = new Venue();
@@ -85,8 +129,8 @@ public class EventServiceTest {
         assertFalse("venue is not avaliable for this event",check);
     }
 
-    @Test(expected = BadRequestException.class)
-    public void Save_ShouldThrowException_whenVenueIsOccupied(){
+    @Test
+    public void checkVenueAvailability_ShouldReturnFalse_whenVenueIsOccupiedUnit(){
         Event event = new Event();
         Venue ven = new Venue();
         ven.setId(1l);
@@ -95,23 +139,29 @@ public class EventServiceTest {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         Date date = null;
         Date date2 = null;
-        Date date3 = null;
         try {
-            date = dateFormat.parse("15/03/2020");
-            date2 = dateFormat.parse("17/03/2020");
-            date3 = dateFormat.parse("14/03/2020");
+            date = dateFormat.parse("15/04/2020");
+            date2 = dateFormat.parse("17/04/2020");
         } catch (ParseException e) {
             e.printStackTrace();
         }
         long time = date.getTime();
         long time2 = date2.getTime();
-        long time3 = date3.getTime();
         event.setStartDate(new Timestamp(time));
         event.setEndDate(new Timestamp(time2));
-        event.setReservationDeadline(new Timestamp(time3));
 
-        eventService.save(event);
+        Event ev = new Event();
+        ev.setStartDate(date);
+        ev.setEndDate(date2);
+        List<Event> evList = new ArrayList<Event>();
+        evList.add(ev);
+        Mockito.when(eventRepository.findByVenueId(ven.getId())).thenReturn(evList);
+
+        Boolean check = eventService.checkVenueAvailability(event);
+        assertFalse("venue is not avaliable for this event",check);
     }
+
+
 
     @Test
     public void checkEventDates_ShouldReturnTrue_whenDatesAreValid(){
@@ -169,36 +219,17 @@ public class EventServiceTest {
         assertFalse("event dates are not in order",check);
     }
 
-    @Test(expected = BadRequestException.class)
-    public void Save_ShouldThrowException_whenEventDatesAreNotCorrect(){
-        Event event = new Event();
-        Venue ven = new Venue();
-        ven.setId(1l);
-        event.setVenue(ven);
-        //'2020-03-14', '2020-03-15'
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        Date date = null;
-        Date date2 = null;
-        Date date3 = null;
-        try {
-            date = dateFormat.parse("15/03/2020");
-            date2 = dateFormat.parse("13/03/2020");
-            date3 = dateFormat.parse("14/03/2020");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        long time = date.getTime();
-        long time2 = date2.getTime();
-        long time3 = date3.getTime();
-        event.setStartDate(new Timestamp(time));
-        event.setEndDate(new Timestamp(time2));
-        event.setReservationDeadline(new Timestamp(time3));
-
-        eventService.save(event);
+    @Test
+    public void checkSectorMaxCapacity_ShouldReturnFalse_whenCapacityIsGreaterThanSectorLimit(){
+        Boolean check = eventService.checkSectorMaxCapacity(1l,10);
+        assertFalse("capacity is greater than max capacity",check);
     }
 
     @Test
-    public void checkSectorMaxCapacity_ShouldReturnFalse_whenCapacityIsGreaterThanSectorLimit(){
+    public void checkSectorMaxCapacity_ShouldReturnFalse_whenCapacityIsGreaterThanSectorLimitUnit(){
+        Sector sector = new Sector();
+        sector.setMaxCapacity(5);
+        Mockito.when(sectorRepository.findById(1l)).thenReturn(Optional.of(sector));
         Boolean check = eventService.checkSectorMaxCapacity(1l,10);
         assertFalse("capacity is greater than max capacity",check);
     }
@@ -209,6 +240,16 @@ public class EventServiceTest {
         Boolean check = eventService.checkSectorMaxCapacity(1l,2);
         assertTrue("capacity is lesser than max capacity",check);
     }
+
+    @Test
+    public void checkSectorMaxCapacity_ShouldReturnTrue_whenCapacityIsLowerThanSectorLimitUnit(){
+        Sector sector = new Sector();
+        sector.setMaxCapacity(5);
+        Mockito.when(sectorRepository.findById(1l)).thenReturn(Optional.of(sector));
+        Boolean check = eventService.checkSectorMaxCapacity(1l,2);
+        assertTrue("capacity is lesser than max capacity",check);
+    }
+
 
     @Test
     public void datesBetween_ShouldReturnListOfDates_whenTwoDatesAreSent(){
@@ -260,6 +301,64 @@ public class EventServiceTest {
         assertEquals("ticket list is not empty",0,tickets.size());
 
     }
+
+    @Test(expected = BadRequestException.class)
+    public void Save_ShouldThrowException_whenVenueIsOccupied(){
+        Event event = new Event();
+        Venue ven = new Venue();
+        ven.setId(1l);
+        event.setVenue(ven);
+        //'2020-03-14', '2020-03-15'
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = null;
+        Date date2 = null;
+        Date date3 = null;
+        try {
+            date = dateFormat.parse("15/03/2020");
+            date2 = dateFormat.parse("17/03/2020");
+            date3 = dateFormat.parse("14/03/2020");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long time = date.getTime();
+        long time2 = date2.getTime();
+        long time3 = date3.getTime();
+        event.setStartDate(new Timestamp(time));
+        event.setEndDate(new Timestamp(time2));
+        event.setReservationDeadline(new Timestamp(time3));
+
+        eventService.save(event);
+    }
+
+
+    @Test(expected = BadRequestException.class)
+    public void Save_ShouldThrowException_whenEventDatesAreNotCorrect(){
+        Event event = new Event();
+        Venue ven = new Venue();
+        ven.setId(1l);
+        event.setVenue(ven);
+        //'2020-03-14', '2020-03-15'
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = null;
+        Date date2 = null;
+        Date date3 = null;
+        try {
+            date = dateFormat.parse("15/03/2020");
+            date2 = dateFormat.parse("13/03/2020");
+            date3 = dateFormat.parse("14/03/2020");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long time = date.getTime();
+        long time2 = date2.getTime();
+        long time3 = date3.getTime();
+        event.setStartDate(new Timestamp(time));
+        event.setEndDate(new Timestamp(time2));
+        event.setReservationDeadline(new Timestamp(time3));
+
+        eventService.save(event);
+    }
+
 
     @Test(expected = BadRequestException.class)
     public void Save_ShouldThrowException_whenCapacityOfInumerableSectorisNull(){
@@ -333,5 +432,51 @@ public class EventServiceTest {
         eSector.setSector(sec);
 
         eventService.save(event);
+    }
+
+    @Test
+    public void Save_ShouldPass_whenEventIsValid(){
+        Event event = new Event();
+        Venue ven = new Venue();
+        ven.setId(1l);
+        event.setVenue(ven);
+        //'2020-03-14', '2020-03-15'
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = null;
+        Date date2 = null;
+        Date date3 = null;
+        try {
+            date = dateFormat.parse("15/04/2020");
+            date2 = dateFormat.parse("17/04/2020");
+            date3 = dateFormat.parse("14/04/2020");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long time = date.getTime();
+        long time2 = date2.getTime();
+        long time3 = date3.getTime();
+
+        event.setStartDate(new Timestamp(time));
+        event.setEndDate(new Timestamp(time2));
+        event.setReservationDeadline(new Timestamp(time3));
+        event.setCategory(Category.CULTURAL);
+        event.setDescription("");
+        event.setName("");
+        event.setReservationLimit(3);
+
+        Set<EventSector> eventSectors = new HashSet<>();
+        EventSector eSector = new EventSector();
+        eSector.setNumeratedSeats(false);
+        eSector.setTicketPrice(BigDecimal.valueOf(100));
+        eSector.setCapacity(2);
+        Sector sec = new Sector();
+        sec.setId(1l);
+        eSector.setSector(sec);
+
+        eventSectors.add(eSector);
+        event.setEventSectors(eventSectors);
+
+        eventService.save(event);
+
     }
 }

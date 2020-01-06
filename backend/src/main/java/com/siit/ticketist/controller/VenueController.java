@@ -72,12 +72,7 @@ public class VenueController {
     @GetMapping(value ="activate/{id}")
     public ResponseEntity<Object> changeState(@PathVariable("id") Long id)
     {
-        if(venueService.changeState(id)){
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>(false,HttpStatus.BAD_REQUEST);
-        }
-
+        return new ResponseEntity<>(venueService.changeState(id), HttpStatus.OK);
     }
 
 }

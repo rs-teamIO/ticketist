@@ -77,7 +77,7 @@ public class VenueService {
             throw new NotFoundException("Venue was not found");
 
         venueRepository.save(venue.get());
-        return true;
+        return venue.get().getIsActive();
     }
 
     public Venue update(Venue venue) {
