@@ -97,6 +97,8 @@ public class RegisteredUserController {
 
         dto.setOldPassword(passwordEncoder.encode(dto.getOldPassword()));
         if(dto.getNewPassword() != null) {
+            if(!dto.getNewPassword().equals(dto.getNewPasswordRepeat()))
+                throw new AuthorizationException("New passwords don't match.");
             dto.setNewPassword(passwordEncoder.encode(dto.getNewPassword()));
         }
 
