@@ -87,6 +87,19 @@ public class UserService {
     }
 
     /**
+     * Checks if email is already taken.
+     * In case an user with the same email exists {@link BadRequestException} is thrown.
+     *
+     * @param email username
+     */
+    public void checkIfEmailTaken(String email) {
+        this.userRepository.findByEmail(email)
+                .ifPresent(u -> {
+                    throw new BadRequestException(String.format("User with e-mail '%s' already registered", email));
+                });
+    }
+
+    /**
      * Persists the {@link RegisteredUser} entity
      *
      * @param registeredUser instance to be saved

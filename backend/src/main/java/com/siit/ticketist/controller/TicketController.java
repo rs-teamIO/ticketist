@@ -5,6 +5,7 @@ import com.siit.ticketist.model.Ticket;
 import com.siit.ticketist.dto.TicketDTO;
 import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.service.TicketService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +25,7 @@ public class TicketController {
 
     private final TicketService ticketService;
 
+    @Autowired
     public TicketController(TicketService ticketService) {
         this.ticketService = ticketService;
     }
@@ -86,7 +88,7 @@ public class TicketController {
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     public ResponseEntity<List<TicketDTO>> findUsersTickets() {
         List<TicketDTO> tickets = new ArrayList<>();
-        ticketService.getUsersTickets().stream()
+        ticketService.getUsersBoughtTickets().stream()
                 .map(TicketDTO::new)
                 .forEachOrdered(tickets::add);
         return new ResponseEntity<>(tickets, HttpStatus.OK);
@@ -114,14 +116,14 @@ public class TicketController {
         return new ResponseEntity<>(ticketsDTO, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping(value="/reservations/accept")
+    @PreAuthorize("hasAuthority('REGISTERED_USER')")
     public ResponseEntity<Boolean> acceptReservations(@Valid @RequestBody List<Long> reservations) {
         return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, TicketStatus.PAID), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping(value="/reservations/cancel")
+    @PreAuthorize("hasAuthority('REGISTERED_USER')")
     public ResponseEntity<Boolean> cancelReservations(@Valid @RequestBody List<Long> reservations) {
         return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, TicketStatus.FREE), HttpStatus.OK);
     }

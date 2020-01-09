@@ -5,6 +5,7 @@
   </button>
   <span class="spacer"></span>
   <div>
+    <button mat-button routerLink="/profile" *ngIf="isAuthenticated">Profile</button>
     <button mat-button routerLink="/logout" *ngIf="isAuthenticated" (click)="onLogout()">Logout</button>
     <button mat-button routerLink="/login" *ngIf="!isAuthenticated">Login</button>
     <button mat-button routerLink="/signup" *ngIf="!isAuthenticated">Sign up</button>

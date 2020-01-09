@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -92,8 +93,8 @@ public class EventController {
      * @param eventDTO DTO containing event info.
      * @return {@link ResponseEntity} containing the info about the created Event
      */
-    //@PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<EventDTO> createEvent(@Valid @RequestBody EventDTO eventDTO) {
         Event eventToBeCreated = eventDTO.convertToEntity();
         Event event = eventService.save(eventToBeCreated);
@@ -108,8 +109,8 @@ public class EventController {
      * @param mediaFiles List of media files
      * @return {@link ResponseEntity} containing HttpStatus and content
      */
-    //@PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(value = "{eventId}/media", consumes = {"application/octet-stream", "multipart/form-data"})
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<EventDTO> addMediaFiles(@PathVariable("eventId") Long eventId,
                                                   @RequestPart("mediaFiles") MultipartFile[] mediaFiles) {
         Event event = eventService.addMediaFiles(eventId, mediaFiles);
@@ -167,6 +168,7 @@ public class EventController {
      * @return Event with updated information
      */
     @PutMapping(value="{eventId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<EventDTO> updateBasicInformation(@PathVariable("eventId") Long eventId,
                                                            @Valid @RequestBody EventUpdateDTO dto) {
         Event updatedEvent = this.eventService.updateBasicInformation(eventId, dto.getName(), dto.getCategory(),
@@ -185,6 +187,7 @@ public class EventController {
      * @return Event with updated information
      */
     @PutMapping(value = "{eventId}/event-sector/{eventSectorId}/ticket-price")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<EventDTO> changeEventSectorTicketPrice(@PathVariable("eventId") Long eventId,
                                                                  @PathVariable("eventSectorId") Long eventSectorId,
                                                                  @RequestBody @Positive BigDecimal newTicketPrice) {
@@ -202,6 +205,7 @@ public class EventController {
      * @return Event with updated information
      */
     @PutMapping(value = "{eventId}/event-sector/{eventSectorId}/status")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<EventDTO> changeEventSectorStatus(@PathVariable("eventId") Long eventId,
                                                             @PathVariable("eventSectorId") Long eventSectorId,
                                                             @RequestBody Boolean newStatus) {
@@ -219,6 +223,7 @@ public class EventController {
      * @return Event with updated information
      */
     @PutMapping(value = "{eventId}/event-sector/{eventSectorId}/capacity")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<EventDTO> changeEventSectorCapacity(@PathVariable("eventId") Long eventId,
                                                               @PathVariable("eventSectorId") Long eventSectorId,
                                                               @RequestBody @Positive Integer newCapacity) {
@@ -249,6 +254,7 @@ public class EventController {
      * @return {@link ResponseEntity} containing HttpStatus and content
      */
     @GetMapping(value = "cancel/{eventId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity cancelEvent(@PathVariable("eventId") Long eventId) throws MessagingException {
         Event event = eventService.cancelEvent(eventId);
         return new ResponseEntity(new EventDTO(event), HttpStatus.OK);
