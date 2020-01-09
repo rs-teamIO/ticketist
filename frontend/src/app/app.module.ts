@@ -35,7 +35,7 @@ import {UserProfileComponent} from './user-profile/user-profile.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {CustomMaterialModule} from './shared/material.module';
 import {AuthInterceptorService} from './services/auth-interceptor.service';
-import {NgxPaginationModule} from 'ngx-pagination';
+import {NgxChartsModule} from '@swimlane/ngx-charts';
 
 @NgModule({
   declarations: [
@@ -69,14 +69,14 @@ import {NgxPaginationModule} from 'ngx-pagination';
     TicketItemComponent,
     UserProfileComponent,
   ],
-  imports: [
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    ReactiveFormsModule,
-    CustomMaterialModule,
-    HttpClientModule,
-    NgxPaginationModule
-  ],
+    imports: [
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        ReactiveFormsModule,
+        CustomMaterialModule,
+        HttpClientModule,
+        NgxChartsModule
+    ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }],
   bootstrap: [AppComponent]
 })
