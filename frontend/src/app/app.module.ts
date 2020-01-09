@@ -1,6 +1,5 @@
-import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -29,13 +28,13 @@ import {ReservationListComponent} from './reservation-list/reservation-list.comp
 import {ReservationItemComponent} from './reservation-list/reservation-item/reservation-item.component';
 import {EventItemComponent} from './event/event-list/event-item/event-item.component';
 import {VenueItemComponent} from './venue/venue-list/venue-item/venue-item.component';
-import { CheckoutComponent } from './checkout/checkout.component';
-import { TicketListComponent } from './checkout/ticket-list/ticket-list.component';
-import { TicketItemComponent } from './checkout/ticket-list/ticket-item/ticket-item.component';
-import { UserProfileComponent } from './user-profile/user-profile.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { CustomMaterialModule } from './shared/material.module';
-import { AuthInterceptorService } from './services/auth-interceptor.service';
+import {CheckoutComponent} from './checkout/checkout.component';
+import {TicketListComponent} from './checkout/ticket-list/ticket-list.component';
+import {TicketItemComponent} from './checkout/ticket-list/ticket-item/ticket-item.component';
+import {UserProfileComponent} from './user-profile/user-profile.component';
+import {ReactiveFormsModule} from '@angular/forms';
+import {CustomMaterialModule} from './shared/material.module';
+import {AuthInterceptorService} from './services/auth-interceptor.service';
 
 @NgModule({
   declarations: [
@@ -67,10 +66,9 @@ import { AuthInterceptorService } from './services/auth-interceptor.service';
     CheckoutComponent,
     TicketListComponent,
     TicketItemComponent,
-    UserProfileComponent,
+    UserProfileComponent
   ],
   imports: [
-    BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
@@ -80,4 +78,5 @@ import { AuthInterceptorService } from './services/auth-interceptor.service';
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
