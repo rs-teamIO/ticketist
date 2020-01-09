@@ -272,6 +272,19 @@ public class EventServiceTest {
     }
 
     @Test
+    public void generateTickets_ShouldReturnTickets_whenValidSectorIdIsSentUnit(){
+        EventSector eSector = new EventSector();
+        Sector sector = new Sector();
+        sector.setId(1l);
+        eSector.setSector(sector);
+        eSector.setNumeratedSeats(true);
+        Mockito.when(sectorRepository.findById(1l)).thenReturn(Optional.of(sector));
+        Set<Ticket> tickets = eventService.generateTickets(eSector);
+        assertEquals("ticket list is not empty",4,tickets.size());
+
+    }
+
+    @Test
     public void generateTickets_ShouldReturnEmptyList_whenSectorIsNotFound(){
         EventSector eSector = new EventSector();
         Sector sector = new Sector();
@@ -281,6 +294,20 @@ public class EventServiceTest {
         Set<Ticket> tickets = eventService.generateTickets(eSector);
         assertEquals("ticket list is empty",0,tickets.size());
     }
+
+    @Test
+    public void generateTickets_ShouldReturnEmptyList_whenSectorIsNotFoundUnit(){
+        EventSector eSector = new EventSector();
+        Sector sector = new Sector();
+        sector.setId(10l);
+        eSector.setSector(sector);
+        eSector.setNumeratedSeats(true);
+        Mockito.when(sectorRepository.findById(10l)).thenReturn(Optional.empty());
+        Set<Ticket> tickets = eventService.generateTickets(eSector);
+        assertEquals("ticket list is empty",0,tickets.size());
+    }
+
+
 
     @Test
     public void generateTickets_ShouldReturnList_whenItsInumerableWithCorrectCapacity(){

@@ -53,6 +53,6 @@
   </mat-card-content>
 </mat-card>
 
-<agm-map *ngIf="!this.new" [latitude]=latitude [longitude]=longitude [zoom]="5">
-  <agm-marker [latitude]=latitude [longitude]=longitude></agm-marker>
+<agm-map *ngIf="!this.new" [latitude]=this.venue.latitude [longitude]=this.venue.longitude [zoom]="5">
+  <agm-marker [latitude]=this.venue.latitude [longitude]=this.venue.longitude></agm-marker>
 </agm-map>

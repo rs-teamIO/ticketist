@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Venue, VenueService} from '../../../services/venue.service';
+import {Venue, VenueBasic, VenueService} from '../../../services/venue.service';
 import {Sector} from '../../../services/sector.service';
 import {GeocodeService} from '../../../services/geocode';
 
@@ -20,8 +20,7 @@ export class VenueFormBasicComponent implements OnInit {
   isLoading = false;
   error = '';
   sectors: Sector[];
-  latitude: number;
-  longitude: number;
+  sectorNew: Sector;
 
 
 
@@ -35,9 +34,8 @@ export class VenueFormBasicComponent implements OnInit {
     });
     if (!this.new) {
       this.presetForm(this.venue);
-      this.latitude = this.venue.latitude;
-      this.longitude = this.venue.longitude;
     }
+    console.log(this.venue);
   }
 
   private presetForm(resData: Venue) {
@@ -58,23 +56,33 @@ export class VenueFormBasicComponent implements OnInit {
 
     const { name, city, street } = this.venueForm.value;
 
-    let latitude = 0.0;
-    let longitude = 0.0;
+    const latitude = 0.0;
+    const longitude = 0.0;
 
-    this.geocodeService.gelocate(city + ',' + street).subscribe(retData => {
-      latitude = retData[0].geometry.location.lat();
-      longitude = retData[0].geometry.location.lng();
+   // this.geocodeService.gelocate(city + ',' + street).subscribe(retData => {
+     // latitude = retData[0].geometry.location.lat();
+     // longitude = retData[0].geometry.location.lng();
 
-      let isActive = true;
-      let id = '0';
+    const isActive = true;
+    const id = null;
+    const startRow = 5;
+    const startColumn = 5;
+    const rowsCount = 5;
+    const columnsCount = 5;
+    const maxCapacity = 5;
 
-      if (!this.new) {
-        isActive = this.venue.isActive;
-        id = this.venue.id;
-      }
+    const sectors: Sector[] = [{
+      id,
+      startRow,
+      startColumn,
+      columnsCount,
+      rowsCount,
+      name,
+      maxCapacity
+    }];
 
-      const sectors = this.sectors;
-
+    this.error = '';
+    if (this.new) {
       const venue: Venue = {
         id,
         name,
@@ -86,9 +94,7 @@ export class VenueFormBasicComponent implements OnInit {
         sectors
       };
 
-      this.error = '';
-
-      this.venueService.update(venue).subscribe(
+      this.venueService.create(venue).subscribe(
         resData => {
           console.log(resData);
           this.isLoading = false;
@@ -99,7 +105,31 @@ export class VenueFormBasicComponent implements OnInit {
           this.isLoading = false;
         }
       );
-    });
+
+    } else {
+      const venue: VenueBasic = {
+        name,
+        city,
+        street,
+        latitude,
+        longitude,
+      };
+      this.venueService.update(this.venue.id, venue).subscribe(
+        resData => {
+          console.log(resData);
+          this.isLoading = false;
+        },
+        error => {
+          console.log('Error: ', error);
+          this.error = 'An error occured!';
+          this.isLoading = false;
+        }
+      );
+    }
+
+
+
+   // });
 
   }
 

@@ -54,7 +54,7 @@ public class VenueController {
      * @return {@link ResponseEntity} containing HttpStatus and content
      */
     @GetMapping(value="{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+  //  @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<VenueDTO> getVenue(@PathVariable("id") Long id) {
         Venue venue = venueService.findOne(id);
         return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.OK);
@@ -68,19 +68,15 @@ public class VenueController {
      * @return {@link ResponseEntity} containing the info about the created Venue
      */
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<VenueDTO> createVenue(@Valid @RequestBody VenueDTO venueDto) {
         Venue venueToBeCreated = venueDto.convertToEntity();
         Venue venue = venueService.save(venueToBeCreated);
         return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.CREATED);
     }
 
-    @GetMapping(value ="activate/{id}")
-    public ResponseEntity<Object> changeState(@PathVariable("id") Long id)
-    {
-        return new ResponseEntity<>(venueService.changeState(id), HttpStatus.OK);
     @PutMapping(value = "/change-status/{venueID}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Boolean> changeActiveStatus(@PathVariable("venueID") Long id) {
         Venue venue = venueService.changeActiveStatus(id);
         return new ResponseEntity<>(venue.getIsActive(), HttpStatus.OK);
@@ -99,7 +95,7 @@ public class VenueController {
     }
 
     @PutMapping(value = "{venueID}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<VenueDTO> updateVenue(@PathVariable("venueID") Long venueID, @Valid @RequestBody VenueBasicDTO venueBasic) {
         Venue venue = venueService.updateVenue(venueBasic, venueID);
         return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.OK);

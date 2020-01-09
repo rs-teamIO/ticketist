@@ -70,17 +70,6 @@ public class VenueService {
         return venue.getIsActive();
     }
 
-    public boolean changeState(Long id) {
-        Optional<Venue> venue = venueRepository.findById(id);
-        if(venue.isPresent())
-            venue.get().setIsActive(!venue.get().getIsActive());
-        else
-            throw new NotFoundException("Venue was not found");
-
-        venueRepository.save(venue.get());
-        return venue.get().getIsActive();
-    }
-
     public Venue update(Venue venue) {
         return venueRepository.save(venue);
     }
