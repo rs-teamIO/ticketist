@@ -4,6 +4,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Subject} from 'rxjs';
 import {Page} from '../model/page.model';
 import {PageEvent} from '@angular/material';
+import { PORT } from '../shared/constants';
 
 export interface IEventPage {
   events: EventModel[];
@@ -22,8 +23,8 @@ export interface ISearchParams {
 export class EventService {
 
   eventsChanged = new Subject<IEventPage>();
-  private readonly getEventsPath = 'http://localhost:8080/api/events/paged';
-  private readonly searchEventsPath = 'http://localhost:8080/api/events/search';
+  private readonly getEventsPath = `http://localhost:${PORT}/api/events/paged`;
+  private readonly searchEventsPath = `http://localhost:${PORT}/api/events/search`;
 
   pageChanged = new Subject<PageEvent>();
   private page: Page = new Page(0, 8);

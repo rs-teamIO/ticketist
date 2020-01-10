@@ -4,6 +4,7 @@ import {BehaviorSubject} from 'rxjs';
 import {User} from '../model/user.model';
 import {tap} from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { PORT } from '../shared/constants';
 
 export interface IUserRegister {
   username: string;
@@ -13,27 +14,44 @@ export interface IUserRegister {
   lastName: string;
 }
 
-@Injectable({providedIn: 'root'})
+interface IFullToken {
+  sub: string;
+  audience: string;
+  created: number;
+  exp: number;
+  authorities: string;
+}
+
+export interface IToken {
+  authority: string;
+  expiration: number;
+}
+
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   user = new BehaviorSubject<User>(null);
   private tokenExpirationTimer: any;
+  private readonly signUpLink = `http://localhost:${PORT}/api/users`;
+  private readonly loginLink = `http://localhost:${PORT}/api/auth`;
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  private handleAuthentication(token: string, expiresIn: number = 86400) {
-    const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+  private handleAuthentication(token: string) {
+    const parsedToken: IToken = this.parseJwt(token);
+    const expirationDate = new Date(parsedToken.expiration * 1000);
     const user = new User(
       token,
-      expirationDate
+      expirationDate,
+      parsedToken.authority
     );
     this.user.next(user);
-    this.autoLogout(expiresIn * 1000);
-    localStorage.setItem('userData', JSON.stringify(user));
+    this.autoLogout(parsedToken.expiration * 1000);
+    localStorage.setItem('userToken', token);
   }
 
   signup(registerUser: IUserRegister) {
     return this.http.post<number>(
-      'http://localhost:8000/api/users',
+      this.signUpLink,
       {
         username: registerUser.username,
         email: registerUser.email,
@@ -46,7 +64,7 @@ export class AuthService {
 
   login(username: string, password: string) {
     return this.http.post<{token: string}>(
-      'http://localhost:8000/api/auth',
+      this.loginLink,
       {
         username,
         password
@@ -59,24 +77,23 @@ export class AuthService {
   }
 
   autoLogin() {
-    const userData: {
-      _token: string,
-      _tokenExpirationDate: string
-    }  = JSON.parse(localStorage.getItem('userData'));
+    const token: string = localStorage.getItem('userToken');
 
-    if (!userData) {
+    if (!token) {
       return;
     }
 
+    const parsedToken: IToken = this.parseJwt(token);
+
     const loadedUser = new User(
-      userData._token,
-      new Date(userData._tokenExpirationDate)
+      token,
+      new Date(parsedToken.expiration * 1000),
+      parsedToken.authority
     );
 
     if (loadedUser.token) {
       this.user.next(loadedUser);
-      const expirationDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
-      this.autoLogout(expirationDuration);
+      this.autoLogout(parsedToken.expiration * 1000);
     }
 
   }
@@ -90,11 +107,26 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  autoLogout(expirationDuration: number) {
-    console.log(`User will be logged out after ${expirationDuration}ms`);
+  autoLogout(expirationDate: number) {
+    console.log(`User will be logged out after ${expirationDate - new Date().getTime()}ms`);
     this.tokenExpirationTimer = setTimeout(() => {
       this.logout();
-    }, expirationDuration);
+    }, expirationDate - new Date().getTime());
+  }
+
+  parseJwt = (token: string): IToken => {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map((c: any) => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    const fullToken: IFullToken = JSON.parse(jsonPayload);
+
+    return {
+      authority: fullToken.authorities.split(',')[0],
+      expiration: fullToken.exp
+    };
   }
 
 }
