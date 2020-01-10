@@ -35,6 +35,7 @@ import {UserProfileComponent} from './user-profile/user-profile.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {CustomMaterialModule} from './shared/material.module';
 import {AuthInterceptorService} from './services/auth-interceptor.service';
+import { ErrorPageComponent } from './error-page/error-page.component';
 
 @NgModule({
   declarations: [
@@ -66,7 +67,8 @@ import {AuthInterceptorService} from './services/auth-interceptor.service';
     CheckoutComponent,
     TicketListComponent,
     TicketItemComponent,
-    UserProfileComponent
+    UserProfileComponent,
+    ErrorPageComponent
   ],
   imports: [
     AppRoutingModule,
