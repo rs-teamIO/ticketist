@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {EventModel} from '../model/event.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Subject} from 'rxjs';
+import {Subject, BehaviorSubject} from 'rxjs';
 import {Page} from '../model/page.model';
 import {PageEvent} from '@angular/material';
 import { PORT } from '../shared/constants';
+import { NewEvent } from '../model/new-event.model';
 
 export interface IEventPage {
   events: EventModel[];
@@ -19,17 +20,57 @@ export interface ISearchParams {
   endDate: Date;
 }
 
+export interface IEvent {
+  basicInfo: IEventBasic;
+  eventSectors: IEventSector[];
+  mediaFiles: any[];
+}
+
+export interface IEventBasic {
+  venueId: number;
+  name: string;
+  category: string;
+  startDate: number;
+  endDate: number;
+  reservationDeadline: number;
+  description: string;
+  reservationLimit: number;
+}
+
+export interface IEventSector {
+  sectorId: number;
+  ticketPrice: number;
+  numeratedSeats: boolean;
+  capacity?: number;
+}
+
 @Injectable({providedIn: 'root'})
 export class EventService {
 
+  private page: Page = new Page(0, 8);
   eventsChanged = new Subject<IEventPage>();
+  pageChanged = new Subject<PageEvent>();
+  searchParamsChanged = new Subject<ISearchParams>();
+
+  newEvent = new NewEvent(
+    {
+      venueId: null,
+      name: '',
+      category: '',
+      startDate: null,
+      endDate: null,
+      reservationDeadline: null,
+      description: '',
+      reservationLimit: null
+    }, [], []
+  );
+  newEventChanged = new Subject<NewEvent>();
+
   private readonly getEventsPath = `http://localhost:${PORT}/api/events/paged`;
   private readonly searchEventsPath = `http://localhost:${PORT}/api/events/search`;
+  private readonly postEventPath = `http://localhost:${PORT}/api/events`;
+  private readonly getAllActiveVenuesPath = `http://localhost:${PORT}/api/venues/active`;
 
-  pageChanged = new Subject<PageEvent>();
-  private page: Page = new Page(0, 8);
-
-  searchParamsChanged = new Subject<ISearchParams>();
   private searchParams = {
     eventName: '',
     category: '',
@@ -55,6 +96,8 @@ export class EventService {
     return false;
   }
 
+  private getVenueSectorsLink = (id: number) => `http://localhost:${PORT}/api/${id}`;
+
   getEvents() {
     if (EventService.checkIfEmpty(this.searchParams)) {
       this.getAll();
@@ -79,6 +122,20 @@ export class EventService {
         this.eventsChanged.next(responseData);
         console.log(responseData);
       });
+  }
+
+  setNewEventBasicInfo(eventBasic: IEventBasic): void {
+    this.newEvent.basicInfo = eventBasic;
+    this.newEventChanged.next(this.newEvent);
+  }
+
+  addEventSector(eventSector: IEventSector): void {
+    this.newEvent.eventSectors.push(eventSector);
+    this.newEventChanged.next(this.newEvent);
+  }
+
+  removeEventSector(eventSector: IEventSector): void {
+
   }
 
 }
