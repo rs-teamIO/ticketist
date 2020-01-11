@@ -1,2 +1,78 @@
-<p>event-form works!</p>
-<app-event-form-sectors></app-event-form-sectors>
+<div fxLayout="row" fxLayout.xs="column" class="main">
+  <div fxFlex="30" fxLayout="column" fxFlexAlign="center center" class="basicInfoPanel">
+    <form [formGroup]="newEventForm" (ngSubmit)="onSubmit()">
+        <mat-form-field>
+          <input matInput placeholder="Event Name" formControlName="eventName">
+          <mat-error *ngIf="eventName.invalid && eventName.touched">
+            Event name is required!
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-select formControlName="category" placeholder="Category">
+            <mat-option value="ENTERTAINMENT">Entertainment</mat-option>
+            <mat-option value="SPORT">Sport</mat-option>
+            <mat-option value="CULTURAL">Cultural</mat-option>
+          </mat-select>
+          <mat-error *ngIf="category.invalid && category.touched">
+            Category is required!
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput [min]="minDate" [matDatepicker]="startDate" placeholder="Select start date" formControlName="startDate">
+          <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+          <mat-datepicker #startDate></mat-datepicker>
+          <mat-error *ngIf="startDateInfo.invalid && startDateInfo.touched">
+            Start date is required!
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput [min]="minDate" [matDatepicker]="endDate" placeholder="Select end date" formControlName="endDate">
+          <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+          <mat-datepicker #endDate></mat-datepicker>
+          <mat-error *ngIf="endDateInfo.invalid && endDateInfo.touched">
+            End date is required!
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput [min]="minDate" [matDatepicker]="reservationDeadline" placeholder="Select reservation deadline" formControlName="reservationDeadline">
+          <mat-datepicker-toggle matSuffix [for]="reservationDeadline"></mat-datepicker-toggle>
+          <mat-datepicker #reservationDeadline></mat-datepicker>
+          <mat-error *ngIf="reservationDeadlineInfo.invalid && reservationDeadlineInfo.touched">
+            Reservation deadline is required!
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field >
+          <input matInput type="number" placeholder="Reservation limit" formControlName="reservationLimit">
+          <mat-error *ngIf="reservationLimit.invalid && reservationLimit.touched">
+            Reservation limit wrong format!
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field >
+          <textarea matInput placeholder="Enter description" formControlName="description"></textarea>
+          <mat-error *ngIf="description.invalid && description.touched">
+            Description is required!
+          </mat-error>
+        </mat-form-field>
+
+        <p>{{error}}</p>
+
+        <button mat-raised-button color="primary" type="submit" class="submitButton">
+          <span>Add Event</span>
+        </button>
+    </form>
+  </div>
+  <div fxLayout="column" fxFlex="70">
+    <div fxLayout="row" class="imagePanel">
+      ads
+    </div>
+    <div fxLayout="row" class="venueSectorPanel">
+      adfsdf
+    </div>
+  </div>
+</div>

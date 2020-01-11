@@ -52,24 +52,9 @@ export class EventService {
   pageChanged = new Subject<PageEvent>();
   searchParamsChanged = new Subject<ISearchParams>();
 
-  newEvent = new NewEvent(
-    {
-      venueId: null,
-      name: '',
-      category: '',
-      startDate: null,
-      endDate: null,
-      reservationDeadline: null,
-      description: '',
-      reservationLimit: null
-    }, [], []
-  );
-  newEventChanged = new Subject<NewEvent>();
-
   private readonly getEventsPath = `http://localhost:${PORT}/api/events/paged`;
   private readonly searchEventsPath = `http://localhost:${PORT}/api/events/search`;
   private readonly postEventPath = `http://localhost:${PORT}/api/events`;
-  private readonly getAllActiveVenuesPath = `http://localhost:${PORT}/api/venues/active`;
 
   private searchParams = {
     eventName: '',
@@ -96,8 +81,6 @@ export class EventService {
     return false;
   }
 
-  private getVenueSectorsLink = (id: number) => `http://localhost:${PORT}/api/${id}`;
-
   getEvents() {
     if (EventService.checkIfEmpty(this.searchParams)) {
       this.getAll();
@@ -122,20 +105,6 @@ export class EventService {
         this.eventsChanged.next(responseData);
         console.log(responseData);
       });
-  }
-
-  setNewEventBasicInfo(eventBasic: IEventBasic): void {
-    this.newEvent.basicInfo = eventBasic;
-    this.newEventChanged.next(this.newEvent);
-  }
-
-  addEventSector(eventSector: IEventSector): void {
-    this.newEvent.eventSectors.push(eventSector);
-    this.newEventChanged.next(this.newEvent);
-  }
-
-  removeEventSector(eventSector: IEventSector): void {
-
   }
 
 }
