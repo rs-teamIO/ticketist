@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Observable} from 'rxjs';
-import { Router } from '@angular/router';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {Observable, Subject} from 'rxjs';
+import {Page} from '../model/page.model';
+import {PageEvent} from '@angular/material';
 import {Sector} from './sector.service';
 import {tap} from "rxjs/operators";
 
@@ -24,12 +25,24 @@ export interface VenueBasic {
   longitude: number;
 }
 
+export interface IVenuePage {
+  venues: Venue[];
+  totalSize: number;
+}
 
 
 @Injectable({providedIn: 'root'})
 export class VenueService {
+  venuesChanged = new Subject<IVenuePage>();
 
-  constructor(private http: HttpClient, private router: Router) {}
+  pageChanged = new Subject<PageEvent>();
+  private page: Page = new Page(0, 2);
+
+  constructor(private http: HttpClient) {
+    this.pageChanged.subscribe((value) => {
+      this.page = {page: value.pageIndex, size: value.pageSize};
+    });
+  }
 
 
   retrieve(): Observable<Venue[]> {
@@ -37,11 +50,10 @@ export class VenueService {
   }
 
   activate(id: string): Observable<boolean> {
-    return this.http.put<boolean>('http://localhost:8000/api/venues/change-status/' + id,{});
+    return this.http.put<boolean>('http://localhost:8000/api/venues/change-status/' + id, {});
   }
 
-  create(venue: Venue): Observable<Venue>{
-    console.log('creating');
+  create(venue: Venue): Observable<Venue> {
     return this.http.post<Venue>('http://localhost:8000/api/venues/', {
       id: venue.id,
       name: venue.name,
@@ -66,5 +78,14 @@ export class VenueService {
 
   find(id: string): Observable<Venue> {
     return this.http.get<Venue>('http://localhost:8000/api/venues/' + id);
+  }
+
+  venuesPaged() {
+    const params: HttpParams = new HttpParams().set('page', String(this.page.page)).set('size', String(this.page.size));
+    this.http.get<IVenuePage>('http://localhost:8000/api/venues/paged', {params})
+      .subscribe(responseData => {
+        this.venuesChanged.next(responseData);
+        console.log(responseData);
+      });
   }
 }

@@ -38,6 +38,7 @@ import { CustomMaterialModule } from './shared/material.module';
 import { AuthInterceptorService } from './services/auth-interceptor.service';
 import {AgmCoreModule} from '@agm/core';
 import {MatDividerModule} from "@angular/material/divider";
+import {MatPaginatorModule} from "@angular/material/paginator";
 
 @NgModule({
   declarations: [
@@ -71,20 +72,21 @@ import {MatDividerModule} from "@angular/material/divider";
     TicketItemComponent,
     UserProfileComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    ReactiveFormsModule,
-    CustomMaterialModule,
-    HttpClientModule,
-    AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyCn40xrisQWoIytZzAEohvAWPQfTIk1SR4',
-      libraries: ['places', 'geometry']
-      /* apiKey is required, unless you are a premium customer, in which case you can use clientId */
-    }),
-    MatDividerModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        ReactiveFormsModule,
+        CustomMaterialModule,
+        HttpClientModule,
+        AgmCoreModule.forRoot({
+            apiKey: 'AIzaSyCn40xrisQWoIytZzAEohvAWPQfTIk1SR4',
+            libraries: ['places', 'geometry']
+            /* apiKey is required, unless you are a premium customer, in which case you can use clientId */
+        }),
+        MatDividerModule,
+        MatPaginatorModule
+    ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }],
   bootstrap: [AppComponent]
 })

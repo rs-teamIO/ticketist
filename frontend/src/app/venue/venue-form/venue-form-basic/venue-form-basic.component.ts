@@ -56,12 +56,14 @@ export class VenueFormBasicComponent implements OnInit {
 
     const { name, city, street } = this.venueForm.value;
 
-    const latitude = 0.0;
-    const longitude = 0.0;
+    let latitude = 0.0;
+    let longitude = 0.0;
 
-   // this.geocodeService.gelocate(city + ',' + street).subscribe(retData => {
-     // latitude = retData[0].geometry.location.lat();
-     // longitude = retData[0].geometry.location.lng();
+    this.geocodeService.gelocate(city + ',' + street).subscribe(retData => {
+    console.log(retData);
+
+    latitude = retData.results[0].geometry.location.lat;
+    longitude = retData.results[0].geometry.location.lng;
 
     const isActive = true;
     const id = null;
@@ -97,6 +99,7 @@ export class VenueFormBasicComponent implements OnInit {
       this.venueService.create(venue).subscribe(
         resData => {
           console.log(resData);
+          this.venue = resData;
           this.isLoading = false;
         },
         error => {
@@ -116,6 +119,7 @@ export class VenueFormBasicComponent implements OnInit {
       };
       this.venueService.update(this.venue.id, venue).subscribe(
         resData => {
+          this.venue = resData;
           console.log(resData);
           this.isLoading = false;
         },
@@ -129,7 +133,7 @@ export class VenueFormBasicComponent implements OnInit {
 
 
 
-   // });
+  });
 
   }
 

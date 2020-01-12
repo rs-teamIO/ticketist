@@ -18,11 +18,8 @@ export class GeocodeService {
   };
 
   gelocate(address: string): Observable<any> {
-    return this.http.get<any>('https://maps.googleapis.com/maps/api/geocode/json?address=' + address +
-      '&key=AIzaSyCn40xrisQWoIytZzAEohvAWPQfTIk1SR4', {headers:
-        {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } }).pipe(map(rez => {
-        console.log(rez);
-    }));
+    return this.http.get<any>('https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/geocode/json?address=' + address +
+      '&key=AIzaSyCn40xrisQWoIytZzAEohvAWPQfTIk1SR4');
   }
 
 }

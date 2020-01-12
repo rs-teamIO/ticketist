@@ -3,6 +3,7 @@ package com.siit.ticketist.controller;
 import com.siit.ticketist.dto.SectorDTO;
 import com.siit.ticketist.dto.VenueBasicDTO;
 import com.siit.ticketist.dto.VenueDTO;
+import com.siit.ticketist.dto.VenuePageDTO;
 import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.model.Venue;
 import com.siit.ticketist.service.VenueService;
@@ -14,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +47,16 @@ public class VenueController {
                 .forEachOrdered(venues::add);
         return new ResponseEntity<>(venues, HttpStatus.OK);
     }
+
+    @GetMapping(value="/paged")
+    public ResponseEntity<VenuePageDTO> getEvents(Pageable pageable) {
+        List<VenueDTO> venues = new ArrayList<>();
+        venueService.findAll(pageable).stream()
+                .map(VenueDTO::new)
+                .forEachOrdered(venues::add);
+        return new ResponseEntity<>(new VenuePageDTO(venues, venueService.findAll(pageable).getTotalElements()), HttpStatus.OK);
+    }
+
 
     /**
      * GET /api/venues/{id}

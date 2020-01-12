@@ -17,4 +17,12 @@
     </button>
   </mat-card>
 
+  <div class="paginator mat-elevation-z5">
+    <mat-paginator [length]="totalSize"
+                   pageSize="2"
+                   pageIndex="0"
+                   (page)="onPageChanged($event)">
+    </mat-paginator>
+  </div>
+
 </div>
