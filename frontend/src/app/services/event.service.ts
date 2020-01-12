@@ -67,7 +67,6 @@ export class EventService {
     this.http.get<IEventPage>(this.getEventsPath, {params})
       .subscribe(responseData => {
         this.eventsChanged.next(responseData);
-        console.log(responseData);
       });
   }
 
@@ -76,7 +75,6 @@ export class EventService {
     this.http.post<IEventPage>(this.searchEventsPath, this.searchParams, {params})
       .subscribe(responseData => {
         this.eventsChanged.next(responseData);
-        console.log(responseData);
       });
   }
 

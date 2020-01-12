@@ -2,7 +2,9 @@ package com.siit.ticketist.controller;
 
 import com.siit.ticketist.dto.InitialReportDTO;
 import com.siit.ticketist.dto.VenueReportDTO;
+import com.siit.ticketist.model.Venue;
 import com.siit.ticketist.service.ReportService;
+import com.siit.ticketist.service.VenueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReportsController {
 
     private final ReportService reportService;
+    private final VenueService venueService;
 
-    public ReportsController(ReportService reportService) {
+    public ReportsController(ReportService reportService, VenueService venueService) {
         this.reportService = reportService;
+        this.venueService = venueService;
     }
 
     /**
@@ -42,10 +46,11 @@ public class ReportsController {
      *
      * @return {@link ResponseEntity} containing HttpStatus and message of the operation result
      */
-    @GetMapping(value="/{venueId}/{criteria}")
+    @GetMapping(value="/{venueName}/{criteria}")
     //@PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity generateVenueReport(@PathVariable("venueId") Long venueId,
+    public ResponseEntity generateVenueReport(@PathVariable("venueName") String venueName,
                                               @PathVariable("criteria") String criteria) {
+        Long venueId = venueService.findOneByName(venueName).getId();
         VenueReportDTO dto = new VenueReportDTO(reportService.getVenueChart(criteria, venueId), reportService.findAllEventReportsByVenue(venueId));
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }

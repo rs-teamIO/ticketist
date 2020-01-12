@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface VenueRepository extends JpaRepository<Venue, Long> {
 
@@ -22,5 +23,7 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
             "ON e.id = t.event_id " +
             "GROUP BY v.id", nativeQuery = true)
     List<Object[]> getAllVenueRevenues();
+
+    Optional<Venue> findOneByName(String name);
 
 }

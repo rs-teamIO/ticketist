@@ -45,6 +45,10 @@ public class VenueService {
                 .orElseThrow(() -> new NotFoundException("Venue not found."));
     }
 
+    public Venue findOneByName(String name) {
+        return this.venueRepository.findOneByName(name).orElseThrow(() -> new NotFoundException("Venue with given name not found"));
+    }
+
     public Venue save(Venue venue) {
         int overlap = 0;
         for(Sector sector: venue.getSectors()){

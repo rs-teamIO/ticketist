@@ -36,6 +36,8 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {CustomMaterialModule} from './shared/material.module';
 import {AuthInterceptorService} from './services/auth-interceptor.service';
 import {NgxChartsModule} from '@swimlane/ngx-charts';
+import {ToMonthChartPipe} from './pipes/to-month-chart.pipe';
+import { ToInitialChartPipe } from './pipes/to-initial-chart.pipe';
 
 @NgModule({
   declarations: [
@@ -68,6 +70,8 @@ import {NgxChartsModule} from '@swimlane/ngx-charts';
     TicketListComponent,
     TicketItemComponent,
     UserProfileComponent,
+    ToMonthChartPipe,
+    ToInitialChartPipe
   ],
     imports: [
         AppRoutingModule,
