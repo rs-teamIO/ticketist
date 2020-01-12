@@ -1,6 +1,5 @@
-import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -39,6 +38,7 @@ import { AuthInterceptorService } from './services/auth-interceptor.service';
 import {AgmCoreModule} from '@agm/core';
 import {MatDividerModule} from "@angular/material/divider";
 import {MatPaginatorModule} from "@angular/material/paginator";
+import { BrowserModule } from '@angular/platform-browser';
 
 @NgModule({
   declarations: [
@@ -70,7 +70,7 @@ import {MatPaginatorModule} from "@angular/material/paginator";
     CheckoutComponent,
     TicketListComponent,
     TicketItemComponent,
-    UserProfileComponent,
+    UserProfileComponent
   ],
     imports: [
         BrowserModule,
@@ -90,4 +90,5 @@ import {MatPaginatorModule} from "@angular/material/paginator";
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

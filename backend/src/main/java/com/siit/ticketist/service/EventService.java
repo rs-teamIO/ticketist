@@ -11,6 +11,8 @@ import com.siit.ticketist.repository.TicketRepository;
 import com.siit.ticketist.service.interfaces.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,6 +60,10 @@ public class EventService {
     public List<Event> findAll() {
         return this.eventRepository.findAll();
     }
+
+    public Page<Event> findAll(Pageable page) { return this.eventRepository.findAllByIsCancelled(false, page); }
+
+    public Long getTotalNumberOfActiveEvents() { return this.eventRepository.countByIsCancelled(false); }
 
     /**
      * Finds a {@link Event} with given ID.
@@ -332,9 +338,9 @@ public class EventService {
      * @param millisecondsTo milliseconds to be converted to Date
      * @return List<Event> result list
      */
-    public List<Event> search(String eventName, String category, String venueName, Long millisecondsFrom, Long millisecondsTo){
+    public List<Event> search(String eventName, String category, String venueName, Long millisecondsFrom, Long millisecondsTo, Pageable pageable){
         return eventRepository.search(eventName, category, venueName,
-                convertMillisToDate(millisecondsFrom), convertMillisToDate(millisecondsTo));
+                convertMillisToDate(millisecondsFrom), convertMillisToDate(millisecondsTo), pageable);
     }
 
     private Date convertMillisToDate(Long millisecondsFrom){

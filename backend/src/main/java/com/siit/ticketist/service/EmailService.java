@@ -5,6 +5,7 @@ import com.siit.ticketist.model.Event;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.repository.TicketRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -26,6 +27,7 @@ import java.util.*;
  * E-mail generation and delivery service implementation.
  */
 @Service
+@RequiredArgsConstructor
 public class EmailService {
 
     private static final int DEADLINE_NOTIFICATIONS_RATE = 86400000;
@@ -50,15 +52,6 @@ public class EmailService {
     private final PdfService pdfService;
     private final EventService eventService;
     private final TicketRepository ticketRepository;
-
-    public EmailService(JavaMailSender mailSender, SpringTemplateEngine springTemplateEngine, PdfService pdfService, EventService eventService, TicketRepository ticketRepository) {
-        this.mailSender = mailSender;
-        this.springTemplateEngine = springTemplateEngine;
-        this.pdfService = pdfService;
-        this.eventService = eventService;
-        this.ticketRepository = ticketRepository;
-    }
-
 
     /**
      * Sends an email.

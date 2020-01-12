@@ -1,8 +1,6 @@
 export class User {
   constructor(
-    // tslint:disable-next-line:variable-name
     private _token: string,
-    // tslint:disable-next-line:variable-name
     private _tokenExpirationDate: Date
   ) {}
 

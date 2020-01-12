@@ -1,1 +1,59 @@
-<p>event-search works!</p>
+<div class="mat-elevation-z3" fxLayout="row" fxHide.sm fxHide.xs fxLayoutAlign="center bottom">
+  <form [formGroup]="searchForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput type="text" formControlName="eventName">
+      <button mat-icon-button matSuffix *ngIf="searchForm.get('eventName').value" (click)="searchForm.patchValue({eventName: ''})">
+        <mat-icon>clear</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-select placeholder="Category" formControlName="category">
+        <mat-option value="">All</mat-option>
+        <mat-option value="ENTERTAINMENT">Entertainment</mat-option>
+        <mat-option value="SPORT">Sport</mat-option>
+        <mat-option value="CULTURAL">Cultural</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-select placeholder="Venue" formControlName="venueName">
+        <mat-option value="">All</mat-option>
+        <mat-option value="venue 1">Venue 1</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <input
+        matInput
+        formControlName="startDate"
+        [matDatepicker]="pickerAfter"
+        placeholder="Events starting after">
+      <mat-datepicker-toggle *ngIf="!searchForm.get('startDate').value; else clearStartDate" matSuffix [for]="pickerAfter"></mat-datepicker-toggle>
+      <mat-datepicker #pickerAfter></mat-datepicker>
+      <ng-template #clearStartDate>
+      <button mat-icon-button matSuffix (click)="searchForm.patchValue({startDate: null})">
+        <mat-icon>clear</mat-icon>
+      </button>
+      </ng-template>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <input matInput formControlName="endDate" [matDatepicker]="pickerBefore" placeholder="Events starting before">
+      <mat-datepicker-toggle *ngIf="!searchForm.get('endDate').value; else clearEndDate" matSuffix [for]="pickerBefore"></mat-datepicker-toggle>
+      <mat-datepicker #pickerBefore></mat-datepicker>
+      <ng-template #clearEndDate>
+        <button mat-icon-button matSuffix (click)="searchForm.patchValue({endDate: null})">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </ng-template>
+    </mat-form-field>
+
+    <button mat-button color="primary" type="submit">
+      <mat-icon>search</mat-icon>
+      <span>Search</span>
+    </button>
+
+  </form>
+</div>
