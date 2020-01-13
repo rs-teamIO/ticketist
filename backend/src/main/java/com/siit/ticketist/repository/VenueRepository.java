@@ -1,6 +1,8 @@
 package com.siit.ticketist.repository;
 
 import com.siit.ticketist.model.Venue;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -24,5 +26,10 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
     List<Object[]> getAllVenueRevenues();
 
     List<Venue> findByIsActiveTrue();
+
+    List<Venue> findAll();
+
+    Page<Venue> findAll(Pageable page);
+
 
 }
