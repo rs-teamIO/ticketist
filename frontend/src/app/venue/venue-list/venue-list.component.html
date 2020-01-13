@@ -1,11 +1,11 @@
-<div>
+<div fxLayoutAlign="center center" fxLayout="column">
   <mat-card class="mat-card-flat card-deck-container" >
     <mat-card-header>
       <mat-card-title>Venues</mat-card-title>
     </mat-card-header>
 
-    <div>
-      <div *ngFor="let venue of venues" >
+    <div fxLayout="row wrap" class="card-deck-container" fxLayout.xs="column wrap" fxLayoutAlign="space-evenly center">
+      <div fxFlex="24" fxFlex.sm="30" fxFlex.xs="80" class="card-item" *ngFor="let venue of venues" >
         <app-venue-item [venue]="venue"></app-venue-item>
       </div>
     </div>
@@ -18,11 +18,7 @@
   </mat-card>
 
   <div class="paginator mat-elevation-z5">
-    <mat-paginator [length]="totalSize"
-                   pageSize="2"
-                   pageIndex="0"
-                   (page)="onPageChanged($event)">
-    </mat-paginator>
+    <mat-paginator [length]="totalSize" pageSize="2" pageIndex="0" (page)="onPageChanged($event)"></mat-paginator>
   </div>
 
 </div>

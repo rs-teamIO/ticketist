@@ -7,6 +7,9 @@ import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.event.annotation.BeforeTestExecution;
+import org.springframework.test.context.event.annotation.BeforeTestMethod;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
@@ -14,10 +17,27 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql("/data.sql")
 public class TicketServiceTest {
 
     @Autowired
     private TicketService ticketService;
+
+    @Test(expected = BadRequestException.class)
+    public void checkDuplicates_ShouldThrowBadRequestException_whenThereAreDuplicates(){
+        List<Long> tickets = new ArrayList<>();
+        tickets.add(1L);
+        tickets.add(1L);
+        ticketService.checkTicketDuplicates(tickets);
+    }
+
+    @Test
+    public void checkDuplicates_ShouldPass_whenThereAreNoDuplicates(){
+        List<Long> tickets = new ArrayList<>();
+        tickets.add(1L);
+        tickets.add(2L);
+        ticketService.checkTicketDuplicates(tickets);
+    }
 
     @Test
     public void checkNumberOfTickets_ShouldPass_whenNumberOfTicketsIsGreaterThanZero(){
@@ -26,11 +46,11 @@ public class TicketServiceTest {
         ticketService.checkNumberOfTickets(tickets);
     }
 
-
     @Test(expected = BadRequestException.class)
     public void checkNumberOfTickets_ShouldThrowException_whenNumberOfTicketsIsZero(){
         List<Long> tickets = new ArrayList();
         ticketService.checkNumberOfTickets(tickets);
+
     }
 
     @Test

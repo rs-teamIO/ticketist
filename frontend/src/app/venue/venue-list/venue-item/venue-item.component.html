@@ -10,7 +10,7 @@
   </mat-card>
   <mat-divider></mat-divider>
   <mat-card-actions>
-    <button mat-stroked-button [routerLink]="['/venues/',venue.id]" >View</button>
+    <button mat-stroked-button class="mat-button" [routerLink]="['/venues/',venue.id]" >View</button>
     <button mat-stroked-button (click)="activate(venue.id)">{{venue.isActive ? 'Deactivate' : 'Activate'}}</button>
   </mat-card-actions>
 </mat-card>

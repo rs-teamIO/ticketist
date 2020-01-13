@@ -77,7 +77,7 @@ VALUES ('REGISTERED_USER', 1, 'kacjica+1@gmail.com', 'Katarina', 'Tukelic', '$2a
     ('REGISTERED_USER', 4, 'pip+1@gmail.com', 'Mark', 'Fly', 'pip', 'pip123', 1, null);
 
 INSERT INTO users
-    (dtype, id, email, first_name, last_name, password, username)
+    (dtype, id, email, first_name, last_name, password, username, is_verified, verification_code)
 VALUES ('ADMIN', 2, 'f.ivkovic16+1@gmail.com', 'Filip', 'Ivkovic', '$2a$10$6HhA6auhomFftE468xtynuk40nllNZAbKLkkyyps/uX6QY1YqIbjO', 'filip', 1, null);
 
 INSERT INTO user_role
