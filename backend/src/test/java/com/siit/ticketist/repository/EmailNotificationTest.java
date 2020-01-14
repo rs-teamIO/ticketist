@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Set;
 
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -24,25 +24,31 @@ public class EmailNotificationTest {
     private TicketRepository ticketRepository;
 
     @Test
-    public void findEmailsToBeNotifiedReturnsUserEmailsWhenThereAreReservationsForGivenEvent() {
-        Set<String> emails = ticketRepository.findEmailsToBeNotified(Long.valueOf(1), TicketStatus.RESERVED);
+    public void findEmailsToBeNotifiedReturnsUserEmailsWhenThereAreReservations_ForReservationDeadline() {
+        Set<String> emails = ticketRepository.findEmailsToBeNotified(Long.valueOf(1), TicketStatus.RESERVED.ordinal());
         assertThat(emails, hasSize(1));
-        assertEquals("Email of user who reserved wanted event should be returned","user1@gmail.com", emails.stream().findFirst().get());
+        assertThat("Email of user who reserved the event should be returned", emails, hasItems("user1@gmail.com"));
     }
 
     @Test
-    public void findEmailsToBeNotifiedReturnsEmptySetWhenThereAreTicketsButNoReservationsForGivenEvent() {
-        Set<String> emails = ticketRepository.findEmailsToBeNotified(Long.valueOf(2), TicketStatus.RESERVED);
+    public void findEmailsToBeNotifiedReturnsEmptySetWhenThereAreTicketsButNoReservations_ForReservationDeadline() {
+        Set<String> emails = ticketRepository.findEmailsToBeNotified(Long.valueOf(2), TicketStatus.RESERVED.ordinal());
         assertThat("No emails are returned when there are no reservations for the event", emails, IsEmptyCollection.empty());
     }
 
     @Test
-    public void findEmailsToBeNotifiedReturnsEmptySetWhenThereAreNoTicketsAndNoReservationsForGivenEvent() {
-        Set<String> emails = ticketRepository.findEmailsToBeNotified(Long.valueOf(3), TicketStatus.RESERVED);
-        assertThat("No emails are returned when there are no reservations and no tickets for the event", emails, IsEmptyCollection.empty());
+    public void findEmailsToBeNotifiedReturnsAllUserEmailsWhenThereAreReservationsAndTickets_ForEventCancellation() {
+        TicketStatus a = TicketStatus.PAID;
+        Set<String> emails = ticketRepository.findEmailsToBeNotified(Long.valueOf(1), TicketStatus.PAID.ordinal());
+        assertThat(emails, hasSize(2));
+        assertThat("Emails of the user who bought the ticket, and the user who reserved should be returned",
+                emails, containsInAnyOrder("user1@gmail.com", "user2@gmail.com"));
     }
 
-    //TODO Metoda izmenjena, dodati testove za TicketStatus.PAID
-
+    @Test
+    public void findEmailsToBeNotifiedReturnsEmptySetWhenThereAreNoTicketsAndNoReservationsForGivenEvent() {
+        Set<String> emails = ticketRepository.findEmailsToBeNotified(Long.valueOf(3), TicketStatus.RESERVED.ordinal());
+        assertThat("No emails are returned when there are no reservations and no tickets for the event", emails, IsEmptyCollection.empty());
+    }
 
 }

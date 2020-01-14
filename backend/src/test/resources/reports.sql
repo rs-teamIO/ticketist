@@ -20,18 +20,18 @@ VALUES
 
 INSERT INTO tickets (id, number_column, number_row, price, status, event_id, user_id)
 VALUES
-    (1,1,1,40,1,1,1),		-- first spens event has one res and two tickets sold
-    (2,1,1,40,1,1,1),
-    (3,1,1,40,0,1,1),
+    (1,1,1,40,2,1,1),		-- first spens event has one res and two tickets sold
+    (2,1,1,40,2,1,1),
+    (3,1,1,40,1,1,1),
 
-    (4,1,1,50,1,2,1),		-- second spens event has one res and one ticket sold
-    (5,1,1,50,0,2,1),
+    (4,1,1,50,2,2,1),		-- second spens event has one res and one ticket sold
+    (5,1,1,50,1,2,1),
 
-    (6,1,1,50,0,3,1),		-- third event has two reservations
-    (7,1,1,60,0,3,1),
+    (6,1,1,50,1,3,1),		-- third event has two reservations
+    (7,1,1,60,1,3,1),
 
-    (8,1,1,60,-1,3,1),      -- fourth event has no tickets or reservations
-    (9,1,1,60,-1,3,1);
+    (8,1,1,60,0,3,1),      -- fourth event has no tickets or reservations
+    (9,1,1,60,0,3,1);
 
 
 
