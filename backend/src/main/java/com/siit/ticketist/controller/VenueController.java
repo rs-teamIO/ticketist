@@ -3,6 +3,7 @@ package com.siit.ticketist.controller;
 import com.siit.ticketist.dto.SectorDTO;
 import com.siit.ticketist.dto.VenueBasicDTO;
 import com.siit.ticketist.dto.VenueDTO;
+import com.siit.ticketist.dto.VenuePageDTO;
 import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.model.Venue;
 import com.siit.ticketist.service.VenueService;
@@ -14,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +48,16 @@ public class VenueController {
         return new ResponseEntity<>(venues, HttpStatus.OK);
     }
 
+    @GetMapping(value="/paged")
+    public ResponseEntity<VenuePageDTO> getEvents(Pageable pageable) {
+        List<VenueDTO> venues = new ArrayList<>();
+        venueService.findAll(pageable).stream()
+                .map(VenueDTO::new)
+                .forEachOrdered(venues::add);
+        return new ResponseEntity<>(new VenuePageDTO(venues, venueService.findAll(pageable).getTotalElements()), HttpStatus.OK);
+    }
+
+
     /**
      * GET /api/venues/{id}
      * Returns a {@link Venue} with the requested ID
@@ -54,7 +66,7 @@ public class VenueController {
      * @return {@link ResponseEntity} containing HttpStatus and content
      */
     @GetMapping(value="{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+  //  @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<VenueDTO> getVenue(@PathVariable("id") Long id) {
         Venue venue = venueService.findOne(id);
         return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.OK);
@@ -68,7 +80,7 @@ public class VenueController {
      * @return {@link ResponseEntity} containing the info about the created Venue
      */
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<VenueDTO> createVenue(@Valid @RequestBody VenueDTO venueDto) {
         Venue venueToBeCreated = venueDto.convertToEntity();
         Venue venue = venueService.save(venueToBeCreated);
@@ -76,7 +88,7 @@ public class VenueController {
     }
 
     @PutMapping(value = "/change-status/{venueID}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Boolean> changeActiveStatus(@PathVariable("venueID") Long id) {
         Venue venue = venueService.changeActiveStatus(id);
         return new ResponseEntity<>(venue.getIsActive(), HttpStatus.OK);
@@ -95,7 +107,7 @@ public class VenueController {
     }
 
     @PutMapping(value = "{venueID}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<VenueDTO> updateVenue(@PathVariable("venueID") Long venueID, @Valid @RequestBody VenueBasicDTO venueBasic) {
         Venue venue = venueService.updateVenue(venueBasic, venueID);
         return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.OK);

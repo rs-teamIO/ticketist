@@ -12,6 +12,7 @@ export interface IUserUpdate {
   firstName: string;
   lastName: string;
   newPassword: string;
+  newPasswordRepeat: string;
 }
 
 export interface IRegisteredUser {
@@ -36,7 +37,8 @@ export class UserService {
         oldPassword: user.oldPassword,
         firstName: user.firstName,
         lastName: user.lastName,
-        newPassword: user.newPassword
+        newPassword: user.newPassword,
+        newPasswordRepeat: user.newPasswordRepeat
       }
     );
   }

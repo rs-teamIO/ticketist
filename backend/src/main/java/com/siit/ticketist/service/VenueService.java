@@ -7,6 +7,8 @@ import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.model.Venue;
 import com.siit.ticketist.repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,6 +50,8 @@ public class VenueService {
                 .orElseThrow(() -> new NotFoundException("Venue not found."));
     }
 
+    public Page<Venue> findAll(Pageable page) { return this.venueRepository.findAll(page); }
+
     public Venue save(Venue venue) {
         int overlap = 0;
         venue.setIsActive(true);
@@ -71,6 +75,9 @@ public class VenueService {
         return venue.getIsActive();
     }
 
+    public Venue update(Venue venue) {
+        return venueRepository.save(venue);
+    }
     public Venue changeActiveStatus(Long venueID) {
         Venue venue = findOne(venueID);
         venue.setIsActive(!venue.getIsActive());

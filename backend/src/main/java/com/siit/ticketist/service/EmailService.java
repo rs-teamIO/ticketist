@@ -135,7 +135,7 @@ public class EmailService {
     public void sendDeadlineNotificationEmails() throws MessagingException {
         List<Event> events = this.eventService.filterEventsByDeadline();
         Set<String> emailsToBeNotified = new LinkedHashSet<>();
-        events.forEach(event -> emailsToBeNotified.addAll(this.ticketRepository.findEmailsToBeNotified(event.getId(), TicketStatus.RESERVED)));
+        events.forEach(event -> emailsToBeNotified.addAll(this.ticketRepository.findEmailsToBeNotified(event.getId(), TicketStatus.RESERVED.ordinal())));
         for (String emailAddress : emailsToBeNotified) {
             this.sendEmail(emailAddress, "Your reservation is about to expire", this.generateDeadlineNotificationMail());
         }
@@ -202,7 +202,7 @@ public class EmailService {
      * @throws MessagingException Exception thrown in case an error on the SMTP server occurs
      */
     public void sendEventCancelledEmails(Event event) throws MessagingException {
-        Set<String> emails = ticketRepository.findEmailsToBeNotified(event.getId(), TicketStatus.PAID);
+        Set<String> emails = ticketRepository.findEmailsToBeNotified(event.getId(), TicketStatus.PAID.ordinal());
         for (String userEmail : emails)
             sendEmail(userEmail, "Event " + event.getName() + " has been cancelled.", generateEventCancelledEmail(event));
     }

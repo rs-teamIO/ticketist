@@ -36,12 +36,14 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     List<Ticket> findTicketsByIdGroup(@Param("ids") List<Long> ticketIds, @Param("userId") Long userId);
 
     /**
-     * Retrieves a set of e-mails that should be notified about something.
+     * Retrieves a set of e-mails that should be notified about:
+     *  - reservation about to expire
+     *  - event cancelled
      *
      * @param eventId ID of the event whose ticket users should be notified
      * @param ticketStatus {@link TicketStatus.RESERVED} used when only reservations are needed
      *                     {@link TicketStatus.PAID} used when both reservations and bought tickets are needed
-     * @return List of strings containing emails
+     * @return Set of strings containing emails
      */
     @Query(value =
             "SELECT u.email " +
@@ -49,7 +51,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "ON t.user_id = u.id " +
             "WHERE t.event_id = :eventId AND (t.status = 1 OR t.status = :ticketStatus)" +
             "GROUP BY u.id", nativeQuery = true)
-    Set<String> findEmailsToBeNotified(Long eventId, TicketStatus ticketStatus);
+    Set<String> findEmailsToBeNotified(Long eventId, Integer ticketStatus);
 
     /**
      * Deactivates tickets by setting their status to {@link TicketStatus.EVENT_CANCELLED}

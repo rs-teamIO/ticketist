@@ -28,14 +28,19 @@ import {ReservationListComponent} from './reservation-list/reservation-list.comp
 import {ReservationItemComponent} from './reservation-list/reservation-item/reservation-item.component';
 import {EventItemComponent} from './event/event-list/event-item/event-item.component';
 import {VenueItemComponent} from './venue/venue-list/venue-item/venue-item.component';
-import {CheckoutComponent} from './checkout/checkout.component';
-import {TicketListComponent} from './checkout/ticket-list/ticket-list.component';
-import {TicketItemComponent} from './checkout/ticket-list/ticket-item/ticket-item.component';
-import {UserProfileComponent} from './user-profile/user-profile.component';
-import {ReactiveFormsModule} from '@angular/forms';
-import {CustomMaterialModule} from './shared/material.module';
-import {AuthInterceptorService} from './services/auth-interceptor.service';
 import { ErrorPageComponent } from './error-page/error-page.component';
+import { CheckoutComponent } from './checkout/checkout.component';
+import { TicketListComponent } from './checkout/ticket-list/ticket-list.component';
+import { TicketItemComponent } from './checkout/ticket-list/ticket-item/ticket-item.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CustomMaterialModule } from './shared/material.module';
+import { AuthInterceptorService } from './services/auth-interceptor.service';
+import { AgmCoreModule } from '@agm/core';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { BrowserModule } from '@angular/platform-browser';
+
 
 @NgModule({
   declarations: [
@@ -70,13 +75,21 @@ import { ErrorPageComponent } from './error-page/error-page.component';
     UserProfileComponent,
     ErrorPageComponent
   ],
-  imports: [
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    ReactiveFormsModule,
-    CustomMaterialModule,
-    HttpClientModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        ReactiveFormsModule,
+        CustomMaterialModule,
+        HttpClientModule,
+        AgmCoreModule.forRoot({
+            apiKey: 'AIzaSyCn40xrisQWoIytZzAEohvAWPQfTIk1SR4',
+            libraries: ['places', 'geometry']
+            /* apiKey is required, unless you are a premium customer, in which case you can use clientId */
+        }),
+        MatDividerModule,
+        MatPaginatorModule
+    ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }],
   bootstrap: [AppComponent]
 })

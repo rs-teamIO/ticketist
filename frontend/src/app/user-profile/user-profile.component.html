@@ -41,6 +41,19 @@
             </mat-form-field>
           </td>
         </tr>
+
+        <tr>
+          <td>
+            <mat-form-field class="example-full-width">
+              <input
+                matInput
+                placeholder="Email address"
+                formControlName="email"
+              >
+            </mat-form-field>
+          </td>
+        </tr>
+
         <tr>
           <td>
             <mat-form-field class="example-full-width">
@@ -53,13 +66,15 @@
             </mat-form-field>
           </td>
         </tr>
+
         <tr>
           <td>
             <mat-form-field class="example-full-width">
               <input
                 matInput
-                placeholder="Email address"
-                formControlName="email"
+                placeholder="New password"
+                formControlName="newPassword"
+                type="password"
               >
             </mat-form-field>
           </td>
@@ -69,8 +84,8 @@
             <mat-form-field class="example-full-width">
               <input
                 matInput
-                placeholder="New password"
-                formControlName="newPassword"
+                placeholder="New password repeated"
+                formControlName="newPasswordRepeat"
                 type="password"
               >
             </mat-form-field>

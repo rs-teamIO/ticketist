@@ -53,6 +53,9 @@ public class RegisteredUserService {
     public RegisteredUser update(RegisteredUser updatedUser, String newPassword) {
         final RegisteredUser registeredUser = this.userService.findRegisteredUserByUsername(updatedUser.getUsername());
 
+        if(!registeredUser.getEmail().equals(updatedUser.getEmail()))
+            this.userService.checkIfEmailTaken(registeredUser.getEmail());
+
         registeredUser.setFirstName(updatedUser.getFirstName());
         registeredUser.setLastName(updatedUser.getLastName());
         registeredUser.setEmail(updatedUser.getEmail());
@@ -60,9 +63,6 @@ public class RegisteredUserService {
 
         if(newPassword != null)
             registeredUser.setPassword(newPassword);
-
-       // this.userService.checkIfUsernameTaken(registeredUser.getUsername());
-        this.userService.checkIfEmailTaken(registeredUser.getEmail());
 
         return this.userService.save(registeredUser);
     }

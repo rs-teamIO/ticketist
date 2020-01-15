@@ -23,7 +23,8 @@ export class UserProfileComponent implements OnInit {
       lastName: new FormControl(null, Validators.required),
       email: new FormControl(null, [Validators.required, Validators.email]),
       oldPassword: new FormControl(null, Validators.required),
-      newPassword : new FormControl(null)
+      newPassword : new FormControl(null),
+      newPasswordRepeat : new FormControl(null)
     });
     this.userService.retrieve().subscribe(
       resData => {
@@ -45,14 +46,15 @@ export class UserProfileComponent implements OnInit {
 
     this.isLoading = true;
 
-    const { email, oldPassword, lastName, firstName, username, newPassword } = this.userForm.value;
+    const { email, oldPassword, lastName, firstName, username, newPassword, newPasswordRepeat } = this.userForm.value;
     const User: IUserUpdate = {
       email,
       oldPassword,
       username,
       firstName,
       lastName,
-      newPassword
+      newPassword,
+      newPasswordRepeat
     };
 
     this.error = '';
@@ -78,7 +80,8 @@ export class UserProfileComponent implements OnInit {
       lastName: new FormControl(resData.lastName, Validators.required),
       email: new FormControl(resData.email, [Validators.required, Validators.email]),
       oldPassword: new FormControl(null, Validators.required),
-      newPassword : new FormControl(null)
+      newPassword : new FormControl(null),
+      newPasswordRepeat : new FormControl(null)
     });
   }
 }

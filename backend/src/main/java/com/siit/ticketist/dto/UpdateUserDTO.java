@@ -18,6 +18,8 @@ public class UpdateUserDTO {
 
     private String newPassword;
 
+    private String newPasswordRepeat;
+
     @NotBlank(message = "E-mail may not be blank")
     @Email(message = "Invalid E-mail format", regexp = "[A-Za-z0-9._%-+]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}")
     private String email;
