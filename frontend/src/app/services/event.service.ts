@@ -107,4 +107,8 @@ export class EventService {
       });
   }
 
+  createEvent(event: IEvent) {
+    console.log('-----> ', event);
+  }
+
 }

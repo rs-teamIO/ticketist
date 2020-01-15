@@ -93,8 +93,8 @@
               <ng-container [formGroupName]="i">
                 <td class="tableInput">{{sectorControl.controls.sectorName.value}}</td>
                 <td class="tableInput">{{sectorControl.controls.maxCapacity.value}}</td>
-                <td><input matInput formControlName="ticketPrice" class="tableInput"></td>
-                <td><input matInput formControlName="capacity" class="tableInput"></td>
+                <td><input matInput type="number" formControlName="ticketPrice" class="tableInput"></td>
+                <td><input matInput type="number" formControlName="capacity" class="tableInput"></td>
                 <td class="tableInput">
                     <input type="checkbox" [value]="sectorControl.controls.numeratedSeats.value" formControlName="numeratedSeats">
                 </td>

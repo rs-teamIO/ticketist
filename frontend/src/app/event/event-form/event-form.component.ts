@@ -1,8 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { EventService } from 'src/app/services/event.service';
+import { EventService, IEventSector } from 'src/app/services/event.service';
 import { VenueService, IVenue, ISector } from 'src/app/services/venue.service';
+import { IEvent } from 'src/app/services/event.service';
 import { Subscription } from 'rxjs';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
+
+interface ISectorTable {
+  sectorName: string;
+  maxCapacity: number;
+  ticketPrice: number;
+  capacity: number;
+  numeratedSeats: boolean;
+  active: boolean;
+}
 
 @Component({
   selector: 'app-event-form',
@@ -76,12 +86,46 @@ export class EventFormComponent implements OnInit, OnDestroy {
         })
       );
     });
-    console.log('>>>> ', this.sectorForm.controls);
   }
 
   onSubmit() {
-    console.log(this.newEventForm.value);
+    let eventSectors: IEventSector[] = this.sectorForm.controls.sectors.value.map((sector: ISectorTable, index: number) => {
+      if (sector.active) {
+        const newEventSector: IEventSector = {
+          sectorId: this.currentVenue.sectors[index].id,
+          ticketPrice: sector.ticketPrice,
+          numeratedSeats: sector.numeratedSeats
+        };
+        if (!sector.numeratedSeats) {
+          newEventSector.capacity = sector.capacity;
+        }
+        return newEventSector;
+      } else {
+        return null;
+      }
+    });
+    eventSectors = eventSectors.filter((sector: IEventSector) => sector !== null);
 
+    // change later
+    if (eventSectors.length === 0) {
+      return;
+    }
+
+    const newEvent: IEvent = {
+      basicInfo: {
+        venueId: this.currentVenue.id,
+        name: this.eventName.value,
+        category: this.category.value,
+        startDate: new Date(this.startDateInfo.value).getTime(),
+        endDate: new Date(this.endDateInfo.value).getTime(),
+        reservationDeadline: new Date(this.reservationDeadlineInfo.value).getTime(),
+        description: this.description.value,
+        reservationLimit: this.reservationLimit.value
+      },
+      eventSectors,
+      mediaFiles: []
+    };
+    this.eventService.createEvent(newEvent);
   }
 
   get eventName() {
