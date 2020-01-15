@@ -108,7 +108,15 @@ export class EventService {
   }
 
   createEvent(event: IEvent) {
-    console.log('-----> ', event);
+    const { eventSectors, mediaFiles, basicInfo } = event;
+    return this.http.post<any>(
+      this.postEventPath,
+      {
+        ...basicInfo,
+        eventSectors,
+        mediaFiles
+      }
+    );
   }
 
 }

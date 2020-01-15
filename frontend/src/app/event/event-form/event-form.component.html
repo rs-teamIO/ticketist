@@ -11,7 +11,7 @@
         <mat-form-field>
           <mat-select formControlName="category" placeholder="Category">
             <mat-option value="ENTERTAINMENT">Entertainment</mat-option>
-            <mat-option value="SPORT">Sport</mat-option>
+            <mat-option value="SPORTS">Sports</mat-option>
             <mat-option value="CULTURAL">Cultural</mat-option>
           </mat-select>
           <mat-error *ngIf="category.invalid && category.touched">
@@ -81,8 +81,6 @@
           </mat-error>
         </mat-form-field>
 
-        <p>{{error}}</p>
-
         <button mat-raised-button color="primary" type="submit" class="submitButton" [disabled]="newEventForm.invalid || sectorForm.invalid">
           <span>Add Event</span>
         </button>
@@ -131,6 +129,9 @@
               </ng-container>
             </tr>
           </table>
+        </div>
+        <div>
+          <p *ngIf="sectorForm.errors && sectorForm.errors['noSelectedSectors']" class="errorMessage">*Event must contain at least one sector!</p>
         </div>
       </form>
     </div>

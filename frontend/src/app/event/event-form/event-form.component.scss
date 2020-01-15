@@ -1,5 +1,7 @@
 .main {
-  margin: 20px;
+  margin: 15px 15px 15px 15px;
+  box-shadow: 0px 0px 16px -8px rgba(0,0,0,0.76);
+  border-radius: 15px;
 }
 
 .mat-form-field {
@@ -48,6 +50,12 @@
 
 .tableInput {
   text-align: center;
+}
+
+.errorMessage {
+  font-size: 12px;
+  text-align: right;
+  color: red;
 }
 
 // table {

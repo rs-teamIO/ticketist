@@ -4,6 +4,7 @@ import { VenueService, IVenue, ISector } from 'src/app/services/venue.service';
 import { IEvent } from 'src/app/services/event.service';
 import { Subscription } from 'rxjs';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
+import { Router } from '@angular/router';
 
 interface ISectorTable {
   sectorName: string;
@@ -26,11 +27,10 @@ export class EventFormComponent implements OnInit, OnDestroy {
   currentVenue: IVenue = null;
   activeVenuesSubscription: Subscription;
   mediaFiles: any = [];
-  error = '';
   newEventForm: FormGroup;
   sectorForm: FormGroup;
 
-  constructor(private eventService: EventService, private venueService: VenueService) { }
+  constructor(private eventService: EventService, private venueService: VenueService, private router: Router) { }
 
   ngOnInit() {
     this.newEventForm = new FormGroup({
@@ -46,7 +46,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
     this.sectorForm = new FormGroup({
       venueName: new FormControl('', Validators.required),
       sectors: new FormArray([])
-    });
+    }, this.checkAtLeastOneSectorValidator.bind(this));
 
     this.sectorForm.get('venueName').valueChanges.subscribe((value: any) => {
       console.log('>>>>: ', this.sectorForm.controls.sectors);
@@ -106,18 +106,13 @@ export class EventFormComponent implements OnInit, OnDestroy {
     });
     eventSectors = eventSectors.filter((sector: IEventSector) => sector !== null);
 
-    // change later
-    if (eventSectors.length === 0) {
-      return;
-    }
-
     const newEvent: IEvent = {
       basicInfo: {
         venueId: this.currentVenue.id,
         name: this.eventName.value,
         category: this.category.value,
-        startDate: new Date(this.startDateInfo.value).getTime(),
-        endDate: new Date(this.endDateInfo.value).getTime(),
+        startDate: new Date(this.startDateInfo.value).getTime() + 60 * 60 * 1000,
+        endDate: new Date(this.endDateInfo.value).getTime() + 2 * 60 * 60 * 1000,
         reservationDeadline: new Date(this.reservationDeadlineInfo.value).getTime(),
         description: this.description.value,
         reservationLimit: this.reservationLimit.value
@@ -125,7 +120,18 @@ export class EventFormComponent implements OnInit, OnDestroy {
       eventSectors,
       mediaFiles: []
     };
-    this.eventService.createEvent(newEvent);
+
+    this.eventService.createEvent(newEvent).subscribe(
+      resData => {
+        console.log(resData);
+        this.sectorForm.reset();
+        this.newEventForm.reset();
+        this.router.navigate(['/events']);
+      },
+      error => {
+        console.log('ERROR: ', error);
+      }
+    );
   }
 
   get eventName() {
@@ -214,6 +220,20 @@ export class EventFormComponent implements OnInit, OnDestroy {
     }
 
     return null;
+  }
+
+  checkAtLeastOneSectorValidator(group: FormGroup): {[s: string]: boolean} {
+    let checkExistanceOfSector = false;
+    group.value.sectors.forEach((sector: ISectorTable) => {
+      if (sector.active) {
+        checkExistanceOfSector = true;
+      }
+    });
+    if (checkExistanceOfSector) {
+      return null;
+    } else {
+      return { noSelectedSectors: true };
+    }
   }
 
   ngOnDestroy() {
