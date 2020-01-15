@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { EventService } from 'src/app/services/event.service';
-import { VenueService, IVenue } from 'src/app/services/venue.service';
+import { VenueService, IVenue, ISector } from 'src/app/services/venue.service';
 import { Subscription } from 'rxjs';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 
 @Component({
   selector: 'app-event-form',
@@ -11,12 +11,14 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 })
 export class EventFormComponent implements OnInit, OnDestroy {
 
+  minDate = new Date();
   activeVenues: IVenue[] = [];
+  currentVenue: IVenue = null;
   activeVenuesSubscription: Subscription;
   mediaFiles: any = [];
-  newEventForm: FormGroup;
   error = '';
-  minDate = new Date();
+  newEventForm: FormGroup;
+  sectorForm: FormGroup;
 
   constructor(private eventService: EventService, private venueService: VenueService) { }
 
@@ -30,17 +32,56 @@ export class EventFormComponent implements OnInit, OnDestroy {
       reservationLimit: new FormControl(null, [Validators.required, Validators.min(0)]),
       description: new FormControl('', Validators.required)
     });
+
+    this.sectorForm = new FormGroup({
+      venueName: new FormControl('', Validators.required),
+      sectors: new FormArray([])
+    });
+
+    this.sectorForm.get('venueName').valueChanges.subscribe((value: any) => {
+      this.activeVenues.forEach((venue: IVenue) => {
+        if (venue.name === value) {
+          this.currentVenue = venue;
+          console.log('Current venue: ', this.currentVenue);
+          this.onVenueChanged();
+        }
+      });
+    });
+
     this.activeVenuesSubscription = this.venueService.activeVenuesChanged.subscribe(
       (venues: IVenue[]) => {
         this.activeVenues = venues;
-        console.log('Active venues: ', this.activeVenues);
+        if (this.activeVenues.length > 0) {
+          this.sectorForm.patchValue({
+            venueName: this.activeVenues[0].name
+          });
+        }
       }
     );
+
     this.venueService.fetchActiveVenues();
+  }
+
+  onVenueChanged() {
+    (this.sectorForm.get('sectors') as FormArray).clear();
+    this.currentVenue.sectors.forEach((sector: ISector) => {
+      (this.sectorForm.get('sectors') as FormArray).push(
+        new FormGroup({
+          sectorName: new FormControl(sector.name),
+          maxCapacity: new FormControl(sector.maxCapacity),
+          ticketPrice: new FormControl(0, Validators.required),
+          capacity: new FormControl(0, Validators.required),
+          numeratedSeats: new FormControl(true, Validators.required),
+          active: new FormControl(false, Validators.required)
+        })
+      );
+    });
+    console.log('>>>> ', this.sectorForm.controls);
   }
 
   onSubmit() {
     console.log(this.newEventForm.value);
+
   }
 
   get eventName() {

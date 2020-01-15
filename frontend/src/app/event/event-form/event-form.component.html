@@ -62,17 +62,52 @@
 
         <p>{{error}}</p>
 
-        <button mat-raised-button color="primary" type="submit" class="submitButton">
+        <button mat-raised-button color="primary" type="submit" class="submitButton" [disabled]="newEventForm.invalid">
           <span>Add Event</span>
         </button>
     </form>
   </div>
   <div fxLayout="column" fxFlex="70">
-    <div fxLayout="row" class="imagePanel">
-      ads
-    </div>
     <div fxLayout="row" class="venueSectorPanel">
-      adfsdf
+      <form [formGroup]="sectorForm">
+        <mat-form-field>
+          <mat-select formControlName="venueName">
+            <div>
+              <mat-option *ngFor="let venue of activeVenues" [value]="venue.name">
+                {{venue.name}}
+              </mat-option>
+            </div>
+          </mat-select>
+        </mat-form-field>
+        <div formArrayName="sectors">
+          <table id="sectorTable">
+            <tr>
+              <th>Sector name</th>
+              <th>Max. Capacity</th>
+              <th>Ticket price</th>
+              <th>Capacity</th>
+              <th>Numerated seats</th>
+              <th>Active</th>
+            </tr>
+            <tr *ngFor="let sectorControl of sectorForm.get('sectors')['controls']; let i = index">
+              <ng-container [formGroupName]="i">
+                <td class="tableInput">{{sectorControl.controls.sectorName.value}}</td>
+                <td class="tableInput">{{sectorControl.controls.maxCapacity.value}}</td>
+                <td><input matInput formControlName="ticketPrice" class="tableInput"></td>
+                <td><input matInput formControlName="capacity" class="tableInput"></td>
+                <td class="tableInput">
+                    <input type="checkbox" [value]="sectorControl.controls.numeratedSeats.value" formControlName="numeratedSeats">
+                </td>
+                <td class="tableInput">
+                    <input type="checkbox" [value]="sectorControl.controls.active.value" formControlName="active">
+                </td>
+              </ng-container>
+            </tr>
+          </table>
+        </div>
+      </form>
+    </div>
+    <div fxLayout="row" class="imagePanel">
     </div>
   </div>
 </div>

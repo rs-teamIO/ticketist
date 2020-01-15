@@ -11,15 +11,54 @@
 }
 
 .imagePanel {
-  background-color: lightskyblue;
   padding: 15px;
 }
 
 .venueSectorPanel {
-  background-color: lightsalmon;
   padding: 15px;
 }
 
 .submitButton {
   width: 100%;
 }
+
+
+#sectorTable {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#sectorTable td, #sectorTable th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#sectorTable tr:nth-child(even){background-color: white;}
+
+// #sectorTable tr:hover {background-color: #ddd;}
+
+#sectorTable th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: purple;
+  color: white;
+}
+
+.tableInput {
+  text-align: center;
+}
+
+// table {
+//   border-collapse: collapse;
+//   width: 100%;
+// }
+
+// th, td {
+//   padding: 8px;
+//   text-align: left;
+//   border-bottom: 1px solid #ddd;
+// }
+
+// tr:hover {background-color:white;}
