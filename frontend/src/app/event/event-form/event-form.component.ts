@@ -21,7 +21,7 @@ interface ISectorTable {
 })
 export class EventFormComponent implements OnInit, OnDestroy {
 
-  minDate = new Date();
+  minDate = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);
   activeVenues: IVenue[] = [];
   currentVenue: IVenue = null;
   activeVenuesSubscription: Subscription;
@@ -36,10 +36,10 @@ export class EventFormComponent implements OnInit, OnDestroy {
     this.newEventForm = new FormGroup({
       eventName: new FormControl('', Validators.required),
       category: new FormControl('', Validators.required),
-      startDate: new FormControl(null, Validators.required),
-      endDate: new FormControl(null, Validators.required),
-      reservationDeadline: new FormControl(null, Validators.required),
-      reservationLimit: new FormControl(null, [Validators.required, Validators.min(0)]),
+      reservationDeadline: new FormControl(null, [Validators.required, this.reservationDeadlineValidator.bind(this)]),
+      startDate: new FormControl(null, [Validators.required, this.startDateValidator.bind(this)]),
+      endDate: new FormControl(null, [Validators.required, this.endDateValidator.bind(this)]),
+      reservationLimit: new FormControl(null, [Validators.required, Validators.min(1)]),
       description: new FormControl('', Validators.required)
     });
 
@@ -49,10 +49,12 @@ export class EventFormComponent implements OnInit, OnDestroy {
     });
 
     this.sectorForm.get('venueName').valueChanges.subscribe((value: any) => {
+      // console.log('1: ', this.reservationDeadlineInfo.errors);
+      // console.log('2: ', this.startDateInfo.errors);
+      // console.log('3: ', this.endDateInfo.errors);
       this.activeVenues.forEach((venue: IVenue) => {
         if (venue.name === value) {
           this.currentVenue = venue;
-          console.log('Current venue: ', this.currentVenue);
           this.onVenueChanged();
         }
       });
@@ -154,6 +156,45 @@ export class EventFormComponent implements OnInit, OnDestroy {
 
   get description() {
     return this.newEventForm.get('description');
+  }
+
+  reservationDeadlineValidator(control: FormControl): {[s: string]: boolean} {
+    if (!this.newEventForm || !control.value) {
+      return null;
+    } else if (this.startDateInfo.value &&
+      new Date(control.value).getTime() > new Date(this.startDateInfo.value).getTime()) {
+      return { reservationDeadlineAfterStartDate: true };
+    } else if (this.endDateInfo.value &&
+      new Date(control.value).getTime() > new Date(this.endDateInfo.value).getTime()) {
+      return { reservationDeadlineAfterEndDate: true };
+    }
+    return null;
+  }
+
+  startDateValidator(control: FormControl): {[s: string]: boolean} {
+    if (!this.newEventForm || !control.value) {
+      return null;
+    } else if (this.reservationDeadlineInfo.value &&
+      new Date(this.reservationDeadlineInfo.value).getTime() > new Date(control.value).getTime()) {
+      return { startDateBeforeDeadline: true };
+    } else if (this.endDateInfo.value &&
+      new Date(control.value).getTime() > new Date(this.endDateInfo.value).getTime()) {
+      return { startDateAfterEndDate: true };
+    }
+    return null;
+  }
+
+  endDateValidator(control: FormControl): {[s: string]: boolean} {
+    if (!this.newEventForm || !control.value) {
+      return null;
+    } else if (this.reservationDeadlineInfo.value &&
+      new Date(this.reservationDeadlineInfo.value).getTime() > new Date(control.value).getTime()) {
+      return { endDateBeforeDeadline: true };
+    } else if (this.startDateInfo.value &&
+      new Date(this.startDateInfo.value).getTime() > new Date(control.value).getTime()) {
+      return { endDateBeforeStartDate: true };
+    }
+    return null;
   }
 
   ngOnDestroy() {

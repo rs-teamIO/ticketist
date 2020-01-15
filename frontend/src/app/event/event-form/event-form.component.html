@@ -20,11 +20,32 @@
         </mat-form-field>
 
         <mat-form-field>
+          <input matInput [min]="minDate" [matDatepicker]="reservationDeadline" placeholder="Select reservation deadline" formControlName="reservationDeadline">
+          <mat-datepicker-toggle matSuffix [for]="reservationDeadline"></mat-datepicker-toggle>
+          <mat-datepicker #reservationDeadline></mat-datepicker>
+          <mat-error *ngIf="reservationDeadlineInfo.errors && reservationDeadlineInfo.errors['required'] && reservationDeadlineInfo.touched">
+            Reservation deadline is required!
+          </mat-error>
+          <mat-error *ngIf="reservationDeadlineInfo.errors && reservationDeadlineInfo.errors['reservationDeadlineAfterStartDate'] && reservationDeadlineInfo.touched">
+            Reservation deadline cannot be after start date!
+          </mat-error>
+          <mat-error *ngIf="reservationDeadlineInfo.errors && reservationDeadlineInfo.errors['reservationDeadlineAfterEndDate'] && reservationDeadlineInfo.touched">
+            Reservation deadline cannot be after end date!
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
           <input matInput [min]="minDate" [matDatepicker]="startDate" placeholder="Select start date" formControlName="startDate">
           <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
           <mat-datepicker #startDate></mat-datepicker>
-          <mat-error *ngIf="startDateInfo.invalid && startDateInfo.touched">
+          <mat-error *ngIf="startDateInfo.errors && startDateInfo.errors['required'] && startDateInfo.touched">
             Start date is required!
+          </mat-error>
+          <mat-error *ngIf="startDateInfo.errors && startDateInfo.errors['startDateBeforeDeadline'] && startDateInfo.touched">
+            Start date cannot be before deadline!
+          </mat-error>
+          <mat-error *ngIf="startDateInfo.errors && startDateInfo.errors['startDateAfterEndDate'] && startDateInfo.touched">
+            Start date cannot be after end date!
           </mat-error>
         </mat-form-field>
 
@@ -32,24 +53,24 @@
           <input matInput [min]="minDate" [matDatepicker]="endDate" placeholder="Select end date" formControlName="endDate">
           <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
           <mat-datepicker #endDate></mat-datepicker>
-          <mat-error *ngIf="endDateInfo.invalid && endDateInfo.touched">
+          <mat-error *ngIf="endDateInfo.errors && endDateInfo.errors['required'] && endDateInfo.touched">
             End date is required!
           </mat-error>
-        </mat-form-field>
-
-        <mat-form-field>
-          <input matInput [min]="minDate" [matDatepicker]="reservationDeadline" placeholder="Select reservation deadline" formControlName="reservationDeadline">
-          <mat-datepicker-toggle matSuffix [for]="reservationDeadline"></mat-datepicker-toggle>
-          <mat-datepicker #reservationDeadline></mat-datepicker>
-          <mat-error *ngIf="reservationDeadlineInfo.invalid && reservationDeadlineInfo.touched">
-            Reservation deadline is required!
+          <mat-error *ngIf="endDateInfo.errors && endDateInfo.errors['endDateBeforeDeadline'] && endDateInfo.touched">
+            End date cannot be before reservation deadline!
+          </mat-error>
+          <mat-error *ngIf="endDateInfo.errors && endDateInfo.errors['endDateBeforeStartDate'] && endDateInfo.touched">
+            End date cannot be before start date!
           </mat-error>
         </mat-form-field>
 
         <mat-form-field >
-          <input matInput type="number" placeholder="Reservation limit" formControlName="reservationLimit">
-          <mat-error *ngIf="reservationLimit.invalid && reservationLimit.touched">
-            Reservation limit wrong format!
+          <input matInput type="number" min="1" placeholder="Reservation limit" formControlName="reservationLimit">
+          <mat-error *ngIf="reservationLimit.errors && reservationLimit.errors['required'] && reservationLimit.touched">
+            Reservation limit is required!
+          </mat-error>
+          <mat-error *ngIf="reservationLimit.errors && reservationLimit.errors['min'] && reservationLimit.touched">
+            Reservation limit must be greater than or equal to 1
           </mat-error>
         </mat-form-field>
 
@@ -74,7 +95,7 @@
           <mat-select formControlName="venueName">
             <div>
               <mat-option *ngFor="let venue of activeVenues" [value]="venue.name">
-                {{venue.name}}
+                {{venue.name}} ({{venue.street}}, {{venue.city}})
               </mat-option>
             </div>
           </mat-select>
