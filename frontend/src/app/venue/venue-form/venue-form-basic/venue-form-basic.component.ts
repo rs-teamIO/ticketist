@@ -1,10 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Venue, VenueBasic, VenueService} from '../../../services/venue.service';
-import {Sector} from '../../../services/sector.service';
-import {GeocodeService} from '../../../services/geocode';
-
-declare var google: any;
+import {IVenue, IVenueBasic, VenueService} from '../../../services/venue.service';
+import {ISector} from '../../../services/sector.service';
+import {GeocodeService} from '../../../services/geocode.service';
 
 @Component({
   selector: 'app-venue-form-basic',
@@ -15,12 +13,12 @@ export class VenueFormBasicComponent implements OnInit {
   @Input()
   new: boolean;
   @Input()
-  venue: Venue;
+  venue: IVenue;
   venueForm: FormGroup;
   isLoading = false;
   error = '';
-  sectors: Sector[];
-  sectorNew: Sector;
+  sectors: ISector[];
+  sectorNew: ISector;
 
 
 
@@ -38,7 +36,7 @@ export class VenueFormBasicComponent implements OnInit {
     console.log(this.venue);
   }
 
-  private presetForm(resData: Venue) {
+  private presetForm(resData: IVenue) {
       this.venueForm = new FormGroup({
         name: new FormControl(resData.name, Validators.required),
         city: new FormControl(resData.city, Validators.required),
@@ -73,7 +71,7 @@ export class VenueFormBasicComponent implements OnInit {
     const columnsCount = 5;
     const maxCapacity = 5;
 
-    const sectors: Sector[] = [{
+    const sectors: ISector[] = [{
       id,
       startRow,
       startColumn,
@@ -85,7 +83,7 @@ export class VenueFormBasicComponent implements OnInit {
 
     this.error = '';
     if (this.new) {
-      const venue: Venue = {
+      const venue: IVenue = {
         id,
         name,
         city,
@@ -110,7 +108,7 @@ export class VenueFormBasicComponent implements OnInit {
       );
 
     } else {
-      const venue: VenueBasic = {
+      const venue: IVenueBasic = {
         name,
         city,
         street,

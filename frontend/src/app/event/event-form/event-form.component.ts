@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { EventService, IEventSector } from 'src/app/services/event.service';
-import { VenueService, IVenue, ISector } from 'src/app/services/venue.service';
+import { VenueService, IVenue } from 'src/app/services/venue.service';
 import { IEvent } from 'src/app/services/event.service';
 import { Subscription } from 'rxjs';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ISector } from 'src/app/services/sector.service';
 
 interface ISectorTable {
   sectorName: string;

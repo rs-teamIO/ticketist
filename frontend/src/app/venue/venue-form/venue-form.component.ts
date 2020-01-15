@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Venue, VenueService} from '../../services/venue.service';
+import {IVenue, VenueService} from '../../services/venue.service';
 import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
@@ -8,7 +8,7 @@ import {ActivatedRoute, Router} from '@angular/router';
   styleUrls: ['./venue-form.component.scss']
 })
 export class VenueFormComponent implements OnInit {
-  venue: Venue;
+  venue: IVenue;
   new: boolean;
   found: boolean;
 
