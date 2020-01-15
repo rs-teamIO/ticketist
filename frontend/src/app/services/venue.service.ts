@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { PORT } from '../shared/constants';
-import { tap, catchError } from 'rxjs/operators';
 
 export interface IVenue {
   id: number;

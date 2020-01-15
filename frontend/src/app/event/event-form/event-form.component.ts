@@ -29,6 +29,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
   mediaFiles: any = [];
   newEventForm: FormGroup;
   sectorForm: FormGroup;
+  errorMessage = '';
 
   constructor(private eventService: EventService, private venueService: VenueService, private router: Router) { }
 
@@ -49,7 +50,6 @@ export class EventFormComponent implements OnInit, OnDestroy {
     }, this.checkAtLeastOneSectorValidator.bind(this));
 
     this.sectorForm.get('venueName').valueChanges.subscribe((value: any) => {
-      console.log('>>>>: ', this.sectorForm.controls.sectors);
       this.activeVenues.forEach((venue: IVenue) => {
         if (venue.name === value) {
           this.currentVenue = venue;
@@ -123,13 +123,14 @@ export class EventFormComponent implements OnInit, OnDestroy {
 
     this.eventService.createEvent(newEvent).subscribe(
       resData => {
-        console.log(resData);
         this.sectorForm.reset();
         this.newEventForm.reset();
         this.router.navigate(['/events']);
       },
       error => {
-        console.log('ERROR: ', error);
+        if (error.status === 400) {
+          this.errorMessage = error.error.message;
+        }
       }
     );
   }

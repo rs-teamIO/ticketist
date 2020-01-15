@@ -84,6 +84,7 @@
         <button mat-raised-button color="primary" type="submit" class="submitButton" [disabled]="newEventForm.invalid || sectorForm.invalid">
           <span>Add Event</span>
         </button>
+        <p class="centralError">{{errorMessage}}</p>
     </form>
   </div>
   <div fxLayout="column" fxFlex="70">
