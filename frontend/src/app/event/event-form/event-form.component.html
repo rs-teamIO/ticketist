@@ -83,7 +83,7 @@
 
         <p>{{error}}</p>
 
-        <button mat-raised-button color="primary" type="submit" class="submitButton" [disabled]="newEventForm.invalid">
+        <button mat-raised-button color="primary" type="submit" class="submitButton" [disabled]="newEventForm.invalid || sectorForm.invalid">
           <span>Add Event</span>
         </button>
     </form>
@@ -109,6 +109,7 @@
               <th>Capacity</th>
               <th>Numerated seats</th>
               <th>Active</th>
+              <th>Valid</th>
             </tr>
             <tr *ngFor="let sectorControl of sectorForm.get('sectors')['controls']; let i = index">
               <ng-container [formGroupName]="i">
@@ -121,6 +122,11 @@
                 </td>
                 <td class="tableInput">
                     <input type="checkbox" [value]="sectorControl.controls.active.value" formControlName="active">
+                </td>
+                <td class="tableInput">
+                  <p *ngIf="!sectorControl.controls.active.value"><mat-icon></mat-icon></p>
+                  <p *ngIf="sectorControl.controls.active.value && sectorControl.valid"><mat-icon>done</mat-icon></p>
+                  <p *ngIf="sectorControl.controls.active.value && sectorControl.invalid"><mat-icon>clear</mat-icon></p>
                 </td>
               </ng-container>
             </tr>

@@ -49,9 +49,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
     });
 
     this.sectorForm.get('venueName').valueChanges.subscribe((value: any) => {
-      // console.log('1: ', this.reservationDeadlineInfo.errors);
-      // console.log('2: ', this.startDateInfo.errors);
-      // console.log('3: ', this.endDateInfo.errors);
+      console.log('>>>>: ', this.sectorForm.controls.sectors);
       this.activeVenues.forEach((venue: IVenue) => {
         if (venue.name === value) {
           this.currentVenue = venue;
@@ -85,7 +83,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
           capacity: new FormControl(0, Validators.required),
           numeratedSeats: new FormControl(true, Validators.required),
           active: new FormControl(false, Validators.required)
-        })
+        }, this.sectorRowValidator.bind(this))
       );
     });
   }
@@ -194,6 +192,27 @@ export class EventFormComponent implements OnInit, OnDestroy {
       new Date(this.startDateInfo.value).getTime() > new Date(control.value).getTime()) {
       return { endDateBeforeStartDate: true };
     }
+    return null;
+  }
+
+  sectorRowValidator(group: FormGroup): {[s: string]: boolean} {
+    if (group.controls.active.value) {
+      if (isNaN(group.controls.ticketPrice.value)) {
+        return { priceIsNotNumber: true };
+      } else if (group.controls.ticketPrice.value <= 0) {
+        return { priceNotPositive: true };
+      }
+      if (!group.controls.numeratedSeats.value) {
+        if (isNaN(group.controls.capacity.value)) {
+          return { capacityIsNotNumber: true };
+        } else if (group.controls.capacity.value <= 0) {
+          return { capacityNotPositive: true };
+        } else if (group.controls.capacity.value > group.controls.maxCapacity.value) {
+          return { capacityGreaterThanMaxCapacity: true };
+        }
+      }
+    }
+
     return null;
   }
 
