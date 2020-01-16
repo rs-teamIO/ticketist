@@ -1,14 +1,15 @@
 <mat-toolbar color="primary" class="mat-elevation-z4">
-  <button mat-button color="accent">
+  <button mat-button color="accent" routerLink="/events">
     <mat-icon>event_seat</mat-icon>
     <span class="mat-title" style="font-weight: 200;">Ticketist</span>
   </button>
   <span class="spacer"></span>
   <div>
+    <button mat-button routerLink="/events/new" *ngIf="isAuthenticated">Add Event</button>
+    <button mat-button routerLink="/venues/list" *ngIf="isAuthenticated">Venues</button>
     <button mat-button routerLink="/profile" *ngIf="isAuthenticated">Profile</button>
     <button mat-button routerLink="/logout" *ngIf="isAuthenticated" (click)="onLogout()">Logout</button>
     <button mat-button routerLink="/login" *ngIf="!isAuthenticated">Login</button>
     <button mat-button routerLink="/signup" *ngIf="!isAuthenticated">Sign up</button>
-    <button mat-button routerLink="/venues/list" *ngIf="isAuthenticated">Venues</button>
   </div>
 </mat-toolbar>

@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Venue, VenueService} from '../../../services/venue.service';
+import {IVenue, VenueService} from '../../../services/venue.service';
 import {Router} from '@angular/router';
+import { ISector } from 'src/app/services/sector.service';
 
 @Component({
   selector: 'app-venue-item',
@@ -9,20 +10,20 @@ import {Router} from '@angular/router';
 })
 export class VenueItemComponent implements OnInit {
   @Input()
-  venue: Venue;
+  venue: IVenue;
   sectorSize: number;
 
   constructor(private venueService: VenueService, private router: Router) { }
 
   ngOnInit() {
     this.sectorSize = 0;
-    for (let i = 0; i < this.venue.sectors.length; i++) {
-      this.sectorSize += this.venue.sectors[i].maxCapacity;
-    }
+    this.venue.sectors.forEach((sector: ISector) => {
+      this.sectorSize += sector.maxCapacity;
+    });
   }
 
 
-  activate(id: string) {
+  activate(id: number) {
     this.venueService.activate(id).subscribe( resData => {
 
       this.venue.isActive = resData;

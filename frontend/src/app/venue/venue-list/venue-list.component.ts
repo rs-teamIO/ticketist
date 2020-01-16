@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, OnInit, OnDestroy} from '@angular/core';
-import {IVenuePage, Venue, VenueService} from '../../services/venue.service';
+import {IVenuePage, IVenue, VenueService} from '../../services/venue.service';
 import {Router} from '@angular/router';
 import {PageEvent} from '@angular/material/paginator';
 import {Subscription} from 'rxjs';
@@ -11,23 +11,13 @@ import {Subscription} from 'rxjs';
   styleUrls: ['./venue-list.component.scss']
 })
 export class VenueListComponent implements OnInit, AfterViewInit, OnDestroy {
-  venues: Venue[];
+  venues: IVenue[];
   totalSize: number;
   subscription: Subscription;
 
   constructor(private venueService: VenueService, private router: Router) { }
 
-  ngOnInit() {
-    /*
-    this.venueService.retrieve().subscribe(
-        resData => {
-          this.venues = resData;
-        }, error => {
-          console.log('Error: ', error);
-        }
-      );
-     */
-  }
+  ngOnInit() {}
 
   ngAfterViewInit(): void {
     this.subscription = this.venueService.venuesChanged

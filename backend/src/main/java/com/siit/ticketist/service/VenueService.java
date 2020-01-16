@@ -56,6 +56,7 @@ public class VenueService {
         int overlap = 0;
         venue.setIsActive(true);
         checkVenueNameAndLocation(venue.getName(), venue.getStreet(), venue.getCity());
+        if (venue.getSectors().size() == 0) throw new BadRequestException("Venue must contain at least 1 sector");
         for (Sector firstSector: venue.getSectors()) {
             overlap = 0;
             for (Sector secondSector: venue.getSectors()) {

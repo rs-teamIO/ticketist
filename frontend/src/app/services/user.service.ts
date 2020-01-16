@@ -4,6 +4,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {User} from '../model/user.model';
 import {tap} from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { PORT } from '../shared/constants';
 
 export interface IUserUpdate {
   username: string;
@@ -25,12 +26,14 @@ export interface IRegisteredUser {
 @Injectable({providedIn: 'root'})
 export class UserService {
   user = new BehaviorSubject<IRegisteredUser>(null);
+  private readonly getUsersInfoPath = `http://localhost:${PORT}/api/users/me`;
+  private readonly usersBasicPath = `http://localhost:${PORT}/api/users`;
 
   constructor(private http: HttpClient, private router: Router) {}
 
   update(user: IUserUpdate): Observable<IRegisteredUser> {
     return this.http.put<IRegisteredUser>(
-      'http://localhost:8000/api/users',
+      this.usersBasicPath,
       {
         username: user.username,
         email: user.email,
@@ -44,7 +47,7 @@ export class UserService {
   }
 
   retrieve(): Observable<any> {
-    return this.http.get<any>('http://localhost:8000/api/users/me');
+    return this.http.get<any>(this.getUsersInfoPath);
   }
 
 

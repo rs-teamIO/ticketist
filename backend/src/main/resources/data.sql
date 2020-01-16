@@ -13,8 +13,12 @@ VALUES
 
 INSERT INTO sectors (id, columns_count, rows_count, max_capacity, name, start_column, start_row, venue_id)
 VALUE
-    (1, 2, 2, 4, 'Sever', 10, 10, 1),
-    (2, 3, 2, 6, 'Zapad', 20, 20, 1);
+    (1, 2, 2, 4, 'Sever', 1, 1, 1),
+    (2, 3, 2, 6, 'Zapad', 10, 10, 1),
+    (3, 3, 3, 9, 'Istok', 20, 20, 1),
+    (4, 4, 4, 16, 'Jug', 30, 30, 1),
+    (5, 2, 2, 4, 'Sever', 10, 10, 2),
+    (6, 3, 2, 6, 'Zapad', 20, 20, 3);
 
 INSERT INTO events
 	(id, name, description, category, start_date, end_date, reservation_deadline, reservation_limit, venue_id)

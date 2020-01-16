@@ -6,20 +6,24 @@ import { LoginComponent } from './auth/login/login.component';
 import { SignUpComponent } from './auth/sign-up/sign-up.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { AuthGuard } from './auth/auth.guard';
+import { EventFormComponent } from './event/event-form/event-form.component';
+import { ErrorPageComponent } from './error-page/error-page.component';
 import {VenueListComponent} from './venue/venue-list/venue-list.component';
 import {VenueFormComponent} from './venue/venue-form/venue-form.component';
-
 
 const routes: Routes = [
   { path: '', redirectTo: '/events', pathMatch: 'full' },
   { path: 'events', component: EventComponent },
+  { path: 'events/new', component: EventFormComponent, canActivate: [AuthGuard]},
   { path: 'venues', component: VenueComponent },
   { path: 'venues/list', component: VenueListComponent },
   { path: 'venues/new', component: VenueFormComponent },
   { path: 'venues/:id', component: VenueFormComponent},
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignUpComponent },
-  { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] }
+  { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] },
+  { path: 'not-found', component: ErrorPageComponent },
+  { path: '**', redirectTo: '/not-found'},
 ];
 
 @NgModule({

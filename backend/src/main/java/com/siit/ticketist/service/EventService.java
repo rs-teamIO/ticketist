@@ -94,8 +94,7 @@ public class EventService {
                 if(eventSector.getCapacity() == null) {
                     throw new BadRequestException("Capacity of event sector with innumerable seats cannot be null");
                 }
-                boolean capacityCheck = true;
-                capacityCheck = checkSectorMaxCapacity(eventSector.getSector().getId(), eventSector.getCapacity());
+                boolean capacityCheck = checkSectorMaxCapacity(eventSector.getSector().getId(), eventSector.getCapacity());
                 if(!capacityCheck) throw new BadRequestException("Capacity is greater than max capacity");
             }
         }
