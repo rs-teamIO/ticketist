@@ -175,7 +175,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
     if (!this.newEventForm) {
       return null;
     }
-    console.log('>>>: ', this.datesInfo.errors);
+
     // reservation deadline validator
     if (!group.controls.reservationDeadline.value) {
       return { reservationDeadlineRequired: true };

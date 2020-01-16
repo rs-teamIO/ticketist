@@ -83,6 +83,9 @@ public class EventService {
             throw new BadRequestException("Dates are invalid");
         if(!checkVenueAvailability(event))
             throw new BadRequestException("There is already an event at that time");
+        if(event.getEventSectors().size() == 0) {
+            throw new BadRequestException("Event must contain at least one sector!");
+        }
 
         Sector sector;
 
