@@ -32,15 +32,17 @@ export class EventFormComponent implements OnInit, OnDestroy {
   sectorForm: FormGroup;
   errorMessage = '';
 
-  constructor(private eventService: EventService, private venueService: VenueService, private router: Router) { }
+  constructor(private router: Router, private eventService: EventService, private venueService: VenueService) { }
 
   ngOnInit() {
     this.newEventForm = new FormGroup({
       eventName: new FormControl('', Validators.required),
       category: new FormControl('', Validators.required),
-      reservationDeadline: new FormControl(null, [Validators.required, this.reservationDeadlineValidator.bind(this)]),
-      startDate: new FormControl(null, [Validators.required, this.startDateValidator.bind(this)]),
-      endDate: new FormControl(null, [Validators.required, this.endDateValidator.bind(this)]),
+      dates: new FormGroup({
+        reservationDeadline: new FormControl(null, [Validators.required]),
+        startDate: new FormControl(null, [Validators.required]),
+        endDate: new FormControl(null, [Validators.required])
+      }, [this.datesValidator.bind(this)]),
       reservationLimit: new FormControl(null, [Validators.required, Validators.min(1)]),
       description: new FormControl('', Validators.required)
     });
@@ -123,12 +125,13 @@ export class EventFormComponent implements OnInit, OnDestroy {
     };
 
     this.eventService.createEvent(newEvent).subscribe(
-      resData => {
+      (resData: any) => {
         this.sectorForm.reset();
         this.newEventForm.reset();
+        this.errorMessage = '';
         this.router.navigate(['/events']);
       },
-      error => {
+      (error: any) => {
         if (error.status === 400) {
           this.errorMessage = error.error.message;
         }
@@ -144,16 +147,20 @@ export class EventFormComponent implements OnInit, OnDestroy {
     return this.newEventForm.get('category');
   }
 
+  get datesInfo() {
+    return this.newEventForm.get('dates');
+  }
+
   get startDateInfo() {
-    return this.newEventForm.get('startDate');
+    return this.newEventForm.get('dates').get('startDate');
   }
 
   get endDateInfo() {
-    return this.newEventForm.get('endDate');
+    return this.newEventForm.get('dates').get('endDate');
   }
 
   get reservationDeadlineInfo() {
-    return this.newEventForm.get('reservationDeadline');
+    return this.newEventForm.get('dates').get('reservationDeadline');
   }
 
   get reservationLimit() {
@@ -164,44 +171,85 @@ export class EventFormComponent implements OnInit, OnDestroy {
     return this.newEventForm.get('description');
   }
 
-  reservationDeadlineValidator(control: FormControl): {[s: string]: boolean} {
-    if (!this.newEventForm || !control.value) {
+  datesValidator(group: FormGroup): {[s: string]: boolean} {
+    if (!this.newEventForm) {
       return null;
+    }
+    console.log('>>>: ', this.datesInfo.errors);
+    // reservation deadline validator
+    if (!group.controls.reservationDeadline.value) {
+      return { reservationDeadlineRequired: true };
     } else if (this.startDateInfo.value &&
-      new Date(control.value).getTime() > new Date(this.startDateInfo.value).getTime()) {
+      new Date(group.controls.reservationDeadline.value).getTime() > new Date(this.startDateInfo.value).getTime()) {
       return { reservationDeadlineAfterStartDate: true };
     } else if (this.endDateInfo.value &&
-      new Date(control.value).getTime() > new Date(this.endDateInfo.value).getTime()) {
+      new Date(group.controls.reservationDeadline.value).getTime() > new Date(this.endDateInfo.value).getTime()) {
       return { reservationDeadlineAfterEndDate: true };
     }
-    return null;
-  }
 
-  startDateValidator(control: FormControl): {[s: string]: boolean} {
-    if (!this.newEventForm || !control.value) {
-      return null;
+    // start date validator
+    if (!group.controls.startDate.value) {
+      return { startDateRequired: true };
     } else if (this.reservationDeadlineInfo.value &&
-      new Date(this.reservationDeadlineInfo.value).getTime() > new Date(control.value).getTime()) {
+      new Date(this.reservationDeadlineInfo.value).getTime() > new Date(group.controls.startDate.value).getTime()) {
       return { startDateBeforeDeadline: true };
     } else if (this.endDateInfo.value &&
-      new Date(control.value).getTime() > new Date(this.endDateInfo.value).getTime()) {
+      new Date(group.controls.startDate.value).getTime() > new Date(this.endDateInfo.value).getTime()) {
       return { startDateAfterEndDate: true };
     }
+
+    // end date validator
+    if (!group.controls.endDate.value) {
+      return { endDateRequired: true };
+    } else if (this.reservationDeadlineInfo.value &&
+      new Date(this.reservationDeadlineInfo.value).getTime() > new Date(group.controls.endDate.value).getTime()) {
+      return { endDateBeforeDeadline: true };
+    } else if (this.startDateInfo.value &&
+      new Date(this.startDateInfo.value).getTime() > new Date(group.controls.endDate.value).getTime()) {
+      return { endDateBeforeStartDate: true };
+    }
+
     return null;
   }
 
-  endDateValidator(control: FormControl): {[s: string]: boolean} {
-    if (!this.newEventForm || !control.value) {
-      return null;
-    } else if (this.reservationDeadlineInfo.value &&
-      new Date(this.reservationDeadlineInfo.value).getTime() > new Date(control.value).getTime()) {
-      return { endDateBeforeDeadline: true };
-    } else if (this.startDateInfo.value &&
-      new Date(this.startDateInfo.value).getTime() > new Date(control.value).getTime()) {
-      return { endDateBeforeStartDate: true };
-    }
-    return null;
-  }
+  // reservationDeadlineValidator(control: FormControl): {[s: string]: boolean} {
+  //   if (!this.newEventForm || !control.value) {
+  //     return null;
+  //   } else if (this.startDateInfo.value &&
+  //     new Date(control.value).getTime() > new Date(this.startDateInfo.value).getTime()) {
+  //     return { reservationDeadlineAfterStartDate: true };
+  //   } else if (this.endDateInfo.value &&
+  //     new Date(control.value).getTime() > new Date(this.endDateInfo.value).getTime()) {
+  //     return { reservationDeadlineAfterEndDate: true };
+  //   }
+  //   return null;
+  // }
+
+  // startDateValidator(control: FormControl): {[s: string]: boolean} {
+  //   if (!this.newEventForm || !control.value) {
+  //     return null;
+  //   } else if (this.reservationDeadlineInfo.value &&
+  //     new Date(this.reservationDeadlineInfo.value).getTime() > new Date(control.value).getTime()) {
+  //     return { startDateBeforeDeadline: true };
+  //   } else if (this.endDateInfo.value &&
+  //     new Date(control.value).getTime() > new Date(this.endDateInfo.value).getTime()) {
+  //     return { startDateAfterEndDate: true };
+  //   }
+  //   return null;
+  // }
+
+  // endDateValidator(control: FormControl): {[s: string]: boolean} {
+  //   if (!this.newEventForm || !control.value) {
+  //     return null;
+  //   } else if (this.reservationDeadlineInfo.value &&
+  //     new Date(this.reservationDeadlineInfo.value).getTime() > new Date(control.value).getTime()) {
+  //     return { endDateBeforeDeadline: true };
+  //   } else if (this.startDateInfo.value &&
+  //     new Date(this.startDateInfo.value).getTime() > new Date(control.value).getTime()) {
+  //     return { endDateBeforeStartDate: true };
+  //   }
+  //   return null;
+  // }
 
   sectorRowValidator(group: FormGroup): {[s: string]: boolean} {
     if (group.controls.active.value) {

@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
 import {EventModel} from '../model/event.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Subject, BehaviorSubject} from 'rxjs';
+import {Subject} from 'rxjs';
 import {Page} from '../model/page.model';
 import {PageEvent} from '@angular/material';
 import { PORT } from '../shared/constants';
-import { NewEvent } from '../model/new-event.model';
 
 export interface IEventPage {
   events: EventModel[];
