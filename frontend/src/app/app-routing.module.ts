@@ -10,6 +10,7 @@ import { EventFormComponent } from './event/event-form/event-form.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
 import {VenueListComponent} from './venue/venue-list/venue-list.component';
 import {VenueFormComponent} from './venue/venue-form/venue-form.component';
+import { ReservationListComponent } from './reservation-list/reservation-list.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/events', pathMatch: 'full' },
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignUpComponent },
   { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] },
+  { path: 'my-reservations', component: ReservationListComponent, canActivate: [AuthGuard] },
   { path: 'not-found', component: ErrorPageComponent },
   { path: '**', redirectTo: '/not-found'},
 ];

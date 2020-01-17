@@ -8,6 +8,8 @@ import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.ReservationRepository;
 import com.siit.ticketist.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -169,9 +171,14 @@ public class TicketService {
         return true;
     }
 
-    public List<Reservation> getUsersReservations() {
+    public Page<Reservation> getUsersReservations(Pageable page) {
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
-        return reservationRepository.findAllByUserId(registeredUser.getId());
+        return reservationRepository.findAllByUserId(registeredUser.getId(), page);
+    }
+
+    public long getTotalNumberOfUsersReservations() {
+        RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
+        return reservationRepository.countByUserId(registeredUser.getId());
     }
 
     public List<Ticket> getUsersBoughtTickets() {

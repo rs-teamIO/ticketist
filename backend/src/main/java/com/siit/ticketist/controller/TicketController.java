@@ -1,5 +1,7 @@
 package com.siit.ticketist.controller;
 
+import com.siit.ticketist.dto.ReservationDTO;
+import com.siit.ticketist.dto.ReservationPageDTO;
 import com.siit.ticketist.dto.SuccessResponse;
 import com.siit.ticketist.model.Reservation;
 import com.siit.ticketist.model.Ticket;
@@ -7,6 +9,7 @@ import com.siit.ticketist.dto.TicketDTO;
 import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -71,12 +74,12 @@ public class TicketController {
      */
     @GetMapping(value="/reservations")
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
-    public ResponseEntity<List<Reservation>> findUserReservations() {
-//        List<TicketDTO> tickets = new ArrayList<>();
-//        ticketService.getUsersReservations().stream()
-//                .map(TicketDTO::new)
-//                .forEachOrdered(tickets::add);
-        return new ResponseEntity<>(ticketService.getUsersReservations(), HttpStatus.OK);
+    public ResponseEntity<ReservationPageDTO> findUserReservations(Pageable pageable) {
+        List<ReservationDTO> reservations = new ArrayList<>();
+        ticketService.getUsersReservations(pageable).stream()
+                .map(ReservationDTO::new)
+                .forEachOrdered(reservations::add);
+        return new ResponseEntity<>(new ReservationPageDTO(reservations, ticketService.getTotalNumberOfUsersReservations()), HttpStatus.OK);
     }
 
     /**
