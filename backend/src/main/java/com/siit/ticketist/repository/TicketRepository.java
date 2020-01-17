@@ -23,9 +23,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     List<Ticket> findByEventSectorId(Long id);
 
-    @Query(value = "select * from tickets t where t.user_id = ?1 and t.status = 1", nativeQuery = true)
-    List<Ticket> findAllReservationsByUser(Long userId);
-
     @Query(value = "select * from tickets t where t.user_id = ?1 and t.event_id = ?2 and t.status = 1", nativeQuery = true)
     List<Ticket> findUsersReservationsByEvent(Long userId, Long eventID);
 

@@ -156,7 +156,7 @@ public class EventSectorService {
         if(capacityDifference > 0) {
             Set<Ticket> newTickets = IntStream.range(0, capacityDifference).parallel()
                     .mapToObj(i -> new Ticket(null, -1, -1, eventSector.getTicketPrice(),
-                            TicketStatus.FREE, 0L, eventSector, eventSector.getEvent(), null))
+                            TicketStatus.FREE, 0L, eventSector, eventSector.getEvent(), null, null))
                     .collect(Collectors.toSet());
             eventSector.getTickets().addAll(newTickets);
         } else {

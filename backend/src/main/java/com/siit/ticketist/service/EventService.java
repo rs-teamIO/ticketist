@@ -130,12 +130,12 @@ public class EventService {
             Sector sector = sectorService.findOne(eventSector.getSector().getId());
             for (int row = 1; row <= sector.getRowsCount(); row++) {
                 for (int col = 1; col <= sector.getColumnsCount(); col++) {
-                    tickets.add(new Ticket(null, row, col, eventSector.getTicketPrice(), TicketStatus.FREE, 0L, eventSector, eventSector.getEvent(), null));
+                    tickets.add(new Ticket(null, row, col, eventSector.getTicketPrice(), TicketStatus.FREE, 0L, eventSector, eventSector.getEvent(), null, null));
                 }
             }
         } else {
             for(int cap=0; cap < eventSector.getCapacity(); cap++) {
-                tickets.add(new Ticket(null, -1, -1, eventSector.getTicketPrice(), TicketStatus.FREE, 0L, eventSector, eventSector.getEvent(), null));
+                tickets.add(new Ticket(null, -1, -1, eventSector.getTicketPrice(), TicketStatus.FREE, 0L, eventSector, eventSector.getEvent(), null, null));
             }
         }
 

@@ -1,6 +1,7 @@
 package com.siit.ticketist.controller;
 
 import com.siit.ticketist.dto.SuccessResponse;
+import com.siit.ticketist.model.Reservation;
 import com.siit.ticketist.model.Ticket;
 import com.siit.ticketist.dto.TicketDTO;
 import com.siit.ticketist.model.TicketStatus;
@@ -70,12 +71,12 @@ public class TicketController {
      */
     @GetMapping(value="/reservations")
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
-    public ResponseEntity<List<TicketDTO>> findUserReservations() {
-        List<TicketDTO> tickets = new ArrayList<>();
-        ticketService.getUsersReservations().stream()
-                .map(TicketDTO::new)
-                .forEachOrdered(tickets::add);
-        return new ResponseEntity<>(tickets, HttpStatus.OK);
+    public ResponseEntity<List<Reservation>> findUserReservations() {
+//        List<TicketDTO> tickets = new ArrayList<>();
+//        ticketService.getUsersReservations().stream()
+//                .map(TicketDTO::new)
+//                .forEachOrdered(tickets::add);
+        return new ResponseEntity<>(ticketService.getUsersReservations(), HttpStatus.OK);
     }
 
     /**
@@ -97,7 +98,7 @@ public class TicketController {
     @PostMapping
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     public ResponseEntity<Object> buyTickets(@Valid @RequestBody List<Long> tickets) throws MessagingException {
-        List<Ticket> ticket = ticketService.buyTickets(tickets,true);
+        List<Ticket> ticket = ticketService.buyTickets(tickets);
         List<TicketDTO> ticketsDTO = new ArrayList<>();
         for (Ticket t : ticket) {
             ticketsDTO.add(new TicketDTO(t));
@@ -108,7 +109,7 @@ public class TicketController {
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping(value = "/reservations")
     public ResponseEntity<Object> makeReservations(@Valid @RequestBody List<Long> tickets) throws MessagingException {
-        List<Ticket> ticket = ticketService.buyTickets(tickets,false);
+        List<Ticket> ticket = ticketService.reserveTickets(tickets);
         List<TicketDTO> ticketsDTO = new ArrayList<>();
         for (Ticket t : ticket) {
             ticketsDTO.add(new TicketDTO(t));
@@ -116,16 +117,16 @@ public class TicketController {
         return new ResponseEntity<>(ticketsDTO, HttpStatus.OK);
     }
 
-    @PostMapping(value="/reservations/accept")
+    @PostMapping(value="/reservations/accept/{id}")
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
-    public ResponseEntity<Boolean> acceptReservations(@Valid @RequestBody List<Long> reservations) {
-        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, TicketStatus.PAID), HttpStatus.OK);
+    public ResponseEntity<Boolean> acceptReservations(@PathVariable("id") Long reservationId) {
+        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservationId, TicketStatus.PAID), HttpStatus.OK);
     }
 
-    @PostMapping(value="/reservations/cancel")
+    @PostMapping(value="/reservations/cancel/{id}")
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
-    public ResponseEntity<Boolean> cancelReservations(@Valid @RequestBody List<Long> reservations) {
-        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, TicketStatus.FREE), HttpStatus.OK);
+    public ResponseEntity<Boolean> cancelReservations(@PathVariable("id") Long reservationId) {
+        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservationId, TicketStatus.FREE), HttpStatus.OK);
     }
 
     /**

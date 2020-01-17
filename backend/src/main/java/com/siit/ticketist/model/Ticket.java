@@ -66,9 +66,16 @@ public class Ticket {
    private Event event;
 
    /**
-    * Holds a reference to the {@link RegisteredUser} who bought the ticket
+    * Holds a reference to the {@link RegisteredUser} who bought/reserved the ticket
     */
    @ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH }, fetch = FetchType.LAZY)
    @JoinColumn(name = "user_id")
    private RegisteredUser user;
+
+   /**
+    * Holds a reference to the {@link Reservation}
+    */
+   @ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH }, fetch = FetchType.LAZY)
+   @JoinColumn(name = "reservation_id")
+   private Reservation reservation;
 }

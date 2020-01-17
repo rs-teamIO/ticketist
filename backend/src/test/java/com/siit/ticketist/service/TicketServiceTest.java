@@ -65,28 +65,28 @@ public class TicketServiceTest {
         ticketService.checkStatusIsValid(TicketStatus.USED);
     }
 
-    @Test(expected = BadRequestException.class)
-    public void acceptOrCancelReservations_ShouldThrowException_whenSomeTicketsAreNotFound(){
-        List<Long> tickets = new ArrayList();
-        tickets.add(2l);
-        tickets.add(100l);
-        ticketService.acceptOrCancelReservations(tickets,TicketStatus.PAID);
-    }
-
-    @Test(expected = BadRequestException.class)
-    public void acceptOrCancelReservations_ShouldThrowException_whenSomeTicketsAreSold(){
-        List<Long> tickets = new ArrayList();
-        tickets.add(1l);
-        tickets.add(2l);
-        ticketService.acceptOrCancelReservations(tickets, TicketStatus.PAID);
-    }
-
-    @Test
-    public void acceptOrCancelReservations_ShouldReturnTrue_whenTicketsAndStatusAreValid(){
-        List<Long> tickets = new ArrayList();
-        tickets.add(2l);
-        tickets.add(5l);
-        Boolean rez = ticketService.acceptOrCancelReservations(tickets, TicketStatus.PAID);
-        assertTrue(rez);
-    }
+//    @Test(expected = BadRequestException.class)
+//    public void acceptOrCancelReservations_ShouldThrowException_whenSomeTicketsAreNotFound(){
+//        List<Long> tickets = new ArrayList();
+//        tickets.add(2l);
+//        tickets.add(100l);
+//        ticketService.acceptOrCancelReservations(tickets,TicketStatus.PAID);
+//    }
+//
+//    @Test(expected = BadRequestException.class)
+//    public void acceptOrCancelReservations_ShouldThrowException_whenSomeTicketsAreSold(){
+//        List<Long> tickets = new ArrayList();
+//        tickets.add(1l);
+//        tickets.add(2l);
+//        ticketService.acceptOrCancelReservations(tickets, TicketStatus.PAID);
+//    }
+//
+//    @Test
+//    public void acceptOrCancelReservations_ShouldReturnTrue_whenTicketsAndStatusAreValid(){
+//        List<Long> tickets = new ArrayList();
+//        tickets.add(2l);
+//        tickets.add(5l);
+//        Boolean rez = ticketService.acceptOrCancelReservations(tickets, TicketStatus.PAID);
+//        assertTrue(rez);
+//    }
 }
