@@ -42,8 +42,16 @@ public class RegisteredUser extends User {
    @JsonBackReference(value = "registeredUser-tickets")
    private Set<Ticket> tickets;
 
+   /**
+    * Collection of tickets the user has reserved or bought
+    */
+   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+   @JsonBackReference(value = "registeredUser-ticketGroups")
+   private Set<TicketGroup> ticketGroups;
+
    public RegisteredUser() {
       this.tickets = new HashSet<>();
+      this.ticketGroups = new HashSet<>();
    }
 
    public RegisteredUser(String username, String password, String email, String firstName, String lastName) {
