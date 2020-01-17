@@ -35,48 +35,48 @@ public class TicketServiceUnitTest {
     @MockBean
     private TicketRepository ticketRepository;
 
-    @Test(expected = BadRequestException.class)
-    public void acceptOrCancelReservations_ShouldThrowException_whenSomeTicketsAreSoldorNotFoundUnit(){
-        List<Long> tickets = new ArrayList();
-        tickets.add(2l);
-        tickets.add(100l);
+//    @Test(expected = BadRequestException.class)
+//    public void acceptOrCancelReservations_ShouldThrowException_whenSomeTicketsAreSoldorNotFoundUnit(){
+//        List<Long> tickets = new ArrayList();
+//        tickets.add(2l);
+//        tickets.add(100l);
+//
+//        RegisteredUser registeredUser = new RegisteredUser();
+//        registeredUser.setId(1L);
+//
+//        Ticket ticket = new Ticket();
+//        List<Ticket> ticketList = new ArrayList<>();
+//        ticketList.add(ticket);
+//
+//        Mockito.when(userService.findCurrentUser()).thenReturn(registeredUser);
+//        Mockito.when(ticketRepository.findTicketsByIdGroup(tickets,registeredUser.getId())).thenReturn(ticketList);
+//
+//        ticketService.acceptOrCancelReservations(tickets,TicketStatus.PAID);
+//    }
 
-        RegisteredUser registeredUser = new RegisteredUser();
-        registeredUser.setId(1L);
-
-        Ticket ticket = new Ticket();
-        List<Ticket> ticketList = new ArrayList<>();
-        ticketList.add(ticket);
-
-        Mockito.when(userService.findCurrentUser()).thenReturn(registeredUser);
-        Mockito.when(ticketRepository.findTicketsByIdGroup(tickets,registeredUser.getId())).thenReturn(ticketList);
-
-        ticketService.acceptOrCancelReservations(tickets,TicketStatus.PAID);
-    }
-
-    @Test
-    public void acceptOrCancelReservations_ShouldReturnTrue_whenTicketsAndStatusAreValid(){
-        List<Long> tickets = new ArrayList();
-        tickets.add(2l);
-        tickets.add(5l);
-
-        RegisteredUser registeredUser = new RegisteredUser();
-        registeredUser.setId(1L);
-
-        Ticket ticket = new Ticket();
-        ticket.setId(2l);
-        Ticket ticket2 = new Ticket();
-        ticket2.setId(5l);
-        List<Ticket> ticketList = new ArrayList<>();
-        ticketList.add(ticket);
-        ticketList.add(ticket2);
-
-        Mockito.when(userService.findCurrentUser()).thenReturn(registeredUser);
-        Mockito.when(ticketRepository.findTicketsByIdGroup(tickets,registeredUser.getId())).thenReturn(ticketList);
-        Mockito.when(ticketRepository.findOneById(ticket.getId())).thenReturn(Optional.of(ticket));
-        Mockito.when(ticketRepository.findOneById(ticket2.getId())).thenReturn(Optional.of(ticket2));
-
-        Boolean rez = ticketService.acceptOrCancelReservations(tickets, TicketStatus.PAID);
-        assertTrue(rez);
-    }
+//    @Test
+//    public void acceptOrCancelReservations_ShouldReturnTrue_whenTicketsAndStatusAreValid(){
+//        List<Long> tickets = new ArrayList();
+//        tickets.add(2l);
+//        tickets.add(5l);
+//
+//        RegisteredUser registeredUser = new RegisteredUser();
+//        registeredUser.setId(1L);
+//
+//        Ticket ticket = new Ticket();
+//        ticket.setId(2l);
+//        Ticket ticket2 = new Ticket();
+//        ticket2.setId(5l);
+//        List<Ticket> ticketList = new ArrayList<>();
+//        ticketList.add(ticket);
+//        ticketList.add(ticket2);
+//
+//        Mockito.when(userService.findCurrentUser()).thenReturn(registeredUser);
+//        Mockito.when(ticketRepository.findTicketsByIdGroup(tickets,registeredUser.getId())).thenReturn(ticketList);
+//        Mockito.when(ticketRepository.findOneById(ticket.getId())).thenReturn(Optional.of(ticket));
+//        Mockito.when(ticketRepository.findOneById(ticket2.getId())).thenReturn(Optional.of(ticket2));
+//
+//        Boolean rez = ticketService.acceptOrCancelReservations(tickets, TicketStatus.PAID);
+//        assertTrue(rez);
+//    }
 }

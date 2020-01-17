@@ -46,23 +46,23 @@ public class TicketRepositoryTest {
         assertEquals("ticket list is not empty (12 elements)", 12, foundTickets.size());
     }
 
-    @Test
-    public void findAllReservationsByUser_ShouldReturnEmptyList_whenUserIsNotRegistered() {
-        List<Ticket> foundTickets = ticketRepository.findAllReservationsByUser(100L);
-        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
-    }
-
-    @Test
-    public void findAllReservationsByUser_ShouldReturnEmptyList_whenUserIsRegisteredButDontHaveAnyTicketReserved() {
-        List<Ticket> foundTickets = ticketRepository.findAllReservationsByUser(4L);
-        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
-    }
-
-    @Test
-    public void findAllReservationsByUser_ShouldReturnListWithTickets_whenUserIsRegisteredAndHasReservedTickets() {
-        List<Ticket> foundTickets = ticketRepository.findAllReservationsByUser(1L);
-        assertEquals("ticket list is empty (4 elements)", 4, foundTickets.size());
-    }
+//    @Test
+//    public void findAllReservationsByUser_ShouldReturnEmptyList_whenUserIsNotRegistered() {
+//        List<Ticket> foundTickets = ticketRepository.findAllReservationsByUser(100L);
+//        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
+//    }
+//
+//    @Test
+//    public void findAllReservationsByUser_ShouldReturnEmptyList_whenUserIsRegisteredButDontHaveAnyTicketReserved() {
+//        List<Ticket> foundTickets = ticketRepository.findAllReservationsByUser(4L);
+//        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
+//    }
+//
+//    @Test
+//    public void findAllReservationsByUser_ShouldReturnListWithTickets_whenUserIsRegisteredAndHasReservedTickets() {
+//        List<Ticket> foundTickets = ticketRepository.findAllReservationsByUser(1L);
+//        assertEquals("ticket list is empty (4 elements)", 4, foundTickets.size());
+//    }
 
     @Test
     public void findAllReservationsByUserAndEvent_ShouldReturnEmptyList_whenUserIsRegisteredButWrongEventId() {

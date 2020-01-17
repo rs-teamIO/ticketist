@@ -212,45 +212,6 @@ export class EventFormComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  // reservationDeadlineValidator(control: FormControl): {[s: string]: boolean} {
-  //   if (!this.newEventForm || !control.value) {
-  //     return null;
-  //   } else if (this.startDateInfo.value &&
-  //     new Date(control.value).getTime() > new Date(this.startDateInfo.value).getTime()) {
-  //     return { reservationDeadlineAfterStartDate: true };
-  //   } else if (this.endDateInfo.value &&
-  //     new Date(control.value).getTime() > new Date(this.endDateInfo.value).getTime()) {
-  //     return { reservationDeadlineAfterEndDate: true };
-  //   }
-  //   return null;
-  // }
-
-  // startDateValidator(control: FormControl): {[s: string]: boolean} {
-  //   if (!this.newEventForm || !control.value) {
-  //     return null;
-  //   } else if (this.reservationDeadlineInfo.value &&
-  //     new Date(this.reservationDeadlineInfo.value).getTime() > new Date(control.value).getTime()) {
-  //     return { startDateBeforeDeadline: true };
-  //   } else if (this.endDateInfo.value &&
-  //     new Date(control.value).getTime() > new Date(this.endDateInfo.value).getTime()) {
-  //     return { startDateAfterEndDate: true };
-  //   }
-  //   return null;
-  // }
-
-  // endDateValidator(control: FormControl): {[s: string]: boolean} {
-  //   if (!this.newEventForm || !control.value) {
-  //     return null;
-  //   } else if (this.reservationDeadlineInfo.value &&
-  //     new Date(this.reservationDeadlineInfo.value).getTime() > new Date(control.value).getTime()) {
-  //     return { endDateBeforeDeadline: true };
-  //   } else if (this.startDateInfo.value &&
-  //     new Date(this.startDateInfo.value).getTime() > new Date(control.value).getTime()) {
-  //     return { endDateBeforeStartDate: true };
-  //   }
-  //   return null;
-  // }
-
   sectorRowValidator(group: FormGroup): {[s: string]: boolean} {
     if (group.controls.active.value) {
       if (isNaN(group.controls.ticketPrice.value)) {

@@ -73,9 +73,9 @@ public class Ticket {
    private RegisteredUser user;
 
    /**
-    * Holds a reference to the {@link TicketGroup}
+    * Holds a reference to the {@link Reservation}
     */
    @ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH }, fetch = FetchType.LAZY)
-   @JoinColumn(name = "ticket_group_id")
-   private TicketGroup ticketGroup;
+   @JoinColumn(name = "reservation_id")
+   private Reservation reservation;
 }

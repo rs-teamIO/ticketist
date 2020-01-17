@@ -4,6 +4,7 @@ TRUNCATE TABLE tickets;
 TRUNCATE TABLE users;
 TRUNCATE TABLE sectors;
 TRUNCATE TABLE event_sectors;
+TRUNCATE TABLE reservations;
 
 INSERT INTO venues (id, is_active, name, street, city, latitude, longitude)
 VALUES
@@ -35,24 +36,37 @@ VALUES
     (9, 'Spens event 5', 'Opis spens eventa 5', 'CULTURAL', '2019-06-10', '2019-06-11', '2019-06-5', 3, 1),
     (10, 'Spens event 6', 'Opis spens eventa 6', 'ENTERTAINMENT', '2019-06-12', '2019-06-13', '2019-06-5', 3, 1),
     (11, 'Spens event 7', 'Opis spens eventa 7', 'ENTERTAINMENT', '2019-06-14', '2019-06-15', '2019-06-5', 3, 1),
-    (12, 'Spens event 8', 'Opis spens eventa 8', 'ENTERTAINMENT', '2020-06-14', '2020-06-15', '2020-06-5', 3, 1);
+    (12, 'Spens event 8', 'Opis spens eventa 8', 'ENTERTAINMENT', '2020-06-14', '2020-06-15', '2020-06-5', 15, 1);
 
 INSERT INTO event_sectors (id, capacity, date, numerated_seats, ticket_price, event_id, sector_id)
 VALUES
     (1, 4, '2020-06-14', 1, 35.00, 12, 1),
     (2, 4, '2020-06-15', 0, 35.00, 12, 2);
 
-INSERT INTO tickets (id, number_column, number_row, price, status, event_id, event_sector_id, user_id, version)
+INSERT INTO reservations (id, event_id, user_id)
 VALUES
-    (1,1,1,35.00,2,12,1,1,0),
-    (2,1,2,35.00,1,12,1,1,0),
-    (3,2,1,35.00,1,12,1,1,0),
-    (4,2,2,35.00,1,12,1,1,0),
-    (5,-1,-1,35.00,1,12,2,1,0),
-    (6,-1,-1,35.00,2,12,2,1,0),
-    (7,-1,-1,35.00,1,12,2,1,0),
-    (8,-1,-1,35.00,0,12,2,null,0);
+    (1, 12, 1),
+    (2, 12, 1);
 
+INSERT INTO tickets (id, number_column, number_row, price, status, event_id, event_sector_id, user_id, version, reservation_id)
+VALUES
+    (1,1,1,35.00,0,12,1,null,0,null),
+    (2,1,2,35.00,1,12,1,1,0,1),
+    (3,2,1,35.00,1,12,1,1,0,1),
+    (4,2,2,35.00,1,12,1,1,0,1),
+    (5,-1,-1,35.00,1,12,2,1,0,2),
+    (6,-1,-1,35.00,1,12,2,1,0,2),
+    (7,-1,-1,35.00,2,12,2,1,0,null),
+    (8,-1,-1,35.00,0,12,2,null,0,null);
+
+--         (1,1,1,35.00,0,12,1,null,0,null),
+--         (2,1,2,35.00,0,12,1,null,0,null),
+--         (3,2,1,35.00,0,12,1,null,0,null),
+--         (4,2,2,35.00,0,12,1,null,0,null),
+--         (5,-1,-1,35.00,0,12,2,null,0,null),
+--         (6,-1,-1,35.00,0,12,2,null,0,null),
+--         (7,-1,-1,35.00,0,12,2,null,0,null),
+--         (8,-1,-1,35.00,0,12,2,null,0,null);
 
 INSERT INTO users
     (dtype, id, email, first_name, last_name, password, username, is_verified, verification_code)
