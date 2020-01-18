@@ -1,1 +1,23 @@
-<p>reservation-item works!</p>
+<div fxLayout="row" class="outer-container">
+  <div class="card-column">
+    <img
+      src="https://www.sveopoznatima.com/wp-content/uploads/2018/12/Zorica-Brunclik-Biografija-Visina-Te%C5%BEina-Godi%C5%A1te.jpg"
+      alt="Event image">
+  </div>
+
+  <div class="card-column" style="justify-content: space-between;">
+    <mat-card-title>{{reservation.eventName}}</mat-card-title>
+    <mat-card-subtitle>{{reservation.venueName}}</mat-card-subtitle>
+    <mat-card-subtitle>02.02.2020. 12:00</mat-card-subtitle>
+  </div>
+
+  <div class="card-column" style="justify-content: space-around;">
+    <mat-card-subtitle>Tickets: {{reservation.ticketCount}}</mat-card-subtitle>
+    <mat-card-subtitle>Total price: ${{reservation.price}}</mat-card-subtitle>
+  </div>
+
+  <div class="card-column" style="justify-content: space-around;">
+    <button mat-raised-button>Pay Now</button>
+    <button mat-raised-button color="warn">Cancel</button>
+  </div>
+</div>

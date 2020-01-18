@@ -33,7 +33,6 @@ export interface IVenuePage {
 
 @Injectable({ providedIn: 'root' })
 export class VenueService {
-  activeVenues: IVenue[] = [];
   activeVenuesChanged = new Subject<IVenue[]>();
   venuesChanged = new Subject<IVenuePage>();
   pageChanged = new Subject<PageEvent>();
@@ -58,13 +57,11 @@ export class VenueService {
     )
     .subscribe(
       (resData: any) => {
-        this.activeVenues = resData;
-        this.activeVenuesChanged.next(this.activeVenues.slice());
+        this.activeVenuesChanged.next(resData.slice());
       },
       (error: any) => {
         console.log(error);
-        this.activeVenues = [];
-        this.activeVenuesChanged.next(this.activeVenues);
+        this.activeVenuesChanged.next([]);
       }
     );
   }
