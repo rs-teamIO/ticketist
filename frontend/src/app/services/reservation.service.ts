@@ -25,6 +25,7 @@ export class ReservationService {
   pageChanged = new Subject<PageEvent>();
 
   private readonly getReservationsPath = `http://localhost:${PORT}/api/tickets/reservations`;
+  private readonly cancelReservationPath = `http://localhost:${PORT}/api/tickets/reservations/cancel/`;
 
   constructor(private http: HttpClient) {
     this.pageChanged.subscribe((value: any) => {
@@ -38,6 +39,12 @@ export class ReservationService {
     .subscribe((responseData: IReservationPage) => {
       this.reservationsChanged.next(responseData);
     });
+  }
+
+  cancelReservation(reservationID: number) {
+    return this.http.post<boolean>(
+      this.cancelReservationPath + (reservationID + ''), {}
+    );
   }
 
 

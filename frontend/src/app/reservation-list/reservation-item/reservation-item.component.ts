@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { IReservation } from 'src/app/services/reservation.service';
+import { IReservation, ReservationService } from 'src/app/services/reservation.service';
 
 @Component({
   selector: 'app-reservation-item',
@@ -8,10 +8,26 @@ import { IReservation } from 'src/app/services/reservation.service';
 })
 export class ReservationItemComponent implements OnInit {
   @Input() reservation: IReservation;
+  errorMessage = '';
 
-  constructor() { }
+  constructor(private reservationService: ReservationService) { }
 
   ngOnInit() {
+  }
+
+  cancelReservation() {
+    this.reservationService.cancelReservation(this.reservation.id)
+    .subscribe(resData => {
+      console.log(resData);
+      this.reservationService.getReservations();
+    },
+    error => {
+      console.log('Error: ', error);
+      if (error.status === 400) {
+        this.errorMessage = error.error.message;
+      }
+    }
+    );
   }
 
 }

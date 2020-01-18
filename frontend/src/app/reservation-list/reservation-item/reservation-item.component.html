@@ -3,6 +3,9 @@
     <img
       src="https://www.sveopoznatima.com/wp-content/uploads/2018/12/Zorica-Brunclik-Biografija-Visina-Te%C5%BEina-Godi%C5%A1te.jpg"
       alt="Event image">
+      <ng-container *ngIf="errorMessage !== ''">
+        <p class="error-message">{{errorMessage}}</p>
+      </ng-container>
   </div>
 
   <div class="card-column" style="justify-content: space-between;">
@@ -12,12 +15,12 @@
   </div>
 
   <div class="card-column" style="justify-content: space-around;">
-    <mat-card-subtitle>Tickets: {{reservation.ticketCount}}</mat-card-subtitle>
-    <mat-card-subtitle>Total price: ${{reservation.price}}</mat-card-subtitle>
+    <mat-card-subtitle>Tickets: <b>{{reservation.ticketCount}}</b></mat-card-subtitle>
+    <mat-card-subtitle>Total price: <b>${{reservation.price}}</b></mat-card-subtitle>
   </div>
 
   <div class="card-column" style="justify-content: space-around;">
-    <button mat-raised-button>Pay Now</button>
-    <button mat-raised-button color="warn">Cancel</button>
+    <button mat-raised-button routerLink="{{'/checkout/'+reservation.id}}">Pay Now</button>
+    <button mat-raised-button color="warn" (click)="cancelReservation()">Cancel</button>
   </div>
 </div>
