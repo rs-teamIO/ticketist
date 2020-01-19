@@ -4,10 +4,17 @@
       <mat-card-title>Venues</mat-card-title>
     </mat-card-header>
 
-    <div fxLayout="row wrap" class="card-deck-container" fxLayout.xs="column wrap" fxLayoutAlign="space-evenly center">
-      <div fxFlex="24" fxFlex.sm="30" fxFlex.xs="80" class="card-item" *ngFor="let venue of venues" >
-        <app-venue-item [venue]="venue"></app-venue-item>
-      </div>
+    <div fxLayout="row wrap" class="card-deck-container" fxLayout.xs="column wrap">
+      <table  id="table">
+        <tr>
+          <th>Name</th>
+          <th>Street</th>
+          <th>Sector size</th>
+          <th>Details</th>
+          <th>Status</th>
+        </tr>
+        <tr app-venue-item *ngFor="let venue of venues" [venue]="venue"></tr>
+    </table>
     </div>
   </mat-card>
 

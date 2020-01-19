@@ -38,6 +38,26 @@ export class UserProfileComponent implements OnInit {
     );
   }
 
+  get firstName(){
+    return this.userForm.get('firstName');
+  }
+
+  get lastName(){
+    return this.userForm.get('lastName');
+  }
+
+  get username(){
+    return this.userForm.get('username');
+  }
+
+  get email(){
+    return this.userForm.get('email');
+  }
+
+  get password(){
+    return this.userForm.get('oldPassword');
+  }
+
   onSubmit() {
     if (!this.userForm.valid) {
       this.error = 'Wrong inputs!';

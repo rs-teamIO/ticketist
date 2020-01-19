@@ -15,6 +15,31 @@ mat-card-title {
   font-weight: normal;
 }
 
+.page{
+  position: fixed;
+  margin-top: 100px;
+}
+
 mat-paginator {
   color: rebeccapurple;
 }
+
+#table {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#table tr:hover{
+  background-color: white;
+}
+
+#table th {
+  padding-top: 12px;
+  padding-left: 9px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: mediumvioletred;
+  color: white;
+}
+
