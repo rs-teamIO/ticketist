@@ -1,7 +1,10 @@
-<div fxLayout="row" fxLayoutAlign="left center">
-  <div class="form-container">
-<app-venue-form-basic *ngIf="found" [venue]="venue" [new]="new" (mapView)="sendToMap($event)"></app-venue-form-basic>
+<div fxLayout="row" fxLayoutAlign="left start">
+  <div class="form-container" fxFlex="30">
+  <app-venue-form-basic *ngIf="found" [venue]="venue" [new]="new" (mapView)="sendToMap($event)"></app-venue-form-basic>
     <app-map-view [latitude]="latitude" [longitude]="longitude"></app-map-view>
   </div>
-<app-event-form-sectors></app-event-form-sectors>
+
+  <div class="sector-container" fxFlex="70">
+    <app-venue-form-sectors></app-venue-form-sectors>
+  </div>
 </div>

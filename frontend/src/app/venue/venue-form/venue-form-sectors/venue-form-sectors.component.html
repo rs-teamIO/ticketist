@@ -1,1 +1,65 @@
-<p>venue-form-sectors works!</p>
+<!-- <div class="table-container mat-elevation-z8">
+<table mat-table [dataSource]="sectors">
+    <ng-container matColumnDef="Sector name">
+        <th mat-header-cell *matHeaderCellDef>Sector name</th>
+        <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+    </ng-container>
+    
+    <ng-container matColumnDef="Rows">
+        <th mat-header-cell *matHeaderCellDef>Rows</th>
+        <td mat-cell *matCellDef="let element">{{element.name}}  </td>
+    </ng-container>
+    
+    <ng-container matColumnDef="Seats per row">
+        <th mat-header-cell *matHeaderCellDef>Seats per row</th>
+        <td mat-cell *matCellDef="let element"> {{element.weight}}  </td>
+    </ng-container>
+    
+    <ng-container matColumnDef="Capacity">
+        <th mat-header-cell *matHeaderCellDef>Capacity</th>
+        <td mat-cell *matCellDef="let element"> {{element.symbol}}  </td>
+    </ng-container>
+    
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+</div>  -->
+
+<div fxLayout="column">
+    <div >
+        <form [formGroup]="addSectorForm" (ngSubmit)="onSubmit()">
+            <mat-form-field appearance="outline">
+                <mat-label>Sector name</mat-label>
+                <input matInput type="text" formControlName="sectorName">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Max capacity</mat-label>
+                <input matInput type="text" formControlName="maxCapacity">
+            </mat-form-field>
+            
+            <button mat-stroked-button color="primary" type="submit">
+                <mat-icon>add</mat-icon>
+                <span>Add sector</span>
+            </button>
+        </form>
+    </div>
+
+</div>
+
+<div class="gridster-container">
+    <gridster [options]="options" style="background-color: whitesmoke">
+        <gridster-item [item]="item" *ngFor="let item of items" style="background-color: lavender; border-radius: 3px;" class="mat-elevation-z3">
+<!--        your content here -->
+            Name: {{ item.name }}
+            Columns: {{item.cols}} 
+            Rows: {{item.rows}}
+            <div class="button-holder">
+                <button mat-mini-fab class="remove-button" (click)="onRemoveItem(item)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </div>
+        </gridster-item>
+    </gridster> 
+</div>
+
