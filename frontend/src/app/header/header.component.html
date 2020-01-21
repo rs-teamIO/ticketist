@@ -5,6 +5,7 @@
   </button>
   <span class="spacer"></span>
   <div>
+    <button mat-button routerLink="/event-details">Event Details</button>
     <button mat-button routerLink="/events/new" *ngIf="isAuthenticated">Add Event</button>
     <button mat-button routerLink="/my-reservations" *ngIf="isAuthenticated">My Reservations</button>
     <button mat-button routerLink="/venues/list" *ngIf="isAuthenticated">Venues</button>

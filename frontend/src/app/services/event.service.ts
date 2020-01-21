@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {EventModel} from '../model/event.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {Page} from '../model/page.model';
 import {PageEvent} from '@angular/material';
 import { PORT } from '../shared/constants';
+import {Venue} from '../model/venue.model';
 
 export interface IEventPage {
   events: EventModel[];
@@ -116,6 +117,14 @@ export class EventService {
         mediaFiles
       }
     );
+  }
+
+  getEvent(id: number): Observable<EventModel> {
+    return this.http.get<EventModel>(`http://localhost:${PORT}/api/events/` + id);
+  }
+
+  getVenue(id: number): Observable<Venue> {
+    return this.http.get<Venue>(`http://localhost:${PORT}/api/venues/` + id);
   }
 
 }

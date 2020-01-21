@@ -11,6 +11,7 @@ import { ErrorPageComponent } from './error-page/error-page.component';
 import {VenueListComponent} from './venue/venue-list/venue-list.component';
 import {VenueFormComponent} from './venue/venue-form/venue-form.component';
 import { ReservationListComponent } from './reservation-list/reservation-list.component';
+import { EventDetailsComponent } from './event/event-details/event-details.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/events', pathMatch: 'full' },
@@ -25,6 +26,7 @@ const routes: Routes = [
   { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] },
   { path: 'my-reservations', component: ReservationListComponent, canActivate: [AuthGuard] },
   { path: 'not-found', component: ErrorPageComponent },
+  { path: 'event-details', component: EventDetailsComponent },
   { path: '**', redirectTo: '/not-found'},
 ];
 
