@@ -11,10 +11,9 @@
         <p>{{event.description}}</p>
         </mat-card-content>
         <mat-card-actions>
-        <!-- <app-map [lat]=venue.latitude [lng]=venue.longitude></app-map> -->
         <app-map-view [latitude]=venue.latitude [longitude]=venue.longitude></app-map-view>
         </mat-card-actions>
     </mat-card>
 
-    <!-- <app-seats-display [event]="event" [venue]="venue"></app-seats-display> -->
+    <app-seats-display [event]="event" [venue]="venue"></app-seats-display>
 </div>

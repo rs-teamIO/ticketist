@@ -41,6 +41,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { BrowserModule } from '@angular/platform-browser';
 import { MapViewComponent } from './venue/venue-form/map-view/map-view.component';
+import {GridsterModule} from 'angular-gridster2';
 
 
 @NgModule({
@@ -90,7 +91,8 @@ import { MapViewComponent } from './venue/venue-form/map-view/map-view.component
             /* apiKey is required, unless you are a premium customer, in which case you can use clientId */
         }),
         MatDividerModule,
-        MatPaginatorModule
+        MatPaginatorModule,
+        GridsterModule
     ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }],
   bootstrap: [AppComponent]
