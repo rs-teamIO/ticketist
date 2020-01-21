@@ -11,8 +11,16 @@ export class VenueFormComponent implements OnInit {
   venue: IVenue;
   new: boolean;
   found: boolean;
+  longitude: number;
+  latitude: number;
 
   constructor(private venueService: VenueService, private route: ActivatedRoute) { }
+
+  sendToMap(view){
+    this.longitude = view.longitude;
+    this.latitude = view.latitude;
+  }
+
 
   ngOnInit() {
     const id = this.route.snapshot.params.id;

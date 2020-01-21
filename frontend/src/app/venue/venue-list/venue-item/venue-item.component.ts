@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 import { ISector } from 'src/app/services/sector.service';
 
 @Component({
-  selector: 'app-venue-item',
+  selector: '[app-venue-item]',
   templateUrl: './venue-item.component.html',
   styleUrls: ['./venue-item.component.scss']
 })

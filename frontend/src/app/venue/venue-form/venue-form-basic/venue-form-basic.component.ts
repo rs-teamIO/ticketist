@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {IVenue, IVenueBasic, VenueService} from '../../../services/venue.service';
 import {ISector} from '../../../services/sector.service';
@@ -9,7 +9,7 @@ import {GeocodeService} from '../../../services/geocode.service';
   templateUrl: './venue-form-basic.component.html',
   styleUrls: ['./venue-form-basic.component.scss']
 })
-export class VenueFormBasicComponent implements OnInit {
+export class VenueFormBasicComponent implements OnInit, OnDestroy {
   @Input()
   new: boolean;
   @Input()
@@ -19,8 +19,7 @@ export class VenueFormBasicComponent implements OnInit {
   error = '';
   sectors: ISector[];
   sectorNew: ISector;
-
-
+  @Output() mapView = new EventEmitter<{longitude: number, latitude: number}>();
 
   constructor(private venueService: VenueService, private geocodeService: GeocodeService) { }
 
@@ -32,6 +31,7 @@ export class VenueFormBasicComponent implements OnInit {
     });
     if (!this.new) {
       this.presetForm(this.venue);
+      this.viewOnMap();
     }
     console.log(this.venue);
   }
@@ -43,6 +43,29 @@ export class VenueFormBasicComponent implements OnInit {
         street: new FormControl(resData.street, Validators.required)
       });
     }
+
+    viewOnMap(){
+      const { city, street } = this.venueForm.value;
+      this.geocodeService.gelocate(city + ',' + street).subscribe(retData => {
+        console.log(retData);
+        this.mapView.emit({longitude: retData.results[0].geometry.location.lng, latitude: retData.results[0].geometry.location.lat});
+      },error=>{
+        console.log(error);
+      });
+    }
+
+    get name(){
+    return this.venueForm.get('name');
+    }
+
+
+  get city(){
+    return this.venueForm.get('city');
+  }
+
+  get street(){
+    return this.venueForm.get('street');
+  }
 
   onSubmit() {
     if (!this.venueForm.valid) {
@@ -129,10 +152,12 @@ export class VenueFormBasicComponent implements OnInit {
       );
     }
 
-
-
   });
 
+  }
+
+  ngOnDestroy(): void {
+    this.mapView.unsubscribe();
   }
 
 }

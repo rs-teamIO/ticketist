@@ -1,16 +1,6 @@
-<mat-card class="mat-card-flat">
-  <mat-card-title style="font-weight: lighter">
-    {{venue.name}}
-  </mat-card-title>
-  <mat-card>
-    {{venue.city}}, {{venue.street}}
-  </mat-card>
-  <mat-card>
-    Sectors size: {{sectorSize}}
-  </mat-card>
-  <mat-divider></mat-divider>
-  <mat-card-actions>
-    <button mat-stroked-button class="mat-button" [routerLink]="['/venues/',venue.id]" >View</button>
-    <button mat-stroked-button (click)="activate(venue.id)">{{venue.isActive ? 'Deactivate' : 'Activate'}}</button>
-  </mat-card-actions>
-</mat-card>
+  <td>{{venue.name}}</td>
+  <td>{{venue.city}}, {{venue.street}}</td>
+  <td>{{sectorSize}}</td>
+  <td><button mat-stroked-button class="mat-button" [routerLink]="['/venues/',venue.id]" >View</button></td>
+  <td><button mat-stroked-button (click)="activate(venue.id)">{{venue.isActive ? 'Deactivate' : 'Activate'}}</button></td>
+

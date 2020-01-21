@@ -40,6 +40,7 @@ import { AgmCoreModule } from '@agm/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { BrowserModule } from '@angular/platform-browser';
+import { MapViewComponent } from './venue/venue-form/map-view/map-view.component';
 
 
 @NgModule({
@@ -73,7 +74,8 @@ import { BrowserModule } from '@angular/platform-browser';
     TicketListComponent,
     TicketItemComponent,
     UserProfileComponent,
-    ErrorPageComponent
+    ErrorPageComponent,
+    MapViewComponent
   ],
     imports: [
         BrowserModule,

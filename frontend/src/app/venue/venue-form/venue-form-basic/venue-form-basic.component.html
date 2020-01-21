@@ -1,3 +1,4 @@
+<div fxLayout="row" fxLayoutAlign="center center" class="main">
 <mat-card class="example-card">
   <mat-card-header>
     <mat-card-title>Profile</mat-card-title>
@@ -13,6 +14,9 @@
                 placeholder="Name"
                 formControlName="name"
               >
+              <mat-error *ngIf="name.errors && name.touched">
+                <p>Name is not correct</p>
+              </mat-error>
             </mat-form-field>
           </td>
         </tr>
@@ -24,6 +28,9 @@
                 placeholder="City"
                 formControlName="city"
               >
+              <mat-error *ngIf="city.errors && city.touched">
+                <p>City is not correct</p>
+              </mat-error>
             </mat-form-field>
           </td>
         </tr>
@@ -35,6 +42,9 @@
                 placeholder="Street"
                 formControlName="street"
               >
+              <mat-error *ngIf="street.errors && street.touched">
+                <p>Street is not correct</p>
+              </mat-error>
             </mat-form-field>
           </td>
         </tr>
@@ -45,14 +55,13 @@
         </tr>
         <tr>
           <td>
-            <button mat-raised-button type="submit" color="primary">Update</button>
+            <button mat-raised-button type="submit" color="primary" [disabled]="venueForm.invalid">Submit</button>
           </td>
         </tr>
       </table>
     </form>
+
+    <button mat-raised-button (click)="viewOnMap()" [disabled]="venueForm.invalid">View on map</button>
   </mat-card-content>
 </mat-card>
-
-<agm-map *ngIf="!this.new" [latitude]=this.venue.latitude [longitude]=this.venue.longitude [zoom]="5">
-  <agm-marker [latitude]=this.venue.latitude [longitude]=this.venue.longitude></agm-marker>
-</agm-map>
+</div>
