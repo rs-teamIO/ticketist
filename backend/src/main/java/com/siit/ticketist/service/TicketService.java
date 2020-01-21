@@ -183,7 +183,7 @@ public class TicketService {
 
     public List<Ticket> getUsersBoughtTickets() {
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
-        return ticketRepository.findUsersBoughtTickets(registeredUser.getId());
+        return ticketRepository.findAllByUserIdAndStatus(registeredUser.getId(), TicketStatus.PAID);
     }
 
     public void checkStatusIsValid(TicketStatus newStatus) {
@@ -197,7 +197,7 @@ public class TicketService {
 
     public void checkMaxNumberOfReservationsPerUser(List<Long> reservations) {
         Ticket ticket = findOne(reservations.get(0));
-        int numberOfReservations = ticketRepository.findUsersReservationsByEvent(userService.findCurrentUser().getId(), ticket.getEvent().getId()).size() + reservations.size();
+        int numberOfReservations = ticketRepository.findAllByUserIdAndStatusAndEventId(userService.findCurrentUser().getId(), TicketStatus.RESERVED, ticket.getEvent().getId()).size() + reservations.size();
         if(numberOfReservations > ticket.getEvent().getReservationLimit()) {
             throw new BadRequestException("Event limit of reservations is " + ticket.getEvent().getReservationLimit());
         }
