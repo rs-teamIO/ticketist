@@ -92,6 +92,10 @@ export class EventFormComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    if (this.newEventForm.invalid || this.sectorForm.invalid) {
+      return;
+    }
+
     let eventSectors: IEventSector[] = this.sectorForm.controls.sectors.value.map((sector: ISectorTable, index: number) => {
       if (sector.active) {
         const newEventSector: IEventSector = {

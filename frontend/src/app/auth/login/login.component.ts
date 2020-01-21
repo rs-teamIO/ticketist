@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import {Router} from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -11,42 +11,47 @@ import {Router} from '@angular/router';
 export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
-  isLoading = false;
-  error = '';
+  errorMessage = '';
 
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
     this.loginForm = new FormGroup({
-      username: new FormControl(null, Validators.required),
-      password: new FormControl(null, Validators.required),
+      username: new FormControl('', Validators.required),
+      password: new FormControl('', Validators.required),
     });
   }
 
   onSubmit() {
-    if (!this.loginForm.valid) {
-      this.error = 'Wrong inputs!';
+    if (this.loginForm.invalid) {
       return;
     }
 
-    this.isLoading = true;
-
     const { password, username } = this.loginForm.value;
-    this.error = '';
+    this.errorMessage = '';
 
     this.authService.login(username, password).subscribe(
       resData => {
         console.log(resData);
         this.loginForm.reset();
-        this.isLoading = false;
         this.router.navigate(['/events']);
       },
       error => {
-        console.log('Error: ', error);
-        this.error = error.error.message;
-        this.isLoading = false;
+        if (error.status === 401) {
+          this.errorMessage = error.error.message;
+        } else {
+          this.errorMessage = 'Error';
+        }
       }
     );
+  }
+
+  get username() {
+    return this.loginForm.get('username');
+  }
+
+  get password() {
+    return this.loginForm.get('password');
   }
 
 }
