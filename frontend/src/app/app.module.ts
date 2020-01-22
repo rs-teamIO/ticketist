@@ -30,8 +30,7 @@ import {EventItemComponent} from './event/event-list/event-item/event-item.compo
 import {VenueItemComponent} from './venue/venue-list/venue-item/venue-item.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
 import { CheckoutComponent } from './checkout/checkout.component';
-import { TicketListComponent } from './checkout/ticket-list/ticket-list.component';
-import { TicketItemComponent } from './checkout/ticket-list/ticket-item/ticket-item.component';
+import { TicketItemComponent } from './checkout/ticket-item/ticket-item.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CustomMaterialModule } from './shared/material.module';
@@ -42,6 +41,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { BrowserModule } from '@angular/platform-browser';
 import { MapViewComponent } from './venue/venue-form/map-view/map-view.component';
 import {GridsterModule} from 'angular-gridster2';
+import {SweetAlert2Module} from '@sweetalert2/ngx-sweetalert2';
 
 
 @NgModule({
@@ -72,7 +72,6 @@ import {GridsterModule} from 'angular-gridster2';
     EventItemComponent,
     VenueItemComponent,
     CheckoutComponent,
-    TicketListComponent,
     TicketItemComponent,
     UserProfileComponent,
     ErrorPageComponent,
@@ -92,7 +91,8 @@ import {GridsterModule} from 'angular-gridster2';
         }),
         MatDividerModule,
         MatPaginatorModule,
-        GridsterModule
+        GridsterModule,
+        SweetAlert2Module.forRoot()
     ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }],
   bootstrap: [AppComponent]

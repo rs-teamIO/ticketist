@@ -23,10 +23,10 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
   eventSectorForm: FormGroup;
   seats: any[] = [];
   seatRows: number[] = [];
-  seatsMap: {[key: number]: ITicket[]} = {};
+  seatsMap: { [key: number]: ITicket[] } = {};
 
 
-  constructor(private ticketService: TicketService, 
+  constructor(private ticketService: TicketService,
               private renderer: Renderer2,
               private router: Router) {
   }
@@ -40,7 +40,8 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
   }
 
   onBuy() {
-    // this.router.navigate(['/checkout']).then(() => this.ticketService.ticketsSelected.next(this.selectedSeats));
+    this.router.navigate(['/checkout']).then(() => this.ticketService.ticketsSelected.next(this.selectedSeats));
+    // this.ticketService.ticketsSelected.next(this.selectedSeats);
   }
 
   onSectorChange() {

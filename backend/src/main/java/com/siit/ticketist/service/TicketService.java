@@ -56,6 +56,10 @@ public class TicketService {
         return ticketRepository.findByEventSectorId(id);
     }
 
+    public Set<Ticket> findAllByReservationId(Long id) {
+        return reservationRepository.findOneById(id).orElseThrow(() -> new NotFoundException("Reservation not found")).getTickets();
+    }
+
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false, rollbackFor = OptimisticLockException.class)
     public List<Ticket> buyTickets(List<Long> ticketIDS) throws MessagingException {
 

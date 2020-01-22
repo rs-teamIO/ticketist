@@ -1,23 +1,30 @@
-<div fxLayoutAlign="center center" fxLayout="column">
-  <mat-card class="mat-card-flat card-deck-container" >
-    <mat-card-header>
-      <mat-card-title>Future events</mat-card-title>
-    </mat-card-header>
-
-    <div fxLayout="row wrap" class="card-deck-container" fxLayout.xs="column wrap">
-      <div fxFlex="24" fxFlex.sm="30" fxFlex.xs="80" class="card-item" *ngFor="let eventItem of events">
-        <app-event-item [eventModel]="eventItem"></app-event-item>
-      </div>
-    </div>
-  </mat-card>
-
-  <div class="paginator mat-elevation-z5">
-    <mat-paginator [length]="totalSize"
-                   pageSize="8"
-                   pageIndex="0"
-                   (page)="onPageChanged($event)">
-    </mat-paginator>
+<div fxLayout="column" fxLayoutAlign="center center" style="height: 100%;">
+  <div *ngIf="events.length === 0; else eventsLoaded">
+    <mat-spinner></mat-spinner>
   </div>
+
+  <ng-template #eventsLoaded>
+    <mat-card class="mat-card-flat card-deck-container">
+      <mat-card-header>
+        <mat-card-title>Future events</mat-card-title>
+      </mat-card-header>
+
+      <div fxLayout="row wrap" class="card-deck-container" fxLayout.xs="column wrap">
+        <div fxFlex="24" fxFlex.sm="30" fxFlex.xs="80" class="card-item" *ngFor="let eventItem of events">
+          <app-event-item [eventModel]="eventItem"></app-event-item>
+        </div>
+      </div>
+    </mat-card>
+
+    <div class="paginator mat-elevation-z5">
+      <mat-paginator [length]="totalSize"
+                     pageSize="8"
+                     pageIndex="0"
+                     (page)="onPageChanged($event)">
+      </mat-paginator>
+    </div>
+  </ng-template>
+
 
 </div>
 

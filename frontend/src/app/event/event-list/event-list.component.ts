@@ -1,8 +1,7 @@
-import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {MatPaginator, PageEvent} from '@angular/material';
+import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
+import {PageEvent} from '@angular/material';
 import {EventModel} from '../../model/event.model';
 import {EventService, IEventPage} from '../../services/event.service';
-import {Page} from '../../model/page.model';
 import {Subscription} from 'rxjs';
 
 @Component({

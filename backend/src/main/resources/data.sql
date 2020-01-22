@@ -52,8 +52,8 @@ VALUES
 
 INSERT INTO tickets (id, number_column, number_row, price, status, event_id, event_sector_id, user_id, version, reservation_id)
 VALUES
-    (1,1,1,35.00,1,12,1,1,0,1),
-    (2,1,2,35.00,1,12,1,1,0,1),
+    (1,1,1,35.00,0,12,1,1,0,1),
+    (2,1,2,35.00,0,12,1,1,0,1),
     (3,2,1,35.00,1,12,1,1,0,2),
     (4,2,2,35.00,1,12,1,1,0,3),
     (5,-1,-1,35.00,1,12,2,1,0,4),

@@ -1,0 +1,23 @@
+<div fxLayout="row" class="outer-container">
+  <mat-card class="mat-card-flat">
+    <img
+      src="https://pb2eu.interticket.com/imgs/system-20/program/000/001/334/zdravko-colic-474-279-10882.jpg"
+      alt="Event image">
+  </mat-card>
+
+  <mat-card class="mat-card-flat" style="padding-right: 50px;">
+    <mat-card-title>{{ticket.eventName}}</mat-card-title>
+    <mat-card-subtitle>{{ticket.venueName}}</mat-card-subtitle>
+    <mat-card-subtitle>{{ticket.date | date:'MMM d, y, HH:mm'}}</mat-card-subtitle>
+  </mat-card>
+
+  <mat-card class="mat-card-flat" style="padding-top: 24px;">
+    <mat-card-subtitle>Sector: {{ticket.sectorName}}</mat-card-subtitle>
+    <mat-card-subtitle>Row: {{ticket.numberRow}}</mat-card-subtitle>
+    <mat-card-subtitle>Seat: {{ticket.numberColumn}}</mat-card-subtitle>
+  </mat-card>
+
+  <mat-card class="mat-card-flat" style="width: 200px;" fxLayoutAlign="center center">
+    <p>Price: <b>{{ticket.price | currency}}</b></p>
+  </mat-card>
+</div>
