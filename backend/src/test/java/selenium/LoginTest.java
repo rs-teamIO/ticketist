@@ -19,7 +19,7 @@ public class LoginTest {
 
     @Before
     public void setupSelenium() {
-        System.setProperty("webdriver.chrome.driver", "src/main/resources/selenium-webdriver/chrome-driver-mac");
+        System.setProperty("webdriver.chrome.driver", "src/main/resources/selenium-webdriver/chromedriver.exe");
         browser = new ChromeDriver();
         browser.manage().window().maximize();
         browser.navigate().to("http://localhost:4200/login");
