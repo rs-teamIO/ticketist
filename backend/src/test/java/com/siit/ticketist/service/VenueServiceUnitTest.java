@@ -77,6 +77,15 @@ public class VenueServiceUnitTest {
         assertEquals("Venue's latitude is correct", new Double("15.0"), venue.getLatitude());
         assertEquals("Venue's longitude is correct", new Double("15.0"), venue.getLongitude());
         assertSame("Venue's sector size is correct", 1, venue.getSectors().size());
+        for(Sector sector1 : venue.getSectors()) {
+            assertSame("First sector has id equals to 1", 1L, sector1.getId());
+            assertEquals("First sector has name Sever", "Sever", sector1.getName());
+            assertSame("First sector has rows count equals to 2", 2, sector1.getRowsCount());
+            assertSame("First sector has columns count equals to 2", 2, sector1.getColumnsCount());
+            assertSame("First sector has max capacity equals to 4", 4, sector1.getMaxCapacity());
+            assertSame("First sector has start row equals to 1", 1, sector1.getStartRow());
+            assertSame("First sector has start column equals to 3", 1, sector1.getStartColumn());
+        }
     }
 
 
@@ -137,21 +146,29 @@ public class VenueServiceUnitTest {
         sectors.add(sector1);
         sectors.add(sector2);
 
-        Venue newVenue = new Venue(null, "ARENA", true, "Gogoljeva 15", "Novi Sad", 15.0, 15.0, sectors, new HashSet<>());
-        Venue savedVenueMock = new Venue(2L, "ARENA", true, "Gogoljeva 15", "Novi Sad", 15.0, 15.0, sectors, new HashSet<>());
+        String venueName = "Emirates Stadium";
+        String venueStreet = "Gogoljeva 15";
+        String venueCity = "Novi Sad";
+        double longitude = 15.0;
+        double latitude = 15.0;
+
+        Venue newVenue = new Venue(null, venueName, true, venueStreet, venueCity, latitude, longitude, sectors, new HashSet<>());
+        Venue savedVenueMock = new Venue(2L, venueName, true, venueStreet, venueCity, latitude, longitude, sectors, new HashSet<>());
 
         when(venueRepositoryMock.save(newVenue))
                 .thenReturn(savedVenueMock);
 
         Venue savedVenue = venueService.save(newVenue);
         assertSame("Venue's id equals to wanted id", 2L, savedVenue.getId());
-        assertEquals("Venue's name is correct", "ARENA", savedVenue.getName());
+        assertEquals("Venue's name is correct", venueName, savedVenue.getName());
         assertEquals("Venue's active status is correct", true, savedVenue.getIsActive());
-        assertEquals("Venue's street is correct", "Gogoljeva 15", savedVenue.getStreet());
-        assertEquals("Venue's city is correct", "Novi Sad", savedVenue.getCity());
-        assertEquals("Venue's latitude is correct", new Double("15.0"), savedVenue.getLatitude());
-        assertEquals("Venue's longitude is correct", new Double("15.0"), savedVenue.getLongitude());
+        assertEquals("Venue's street is correct", venueStreet, savedVenue.getStreet());
+        assertEquals("Venue's city is correct", venueCity, savedVenue.getCity());
+        assertEquals("Venue's latitude is correct", new Double(latitude), savedVenue.getLatitude());
+        assertEquals("Venue's longitude is correct", new Double(longitude), savedVenue.getLongitude());
         assertSame("Venue's sector size is correct", 2, savedVenue.getSectors().size());
+
+        //add sector validation
     }
 
     @Test(expected = NotFoundException.class)
@@ -265,7 +282,6 @@ public class VenueServiceUnitTest {
     @Test
     public void addSectorToVenue_successfullyAddSectorToVenue() {
         Long venueID = 1L;
-        Sector sector = new Sector(1L, "Sever", 2, 2, 4, 1, 1);
         Sector newSector = new Sector(2L, "Jug", 2, 2, 4, 3, 3);
 
         assertSame("Venue has 1 sector", venue.getSectors().size(), 1);
@@ -284,9 +300,8 @@ public class VenueServiceUnitTest {
 
         assertSame("Venue has 2 sectors", venue.getSectors().size(), 2);
 
-        int index = 0;
         for(Sector sector1 : venue.getSectors()) {
-            if(index == 0) {
+            if(sector1.getId() == 1L) {
                 assertSame("First sector has id equals to 1", 1L, sector1.getId());
                 assertEquals("First sector has name Sever", "Sever", sector1.getName());
                 assertSame("First sector has rows count equals to 2", 2, sector1.getRowsCount());
@@ -294,7 +309,7 @@ public class VenueServiceUnitTest {
                 assertSame("First sector has max capacity equals to 4", 4, sector1.getMaxCapacity());
                 assertSame("First sector has start row equals to 1", 1, sector1.getStartRow());
                 assertSame("First sector has start column equals to 1", 1, sector1.getStartColumn());
-            } else {
+            } else if(sector1.getId() == 2L) {
                 assertSame("Second sector has id equals to 2", 2L, sector1.getId());
                 assertEquals("Second sector has name Sever", "Jug", sector1.getName());
                 assertSame("Second sector has rows count equals to 2", 2, sector1.getRowsCount());
@@ -302,8 +317,9 @@ public class VenueServiceUnitTest {
                 assertSame("Second sector has max capacity equals to 4", 4, sector1.getMaxCapacity());
                 assertSame("Second sector has start row equals to 3", 3, sector1.getStartRow());
                 assertSame("Second sector has start column equals to 3", 3, sector1.getStartColumn());
+            } else {
+                assertEquals("Exception in case that there is unwanted sector", "NOT_EXIST", "NONE");
             }
-            index++;
         }
     }
 
