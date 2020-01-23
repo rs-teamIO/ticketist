@@ -54,7 +54,7 @@ public class RegisteredUserService {
         final RegisteredUser registeredUser = this.userService.findRegisteredUserByUsername(updatedUser.getUsername());
 
         if(!registeredUser.getEmail().equals(updatedUser.getEmail()))
-            this.userService.checkIfEmailTaken(registeredUser.getEmail());
+            this.userService.checkIfEmailTaken(updatedUser.getEmail());
 
         registeredUser.setFirstName(updatedUser.getFirstName());
         registeredUser.setLastName(updatedUser.getLastName());
