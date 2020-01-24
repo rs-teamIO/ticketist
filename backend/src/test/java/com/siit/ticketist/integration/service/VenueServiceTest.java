@@ -1,10 +1,11 @@
-package com.siit.ticketist.service;
+package com.siit.ticketist.integration.service;
 
 import com.siit.ticketist.dto.VenueBasicDTO;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.model.Venue;
+import com.siit.ticketist.service.VenueService;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -24,7 +25,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/venues.sql")
-public class VenueServiceIntegrationTest {
+public class VenueServiceTest {
 
     @Autowired
     private VenueService venueService;

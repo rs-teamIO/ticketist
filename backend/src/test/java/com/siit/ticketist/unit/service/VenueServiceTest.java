@@ -1,4 +1,4 @@
-package com.siit.ticketist.service;
+package com.siit.ticketist.unit.service;
 
 import com.siit.ticketist.dto.VenueBasicDTO;
 import com.siit.ticketist.exceptions.BadRequestException;
@@ -6,6 +6,7 @@ import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.model.Venue;
 import com.siit.ticketist.repository.VenueRepository;
+import com.siit.ticketist.service.VenueService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/data.sql")
-public class VenueServiceUnitTest {
+public class VenueServiceTest {
 
     @Autowired
     private VenueService venueService;
