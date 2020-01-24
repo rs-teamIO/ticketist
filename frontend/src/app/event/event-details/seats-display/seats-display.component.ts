@@ -41,7 +41,6 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
 
   onBuy() {
     this.router.navigate(['/checkout']).then(() => this.ticketService.ticketsSelected.next(this.selectedSeats));
-    // this.ticketService.ticketsSelected.next(this.selectedSeats);
   }
 
   onSectorChange() {
@@ -66,7 +65,7 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
     });
   }
 
-  onSeatSelected(event: MouseEvent, seat: any) {
+  onSeatSelected(event: MouseEvent, seat: ITicket) {
     // @ts-ignore
     if (event.target.classList.contains('selected')) {
       this.renderer.removeClass(event.target, 'selected');

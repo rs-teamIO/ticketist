@@ -1,9 +1,9 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ITicket, TicketService} from '../services/ticket.service';
 import {EventService} from '../services/event.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 
 declare var paypal;
 
@@ -12,34 +12,23 @@ declare var paypal;
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss']
 })
-export class CheckoutComponent implements OnInit {
-
+export class CheckoutComponent implements OnInit, OnDestroy {
   @ViewChild('paypal', {static: true}) paypalElement: ElementRef;
   tickets: ITicket[] = [];
   ticketSubscription: Subscription;
 
-  product = {
-    price: 777.77,
-    description: 'used couch, decent condition',
-    img: 'assets/couch.jpg'
-  };
-
-  paidFor = false;
-
   constructor(private ticketService: TicketService,
               private eventService: EventService,
+              private router: Router,
               private route: ActivatedRoute) {
+
+    // ToDo: Problem kod refresha, gubi se sve iz korpe (ako proba da ode obavestis ga da ce izgubiti sve?)
+    this.ticketSubscription = this.ticketService.ticketsSelected.subscribe(responseTickets => {
+      this.tickets = responseTickets;
+    });
   }
 
   ngOnInit() {
-    this.ticketSubscription = this.ticketService.ticketsSelected.subscribe(responseTickets => {
-      this.tickets = responseTickets;
-      // treba provera da li je prazno
-
-    });
-
-
-
     this.route.paramMap.subscribe(params => {
       if (params.has('resId')) {
         this.ticketService.getReservationTickets(Number(params.get('resId'))).subscribe((response) => {
@@ -49,14 +38,16 @@ export class CheckoutComponent implements OnInit {
             title: 'Oops!',
             text: error.error.message,
             icon: 'error',
-            // confirmButtonText: 'Cool'
-          }).then(() => console.log('Vrati ga na stranicu neku, pocetnu recimo'));
+            allowOutsideClick: false,
+            confirmButtonText: 'Cool, I\'ll go back to start page now',
+          }).then(() => this.router.navigate(['/']));
         });
       }
     });
 
     paypal
       .Buttons({
+        env: 'sandbox',
         style: {
           size: 'responsive',
           layout: 'vertical',
@@ -65,30 +56,59 @@ export class CheckoutComponent implements OnInit {
           label: 'checkout'
         },
         createOrder: (data, actions) => {
-          console.log('Kreiranje ordera');
           return actions.order.create({
             purchase_units: [
               {
-                description: this.product.description,
+                description: 'Tickets for ' + this.tickets[0].eventName,
                 amount: {
                   currency_code: 'USD',
-                  value: this.product.price
+                  value: this.getTotalPrice()
                 }
               }
             ]
           });
         },
         onApprove: async (data, actions) => {
-          const order = await actions.order.capture();
-          this.paidFor = true;
-          console.log(order);
-          console.log('Potvrdjeno');
+          Swal.fire({
+            text: 'Your payment is being processed, please wait',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+          });
+          Swal.showLoading();
+
+          this.ticketService.buyTickets(this.tickets.map(ticket => ticket.id)).subscribe((response: ITicket[]) => {
+            actions.order.capture().then(order => {
+              console.log(order);
+              Swal.fire({
+                icon: 'success',
+                title: 'Payment successful!',
+                allowEnterKey: true,
+                allowOutsideClick: false,
+                confirmButtonText: 'Okay',
+                confirmButtonColor: '#673AB7'
+              }).then(() => this.router.navigate(['/']));
+            });
+          }, error => {
+            Swal.fire({
+              icon: 'error',
+              text: error.error.message,
+              confirmButtonColor: '#673AB7',
+              confirmButtonText: 'Okay, I\'ll go back to the front page then',
+              allowOutsideClick: false
+            }).then(() => this.router.navigate(['/']));
+          });
         },
         onError: err => {
-          console.log(err);
+          Swal.fire({
+            icon: 'error',
+            text: err
+          }).then(() => this.router.navigate(['/']));
         }
-      })
-      .render(this.paypalElement.nativeElement);
+      }).render(this.paypalElement.nativeElement);
+  }
+
+  ngOnDestroy(): void {
+    this.ticketSubscription.unsubscribe();
   }
 
   private getTotalPrice(): number {
@@ -96,6 +116,4 @@ export class CheckoutComponent implements OnInit {
     this.tickets.forEach(ticket => total += ticket.price);
     return total;
   }
-
-
 }

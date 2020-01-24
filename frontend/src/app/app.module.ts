@@ -41,7 +41,6 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { BrowserModule } from '@angular/platform-browser';
 import { MapViewComponent } from './venue/venue-form/map-view/map-view.component';
 import {GridsterModule} from 'angular-gridster2';
-import {SweetAlert2Module} from '@sweetalert2/ngx-sweetalert2';
 
 
 @NgModule({
@@ -92,7 +91,6 @@ import {SweetAlert2Module} from '@sweetalert2/ngx-sweetalert2';
         MatDividerModule,
         MatPaginatorModule,
         GridsterModule,
-        SweetAlert2Module.forRoot()
     ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }],
   bootstrap: [AppComponent]

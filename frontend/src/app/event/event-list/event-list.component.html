@@ -1,6 +1,6 @@
 <div fxLayout="column" fxLayoutAlign="center center" style="height: 100%;">
-  <div *ngIf="events.length === 0; else eventsLoaded">
-    <mat-spinner></mat-spinner>
+  <div *ngIf="events.length === 0; else eventsLoaded" style="margin-top: 150px;">
+    <mat-spinner color="accent" strokeWidth="4"></mat-spinner>
   </div>
 
   <ng-template #eventsLoaded>

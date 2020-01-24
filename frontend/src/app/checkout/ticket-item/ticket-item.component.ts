@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnChanges, OnInit} from '@angular/core';
 import {ITicket} from '../../services/ticket.service';
 
 @Component({
@@ -6,17 +6,12 @@ import {ITicket} from '../../services/ticket.service';
   templateUrl: './ticket-item.component.html',
   styleUrls: ['./ticket-item.component.scss']
 })
-export class TicketItemComponent implements OnInit, AfterViewInit {
-
+export class TicketItemComponent implements OnInit {
   @Input() ticket: ITicket;
-  constructor() { }
+
+  constructor() {
+  }
 
   ngOnInit() {
-    console.log(this.ticket);
   }
-
-  ngAfterViewInit(): void {
-    console.log('after view');
-  }
-
 }
