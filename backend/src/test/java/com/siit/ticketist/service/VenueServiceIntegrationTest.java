@@ -5,7 +5,9 @@ import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.Sector;
 import com.siit.ticketist.model.Venue;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,8 +29,13 @@ public class VenueServiceIntegrationTest {
     @Autowired
     private VenueService venueService;
 
-    @Test(expected = NotFoundException.class)
-    public void findOne_throwsNotFoundException_whenWantedVenueDoesNotExist2() {
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
+
+    @Test
+    public void findOne_throwsNotFoundException_whenWantedVenueDoesNotExist() {
+        exceptionRule.expect(NotFoundException.class);
+        exceptionRule.expectMessage("Venue not found.");
         Long wantedID = 3L;
         venueService.findOne(wantedID);
     }
@@ -73,8 +80,10 @@ public class VenueServiceIntegrationTest {
         }
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void saveVenue_throwsBadRequestException_whenNameStreetAndCityTripleAlreadyExists() {
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Venue name, street and city combination must be unique!");
         Sector sector = new Sector(null, "Istok", 2, 2, 4, 1, 1);
         Set<Sector> sectors = new HashSet<>();
         sectors.add(sector);
@@ -82,14 +91,18 @@ public class VenueServiceIntegrationTest {
         venueService.save(newVenue);
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void saveVenue_throwsBadRequestException_whenNewVenueDoesNotHaveAnySectorIncluded() {
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Venue must contain at least 1 sector");
         Venue newVenue = new Venue(null, "Emirates Stadium", true, "Gogoljeva 15", "Novi Sad", 15.0, 15.0, new HashSet<>(), new HashSet<>());
         venueService.save(newVenue);
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void saveVenue_throwsBadRequestException_whenNewVenueHasSectorsWhichOverlap() {
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Sectors overlap!");
         Sector sector1 = new Sector(null, "Sever", 2, 2, 4, 1, 1);
         Sector sector2 = new Sector(null, "Jug", 2, 2, 4, 2, 2);
         Set<Sector> sectors = new HashSet<>();
@@ -100,8 +113,10 @@ public class VenueServiceIntegrationTest {
         venueService.save(newVenue);
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void saveVenue_throwsBadRequestException_whenNewVenueHasSectorsWithTheSameName() {
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Sector name is not unique!");
         Sector sector1 = new Sector(null, "Sever", 2, 2, 4, 1, 1);
         Sector sector2 = new Sector(null, "Sever", 2, 2, 4, 3, 3);
         Set<Sector> sectors = new HashSet<>();
@@ -159,8 +174,10 @@ public class VenueServiceIntegrationTest {
         }
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void checkIsActive_throwsNotFoundException_whenVenueWithWantedIdDoesNotExist() {
+        exceptionRule.expect(NotFoundException.class);
+        exceptionRule.expectMessage("Venue not found.");
         Long venueID = 3L;
         venueService.checkIsActive(venueID);
     }
@@ -179,8 +196,10 @@ public class VenueServiceIntegrationTest {
         assertFalse("Status is false", checkIsActive);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void changeActiveStatus_throwsNotFoundException_whenVenueWithWantedIdDoesNotExist() {
+        exceptionRule.expect(NotFoundException.class);
+        exceptionRule.expectMessage("Venue not found.");
         Long venueID = 3L;
         venueService.changeActiveStatus(venueID);
     }
@@ -195,16 +214,20 @@ public class VenueServiceIntegrationTest {
         assertTrue("venue status is again true", venue.getIsActive());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateVenue_throwsNotFoundException_whenVenueWithWantedIdDoesNotExist() {
+        exceptionRule.expect(NotFoundException.class);
+        exceptionRule.expectMessage("Venue not found.");
         Long venueID = 3L;
         VenueBasicDTO basicVenue = new VenueBasicDTO("SPENS", "Puskinova 12", "Novi Sad", 12.0, 15.0);
 
         venueService.updateVenue(basicVenue, venueID);
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void updateVenue_throwsBadRequestException__whenNameStreetAndCityTripleAlreadyExists() {
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Venue name, street and city combination must be unique!");
         Long venueID = 1L;
         VenueBasicDTO basicVenue = new VenueBasicDTO("Arena", "Puskinova 2", "Beograd", 12.0, 15.0);
 
@@ -222,7 +245,6 @@ public class VenueServiceIntegrationTest {
 
         VenueBasicDTO basicVenue = new VenueBasicDTO(newVenueName, newVenueStreet, newVenueCity, newLat, newLon);
 
-        // check is okay to call additional get
         Venue startVenue = venueService.findOne(venueID);
 
         assertEquals("Venue's name is correct", "Spens", startVenue.getName());
@@ -240,28 +262,34 @@ public class VenueServiceIntegrationTest {
         assertEquals("Venue's longitude is correct", new Double(newLon.toString()), changedVenue.getLongitude());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void addSectorToVenue_throwsNotFoundException_whenVenueWithWantedIdDoesNotExist() {
+        exceptionRule.expect(NotFoundException.class);
+        exceptionRule.expectMessage("Venue not found.");
         Long venueID = 3L;
         Sector sector = new Sector(null, "Istok", 2, 2, 4, 8, 8);
 
         venueService.addSectorToVenue(sector, venueID);
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     @Transactional
     @Rollback
     public void addSectorToVenue_throwsBadRequestException_whenAddSectorWithNameThatAlreadyExistsInVenue() {
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Sector name already exists!");
         Long venueID = 1L;
         Sector sector = new Sector(null, "Sever", 2, 2, 4, 8, 8);
 
         venueService.addSectorToVenue(sector, venueID);
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     @Transactional
     @Rollback
     public void addSectorToVenue_throwsBadRequestException_whenNewSectorOverlapWithOtherSectors() {
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Sectors overlap!");
         Long venueID = 1L;
         Sector sector = new Sector(null, "Jug", 2, 2, 4, 1, 1);
 
@@ -274,8 +302,6 @@ public class VenueServiceIntegrationTest {
     public void addSectorToVenue_successfullyAddSectorToVenue() {
         Long venueID = 1L;
         Sector newSector = new Sector(null, "Istok", 2, 2, 4, 8, 8);
-
-        // also check is it okay
 
         Venue startVenue = venueService.findOne(venueID);
 
