@@ -6,7 +6,9 @@ import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.SectorRepository;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -41,6 +43,8 @@ public class EventServiceUnitTest {
     @MockBean
     private SectorRepository sectorRepository;
 
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
 
     @Test
     public void checkVenueAvailability_ShouldReturnTrue_whenVenueIsFreeUnit(){
@@ -150,8 +154,10 @@ public class EventServiceUnitTest {
 
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void generateTickets_ShouldThrowNotFoundException_whenSectorIsNotFoundUnit(){
+        exceptionRule.expect(NotFoundException.class);
+        exceptionRule.expectMessage("Sector not found.");
         EventSector eSector = new EventSector();
         Sector sector = new Sector();
         sector.setId(10l);
@@ -165,8 +171,10 @@ public class EventServiceUnitTest {
 
     //------------------------------------------------------
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void Save_ShouldThrowNotFoundException_whenSectorIsNotFound(){
+        exceptionRule.expect(NotFoundException.class);
+        exceptionRule.expectMessage("Sector not found.");
         Event event = new Event();
         Venue ven = new Venue();
         ven.setId(1l);

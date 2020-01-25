@@ -6,7 +6,9 @@ import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.SectorRepository;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -34,8 +36,12 @@ public class EventServiceTest {
     @Autowired
     private EventService eventService;
 
-    @Test(expected = NotFoundException.class)
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
+
+    @Test
     public void findOne_ShouldThrowException_whenIdIsWrong(){
+        exceptionRule.expect(NotFoundException.class);
         eventService.findOne(100l);
     }
 
@@ -183,8 +189,10 @@ public class EventServiceTest {
     }
 
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void generateTickets_ShouldThrowNotFoundException_whenSectorIsNotFound(){
+        exceptionRule.expect(NotFoundException.class);
+        exceptionRule.expectMessage("Sector not found.");
         EventSector eSector = new EventSector();
         Sector sector = new Sector();
         sector.setId(10l);
@@ -214,8 +222,10 @@ public class EventServiceTest {
 
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void Save_ShouldThrowException_whenVenueIsOccupied(){
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("There is already an event at that time");
         Event event = new Event();
         Venue ven = new Venue();
         ven.setId(1l);
@@ -243,8 +253,10 @@ public class EventServiceTest {
     }
 
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void Save_ShouldThrowException_whenEventDatesAreNotCorrect(){
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Dates are invalid");
         Event event = new Event();
         Venue ven = new Venue();
         ven.setId(1l);
@@ -272,8 +284,10 @@ public class EventServiceTest {
     }
 
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void Save_ShouldThrowException_whenCapacityOfInumerableSectorisNull(){
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Capacity of event sector with innumerable seats cannot be null");
         Event event = new Event();
         Venue ven = new Venue();
         ven.setId(1l);
@@ -307,8 +321,10 @@ public class EventServiceTest {
         eventService.save(event);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void Save_ShouldThrowNotFoundException_whenSectorIsNotFound(){
+        exceptionRule.expect(NotFoundException.class);
+        exceptionRule.expectMessage("Sector not found.");
         Event event = new Event();
         Venue ven = new Venue();
         ven.setId(1l);
@@ -348,8 +364,10 @@ public class EventServiceTest {
         eventService.save(event);
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void Save_ShouldThrowException_whenCapacityExceedsSectorCapacity(){
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Capacity is greater than max capacity");
         Event event = new Event();
         Venue ven = new Venue();
         ven.setId(1l);
@@ -434,10 +452,11 @@ public class EventServiceTest {
         eventSectors.add(eSector);
         event.setEventSectors(eventSectors);
 
-        eventService.save(event);
-
+        Event ev = eventService.save(event);
+        assertEquals(ev.getName(),event.getName());
     }
 
+    @Test
     public void Save_ShouldPass_whenEventIsValidNumerable(){
         Event event = new Event();
         Venue ven = new Venue();
@@ -484,7 +503,7 @@ public class EventServiceTest {
         eventSectors.add(eSector);
         event.setEventSectors(eventSectors);
 
-        eventService.save(event);
-
+        Event ev = eventService.save(event);
+        assertEquals(ev.getName(),event.getName());
     }
 }
