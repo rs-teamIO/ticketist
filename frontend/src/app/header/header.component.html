@@ -4,13 +4,24 @@
     <span class="mat-title" style="font-weight: 200;">Ticketist</span>
   </button>
   <span class="spacer"></span>
-  <div>
-    <button mat-button routerLink="/events/new" *ngIf="isAuthenticated">Add Event</button>
-    <button mat-button routerLink="/my-reservations" *ngIf="isAuthenticated">My Reservations</button>
-    <button mat-button routerLink="/venues/list" *ngIf="isAuthenticated">Venues</button>
-    <button mat-button routerLink="/profile" *ngIf="isAuthenticated">Profile</button>
-    <button mat-button routerLink="/logout" *ngIf="isAuthenticated" (click)="onLogout()">Logout</button>
-    <button mat-button routerLink="/login" *ngIf="!isAuthenticated">Login</button>
-    <button mat-button routerLink="/signup" *ngIf="!isAuthenticated">Sign up</button>
+
+  <!-- Header for unregistered user -->
+  <div *ngIf="!isAuthenticated">
+    <button mat-button routerLink="/login">Login</button>
+    <button mat-button routerLink="/signup">Sign up</button>
+  </div>
+
+  <!-- Header for registered user -->
+  <div *ngIf="isAuthenticated && role==='REGISTERED_USER'">
+    <button mat-button routerLink="/my-reservations">My Reservations</button>
+    <button mat-button routerLink="/profile">Profile</button>
+    <button mat-button routerLink="/logout" (click)="onLogout()">Logout</button>
+  </div>
+
+  <!-- Header for admin -->
+  <div *ngIf="isAuthenticated && role==='ADMIN'">
+    <button mat-button routerLink="/events/new">Add Event</button>
+    <button mat-button routerLink="/venues/list">Venues</button>
+    <button mat-button routerLink="/logout" (click)="onLogout()">Logout</button>
   </div>
 </mat-toolbar>

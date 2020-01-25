@@ -86,9 +86,11 @@ export class UserProfileComponent implements OnInit {
         this.isLoading = false;
       },
       error => {
-        console.log('Error: ', error);
-        this.error = 'An error occured!';
-        this.isLoading = false;
+        if (error.status === 401 || error.status === 400) {
+          this.error = error.error.message;
+        } else {
+          this.error = 'Error';
+        }
       }
     );
   }

@@ -4,6 +4,7 @@ TRUNCATE TABLE tickets;
 TRUNCATE TABLE users;
 TRUNCATE TABLE sectors;
 TRUNCATE TABLE event_sectors;
+TRUNCATE TABLE reservations;
 
 INSERT INTO venues (id, is_active, name, street, city, latitude, longitude)
 VALUES

@@ -1,6 +1,7 @@
 package com.siit.ticketist.dto;
 
 import com.siit.ticketist.model.Venue;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class VenueBasicDTO {
 
     @NotBlank(message = "Venue name cannot be empty")

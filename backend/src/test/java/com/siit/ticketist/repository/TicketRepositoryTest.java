@@ -64,63 +64,63 @@ public class TicketRepositoryTest {
 //        assertEquals("ticket list is empty (4 elements)", 4, foundTickets.size());
 //    }
 
-    @Test
-    public void findAllReservationsByUserAndEvent_ShouldReturnEmptyList_whenUserIsRegisteredButWrongEventId() {
-        List<Ticket> foundTickets = ticketRepository.findUsersReservationsByEvent(1L,40L);
-        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
-    }
+//    @Test
+//    public void findAllReservationsByUserAndEvent_ShouldReturnEmptyList_whenUserIsRegisteredButWrongEventId() {
+//        List<Ticket> foundTickets = ticketRepository.findUsersReservationsByEvent(1L,40L);
+//        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
+//    }
+//
+//
+//    @Test
+//    public void findAllReservationsByUserAndEvent_ShouldReturnEmptyList_whenEventIsCorrectButWrongUserId() {
+//        List<Ticket> foundTickets = ticketRepository.findUsersReservationsByEvent(6L,12L);
+//        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
+//    }
+//
+//
+//    @Test
+//    public void findAllReservationsByUserAndEvent_ShouldReturnList_whenUserIsRegisteredAndCorrectEventId() {
+//        List<Ticket> foundTickets = ticketRepository.findUsersReservationsByEvent(1L,12L);
+//        assertEquals("ticket list is not empty (2 elements)", 2, foundTickets.size());
+//    }
 
+//    @Test
+//    public void findUserTickets_ShouldReturnEmptyList_whenUserIdIsWrong(){
+//        List<Ticket> foundTickets = ticketRepository.findUsersBoughtTickets(10L);
+//        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
+//    }
+//
+//
+//    @Test
+//    public void findUserTickets_ShouldReturnList_whenUserIdIsCorrect(){
+//        List<Ticket> foundTickets = ticketRepository.findUsersBoughtTickets(1L);
+//        assertEquals("ticket list is not empty (4 elements)", 4, foundTickets.size());
+//    }
 
-    @Test
-    public void findAllReservationsByUserAndEvent_ShouldReturnEmptyList_whenEventIsCorrectButWrongUserId() {
-        List<Ticket> foundTickets = ticketRepository.findUsersReservationsByEvent(6L,12L);
-        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
-    }
-
-
-    @Test
-    public void findAllReservationsByUserAndEvent_ShouldReturnList_whenUserIsRegisteredAndCorrectEventId() {
-        List<Ticket> foundTickets = ticketRepository.findUsersReservationsByEvent(1L,12L);
-        assertEquals("ticket list is not empty (2 elements)", 2, foundTickets.size());
-    }
-
-    @Test
-    public void findUserTickets_ShouldReturnEmptyList_whenUserIdIsWrong(){
-        List<Ticket> foundTickets = ticketRepository.findUsersBoughtTickets(10L);
-        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
-    }
-
-
-    @Test
-    public void findUserTickets_ShouldReturnList_whenUserIdIsCorrect(){
-        List<Ticket> foundTickets = ticketRepository.findUsersBoughtTickets(1L);
-        assertEquals("ticket list is not empty (4 elements)", 4, foundTickets.size());
-    }
-
-    @Test
-    public void findTicketsByIdGroup_ShouldReturnEmptyList_whenUserIdIsWrong(){
-        List<Long> temp = new ArrayList<>();
-        temp.add(2l);
-        temp.add(5l);
-        List<Ticket> foundTickets = ticketRepository.findTicketsByIdGroup(temp,11l);
-        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
-    }
-
-    @Test
-    public void findTicketsByIdGroup_ShouldReturnWrongList_whenSendindTicketsThatAreBought(){
-        List<Long> temp = new ArrayList<>();
-        temp.add(1l);
-        temp.add(2l);
-        List<Ticket> foundTickets = ticketRepository.findTicketsByIdGroup(temp,1l);
-        assertEquals("ticket list size is wronge (1 elements)", 1, foundTickets.size());
-    }
-
-    @Test
-    public void findTicketsByIdGroup_ShouldReturnList_whenTicketsAndUserIdIsCorrect(){
-        List<Long> temp = new ArrayList<>();
-        temp.add(2l);
-        temp.add(5l);
-        List<Ticket> foundTickets = ticketRepository.findTicketsByIdGroup(temp,1l);
-        assertEquals("ticket list is not empty (2 elements)", 2, foundTickets.size());
-    }
+//    @Test
+//    public void findTicketsByIdGroup_ShouldReturnEmptyList_whenUserIdIsWrong(){
+//        List<Long> temp = new ArrayList<>();
+//        temp.add(2l);
+//        temp.add(5l);
+//        List<Ticket> foundTickets = ticketRepository.findTicketsByIdGroup(temp,11l);
+//        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
+//    }
+//
+//    @Test
+//    public void findTicketsByIdGroup_ShouldReturnWrongList_whenSendindTicketsThatAreBought(){
+//        List<Long> temp = new ArrayList<>();
+//        temp.add(1l);
+//        temp.add(2l);
+//        List<Ticket> foundTickets = ticketRepository.findTicketsByIdGroup(temp,1l);
+//        assertEquals("ticket list size is wronge (1 elements)", 1, foundTickets.size());
+//    }
+//
+//    @Test
+//    public void findTicketsByIdGroup_ShouldReturnList_whenTicketsAndUserIdIsCorrect(){
+//        List<Long> temp = new ArrayList<>();
+//        temp.add(2l);
+//        temp.add(5l);
+//        List<Ticket> foundTickets = ticketRepository.findTicketsByIdGroup(temp,1l);
+//        assertEquals("ticket list is not empty (2 elements)", 2, foundTickets.size());
+//    }
 }

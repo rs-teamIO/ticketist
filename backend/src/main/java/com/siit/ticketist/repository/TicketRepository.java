@@ -23,14 +23,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     List<Ticket> findByEventSectorId(Long id);
 
-    @Query(value = "select * from tickets t where t.user_id = ?1 and t.event_id = ?2 and t.status = 1", nativeQuery = true)
-    List<Ticket> findUsersReservationsByEvent(Long userId, Long eventID);
+    List<Ticket> findAllByUserIdAndStatusAndEventId(Long userId, TicketStatus ticketStatus, Long eventId);
 
-    @Query(value = "select * from tickets t where t.user_id = ?1 and t.status = 2", nativeQuery = true)
-    List<Ticket> findUsersBoughtTickets(Long userId);
-
-    @Query(value = "select * from tickets t where t.id in :ids and t.user_id = :userId and t.status = 1", nativeQuery = true)
-    List<Ticket> findTicketsByIdGroup(@Param("ids") List<Long> ticketIds, @Param("userId") Long userId);
+    List<Ticket> findAllByUserIdAndStatus(Long userId, TicketStatus ticketStatus);
 
     /**
      * Retrieves a set of e-mails that should be notified about:
