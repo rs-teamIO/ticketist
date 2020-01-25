@@ -68,6 +68,8 @@ public class VenueServiceTest {
         exceptionRule.expect(NotFoundException.class);
         exceptionRule.expectMessage("Venue not found.");
         Long wantedID = 2L;
+        when(venueRepositoryMock.findById(wantedID))
+                .thenReturn(Optional.empty());
         venueService.findOne(wantedID);
     }
 

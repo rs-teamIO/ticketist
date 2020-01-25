@@ -295,7 +295,7 @@ public class TicketServiceTest {
 
         ticket3 = ticketService.findOne(ticketID);
 
-        assertSame("Ticket status is PAID", TicketStatus.RESERVED, ticket3.getStatus());
+        assertSame("Ticket status is RESERVED", TicketStatus.RESERVED, ticket3.getStatus());
         assertNotNull("Ticket is related to user", ticket3.getUser());
         assertSame("Ticket is related to user 1", 1L, ticket3.getUser().getId());
         assertSame("Ticket reservation id is 3", 3L, ticket3.getReservation().getId());
