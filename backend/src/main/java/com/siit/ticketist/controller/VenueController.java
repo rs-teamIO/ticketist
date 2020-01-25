@@ -33,12 +33,12 @@ public class VenueController {
         this.venueService = venueService;
     }
 
-    /**
-     * GET /api/venues
-     * Returns all venues
-     *
-     * @return {@link ResponseEntity} containing HttpStatus and a list of venues
-     */
+    @GetMapping(value="{id}")
+    public ResponseEntity<VenueDTO> getVenue(@PathVariable("id") Long id) {
+        Venue venue = venueService.findOne(id);
+        return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.OK);
+    }
+
     @GetMapping
     public ResponseEntity<List<VenueDTO>> getVenues() {
         List<VenueDTO> venues = new ArrayList<>();
@@ -49,7 +49,7 @@ public class VenueController {
     }
 
     @GetMapping(value="/paged")
-    public ResponseEntity<VenuePageDTO> getEvents(Pageable pageable) {
+    public ResponseEntity<VenuePageDTO> getVenues(Pageable pageable) {
         List<VenueDTO> venues = new ArrayList<>();
         venueService.findAll(pageable).stream()
                 .map(VenueDTO::new)
@@ -57,45 +57,7 @@ public class VenueController {
         return new ResponseEntity<>(new VenuePageDTO(venues, venueService.findAll(pageable).getTotalElements()), HttpStatus.OK);
     }
 
-
-    /**
-     * GET /api/venues/{id}
-     * Returns a {@link Venue} with the requested ID
-     *
-     * @param id ID of the {@link Venue}
-     * @return {@link ResponseEntity} containing HttpStatus and content
-     */
-    @GetMapping(value="{id}")
-  //  @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<VenueDTO> getVenue(@PathVariable("id") Long id) {
-        Venue venue = venueService.findOne(id);
-        return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.OK);
-    }
-
-    /**
-     * POST /api/venues
-     * Creates a new {@link Venue}.
-     *
-     * @param venueDto DTO containing venue info.
-     * @return {@link ResponseEntity} containing the info about the created Venue
-     */
-    @PostMapping
-    //@PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<VenueDTO> createVenue(@Valid @RequestBody VenueDTO venueDto) {
-        Venue venueToBeCreated = venueDto.convertToEntity();
-        Venue venue = venueService.save(venueToBeCreated);
-        return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.CREATED);
-    }
-
-    @PutMapping(value = "/change-status/{venueID}")
-    //@PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Boolean> changeActiveStatus(@PathVariable("venueID") Long id) {
-        Venue venue = venueService.changeActiveStatus(id);
-        return new ResponseEntity<>(venue.getIsActive(), HttpStatus.OK);
-    }
-
     @GetMapping(value="/active")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<VenueDTO>> getActiveVenues() {
         List<Venue> venues = venueService.getAllActiveVenues();
         List<VenueDTO> venueDTOS = new ArrayList<>();
@@ -106,8 +68,23 @@ public class VenueController {
         return new ResponseEntity<>(venueDTOS, HttpStatus.OK);
     }
 
+    @PostMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<VenueDTO> createVenue(@Valid @RequestBody VenueDTO venueDto) {
+        Venue venueToBeCreated = venueDto.convertToEntity();
+        Venue venue = venueService.save(venueToBeCreated);
+        return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.CREATED);
+    }
+
+    @PutMapping(value = "/change-status/{venueID}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Boolean> changeActiveStatus(@PathVariable("venueID") Long id) {
+        Venue venue = venueService.changeActiveStatus(id);
+        return new ResponseEntity<>(venue.getIsActive(), HttpStatus.OK);
+    }
+
     @PutMapping(value = "{venueID}")
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<VenueDTO> updateVenue(@PathVariable("venueID") Long venueID, @Valid @RequestBody VenueBasicDTO venueBasic) {
         Venue venue = venueService.updateVenue(venueBasic, venueID);
         return new ResponseEntity<>(new VenueDTO(venue), HttpStatus.OK);
