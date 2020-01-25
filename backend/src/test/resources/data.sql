@@ -44,36 +44,43 @@ VALUES
     (5, 4, '2020-03-14', 1, 35.00, 11, 1),
     (6, 4, '2020-03-15', 0, 35.00, 11, 2);
 
-INSERT INTO tickets (id, number_column, number_row, price, status, event_id, event_sector_id, user_id, version)
+INSERT INTO reservations (id, event_id, user_id)
 VALUES
-    (1,1,1,35.00,1,12,1,1,0),
-    (2,1,2,35.00,0,12,1,1,0),
-    (3,2,1,35.00,-1,12,1,null,0),
-    (4,2,2,35.00,-1,12,1,null,0),
-    (5,-1,-1,35.00,0,12,2,1,0),
-    (6,-1,-1,35.00,1,12,2,1,0),
-    (7,-1,-1,35.00,-1,12,2,null,0),
-    (8,-1,-1,35.00,-1,12,2,null,0),
-    (9,1,1,35.00,1,13,1,1,0),
-    (10,1,2,35.00,0,13,1,1,0),
-    (11,2,1,35.00,-1,13,1,null,0),
-    (12,2,2,35.00,-1,13,1,null,0),
-    (13,-1,-1,35.00,0,13,2,1,0),
-    (14,-1,-1,35.00,1,13,2,1,0),
-    (15,-1,-1,35.00,-1,13,2,null,0),
-    (16,-1,-1,35.00,-1,13,2,null,0),
-    (17,1,1,35.00,1,11,1,3,0),
-    (18,1,2,35.00,0,11,1,3,0),
-    (19,2,1,35.00,-1,11,1,null,0),
-    (20,2,2,35.00,-1,11,1,null,0),
-    (21,-1,-1,35.00,0,11,2,3,0),
-    (22,-1,-1,35.00,1,11,2,3,0),
-    (23,-1,-1,35.00,-1,11,2,null,0),
-    (24,-1,-1,35.00,-1,11,2,null,0);
+(1, 12, 1),
+(2, 13, 1),
+(3, 11, 3),
+(4, 12, 3);
+
+INSERT INTO tickets (id, number_column, number_row, price, status, event_id, event_sector_id, user_id, version, reservation_id)
+VALUES
+    (1,1,1,35.00,2,12,1,1,0,null),
+    (2,1,2,35.00,1,12,1,1,0,1),
+    (3,2,1,35.00,0,12,1,null,0,null),
+    (4,2,2,35.00,0,12,1,null,0,null),
+    (5,-1,-1,35.00,1,12,2,1,0,1),
+    (6,-1,-1,35.00,2,12,2,1,0,null),
+    (7,-1,-1,35.00,0,12,2,null,0,null),
+    (8,-1,-1,35.00,0,12,2,null,0,null),
+    (9,1,1,35.00,2,13,1,1,0,null),
+    (10,1,2,35.00,1,13,1,1,0,2),
+    (11,2,1,35.00,0,13,1,null,0,null),
+    (12,2,2,35.00,0,13,1,null,0,null),
+    (13,-1,-1,35.00,1,13,2,1,0,2),
+    (14,-1,-1,35.00,2,13,2,1,0,null),
+    (15,-1,-1,35.00,0,13,2,null,0,null),
+    (16,-1,-1,35.00,0,13,2,null,0,null),
+    (17,1,1,35.00,2,11,1,3,0,null),
+    (18,1,2,35.00,1,11,1,3,0,3),
+    (19,2,1,35.00,0,11,1,null,0,null),
+    (20,2,2,35.00,0,11,1,null,0,null),
+    (21,-1,-1,35.00,1,11,2,3,0,3),
+    (22,-1,-1,35.00,2,11,2,3,0,null),
+    (23,-1,-1,35.00,0,11,2,null,0,null),
+    (24,-1,-1,35.00,0,11,2,null,0,null);
 
 INSERT INTO users
     (dtype, id, email, first_name, last_name, password, username, is_verified, verification_code)
-VALUES ('REGISTERED_USER', 1, 'kacjica+1@gmail.com', 'Katarina', 'Tukelic', '$2a$10$6HhA6auhomFftE468xtynuk40nllNZAbKLkkyyps/uX6QY1YqIbjO', 'kaca', 1, null),
+VALUES ('REGISTERED_USER', 1, 'kacjica+1@gmail.com', 'Katarina', 'Tukelic', '$2a$10$6HhA6auhomFftE468xtynuk40nllNZAbKLkkyyps/uX6QY1YqIbjO', 'user2020', 1, null),
        ('REGISTERED_USER', 3, 'rocky+1@gmail.com', 'Rocky', 'Balboa', 'rocky', 'rocky123', 1, null),
     ('REGISTERED_USER', 4, 'pip+1@gmail.com', 'Mark', 'Fly', 'pip', 'pip123', 1, null);
 

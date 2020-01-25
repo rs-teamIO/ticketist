@@ -1,56 +1,71 @@
 package com.siit.ticketist.service;
 
+import com.itextpdf.text.log.SysoCounter;
+import com.siit.ticketist.dto.AuthenticationRequest;
 import com.siit.ticketist.exceptions.BadRequestException;
-import com.siit.ticketist.model.TicketStatus;
+import com.siit.ticketist.exceptions.ForbiddenException;
+import com.siit.ticketist.model.*;
+import com.siit.ticketist.repository.ReservationRepository;
+import com.siit.ticketist.security.TokenUtils;
+import com.siit.ticketist.security.UserDetailsServiceImpl;
+import lombok.With;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.event.annotation.BeforeTestExecution;
-import org.springframework.test.context.event.annotation.BeforeTestMethod;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/data.sql")
 public class TicketServiceTest {
 
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
+
     @Autowired
     private TicketService ticketService;
 
-    @Test(expected = BadRequestException.class)
-    public void checkDuplicates_ShouldThrowBadRequestException_whenThereAreDuplicates(){
-        List<Long> tickets = new ArrayList<>();
-        tickets.add(1L);
-        tickets.add(1L);
-        ticketService.checkTicketDuplicates(tickets);
-    }
+    @Autowired
+    private TokenUtils tokenUtils;
 
-    @Test
-    public void checkDuplicates_ShouldPass_whenThereAreNoDuplicates(){
-        List<Long> tickets = new ArrayList<>();
-        tickets.add(1L);
-        tickets.add(2L);
-        ticketService.checkTicketDuplicates(tickets);
-    }
+    @Autowired
+    private UserService userService;
 
-    @Test
-    public void checkNumberOfTickets_ShouldPass_whenNumberOfTicketsIsGreaterThanZero(){
-        List<Long> tickets = new ArrayList();
-        tickets.add(1l);
-        ticketService.checkNumberOfTickets(tickets);
-    }
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-    @Test(expected = BadRequestException.class)
-    public void checkNumberOfTickets_ShouldThrowException_whenNumberOfTicketsIsZero(){
-        List<Long> tickets = new ArrayList();
-        ticketService.checkNumberOfTickets(tickets);
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
 
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Before
+    public void before(){
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken("user2020", "123456"));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     @Test
@@ -59,34 +74,68 @@ public class TicketServiceTest {
         ticketService.checkStatusIsValid(TicketStatus.PAID);
     }
 
-
-    @Test(expected = BadRequestException.class)
+    @Test
     public void checkStatusIsValid_ShouldThrowException_whenStatusIsInvalid(){
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Status is not valid");
         ticketService.checkStatusIsValid(TicketStatus.USED);
     }
 
-//    @Test(expected = BadRequestException.class)
-//    public void acceptOrCancelReservations_ShouldThrowException_whenSomeTicketsAreNotFound(){
-//        List<Long> tickets = new ArrayList();
-//        tickets.add(2l);
-//        tickets.add(100l);
-//        ticketService.acceptOrCancelReservations(tickets,TicketStatus.PAID);
-//    }
-//
-//    @Test(expected = BadRequestException.class)
-//    public void acceptOrCancelReservations_ShouldThrowException_whenSomeTicketsAreSold(){
-//        List<Long> tickets = new ArrayList();
-//        tickets.add(1l);
-//        tickets.add(2l);
-//        ticketService.acceptOrCancelReservations(tickets, TicketStatus.PAID);
-//    }
-//
-//    @Test
-//    public void acceptOrCancelReservations_ShouldReturnTrue_whenTicketsAndStatusAreValid(){
-//        List<Long> tickets = new ArrayList();
-//        tickets.add(2l);
-//        tickets.add(5l);
-//        Boolean rez = ticketService.acceptOrCancelReservations(tickets, TicketStatus.PAID);
-//        assertTrue(rez);
-//    }
+    @Test
+    public void acceptOrCancelReservations_ShouldThrowBadRequestException_whenReservationIsInvalid(){
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Reservation does not exist");
+        Reservation reservation = new Reservation();
+        reservation.setId(10l);
+        ticketService.acceptOrCancelReservations(reservation.getId(),TicketStatus.PAID);
+    }
+
+    @Test
+    public void acceptOrCancelReservations_ShouldThrowBadRequestException_whenItDoesntBelongToThatUser(){
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Reservation does not belong to that user!");
+        Reservation reservation = new Reservation();
+        reservation.setId(3l);
+
+        ticketService.acceptOrCancelReservations(reservation.getId(), TicketStatus.PAID);
+    }
+
+    @Test
+    public void acceptOrCancelReservations_ShouldReturnTrue_whenTicketsAndStatusAreValid() {
+        Reservation reservation = new Reservation();
+        reservation.setId(1l);
+
+        Optional<Reservation> test = reservationRepository.findById(reservation.getId());
+        if(test.isPresent()){
+            for (Ticket ticket: test.get().getTickets()) {
+                assertEquals(TicketStatus.RESERVED, ticket.getStatus());
+                assertEquals(reservation.getId(), ticket.getReservation().getId());
+            }
+        }
+        ticketService.acceptOrCancelReservations(reservation.getId(), TicketStatus.PAID);
+
+        test = reservationRepository.findById(reservation.getId());
+        if(test.isPresent()){
+            for (Ticket ticket: test.get().getTickets()) {
+                assertEquals(TicketStatus.PAID, ticket.getStatus());
+                assertNull(ticket.getReservation());
+            }
+        }
+
+    }
+
+    @Test
+    public void getUsersBoughtTickets_ShouldPass_whenUserIsValid(){
+        List<Ticket> tickets = this.ticketService.getUsersBoughtTickets();
+        assertEquals(2,tickets.size());
+
+    }
+
+    @Test
+    public void getTotalNumberOfUsersReservations_ShouldPass_whenUserIsValid(){
+        Long ticketSize = this.ticketService.getTotalNumberOfUsersReservations();
+        assertTrue(ticketSize.equals(3l));
+
+    }
+
 }

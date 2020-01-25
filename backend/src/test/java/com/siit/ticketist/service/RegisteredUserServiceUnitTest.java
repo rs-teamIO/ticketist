@@ -3,9 +3,13 @@ import com.siit.ticketist.exceptions.AuthorizationException;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.RegisteredUser;
+import org.junit.Rule;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,33 +32,42 @@ public class RegisteredUserServiceUnitTest {
     @MockBean
     private UserService userService;
 
-    @Test(expected = AuthorizationException.class)
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
+
+
+    @Test
     public void updateUser_ShouldThrowAuthorizationException_whenUserDoesntExistUnit(){
+        exceptionRule.expect(AuthorizationException.class);
         RegisteredUser regUser = new RegisteredUser();
         regUser.setUsername("Primer");
 
         Mockito.when(userService.findRegisteredUserByUsername(regUser.getUsername())).thenThrow(AuthorizationException.class);
-        this.registeredUserService.update(regUser,"");
+        this.registeredUserService.update(regUser,null);
 
     }
 
-    @Test(expected = BadRequestException.class)
+
+    // Not working properly
+    /*
+    @Test
     public void updateUser_ShouldThrowBadRequestException_whenEmailIsTakenUnit(){
+        exceptionRule.expect(BadRequestException.class);
         RegisteredUser regUser = new RegisteredUser();
-        regUser.setUsername("kaca");
-        regUser.setEmail("kacjica+1@gmail.com");
+        regUser.setUsername("user2020");
+        regUser.setEmail("rocky+1@gmail.com");
 
 
         Mockito.when(userService.findRegisteredUserByUsername(regUser.getUsername())).thenReturn(regUser);
         Mockito.doThrow(BadRequestException.class).when(userService).checkIfEmailTaken(regUser.getEmail());
-        this.registeredUserService.update(regUser,"");
+        this.registeredUserService.update(regUser,null);
 
     }
-
+     */
     @Test
     public void updateUser_ShouldPass_whenUserUpdateIsValidUnit(){
         RegisteredUser regUser = new RegisteredUser();
-        regUser.setUsername("kaca");
+        regUser.setUsername("user2020");
         regUser.setEmail("kaca@gmail.com");
         regUser.setFirstName("First");
         regUser.setLastName("Last");

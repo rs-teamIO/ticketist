@@ -1,10 +1,9 @@
 package selenium;
 
-import com.siit.ticketist.model.Venue;
-import com.siit.ticketist.selenium.EventsPage;
-import com.siit.ticketist.selenium.LoginPage;
-import com.siit.ticketist.selenium.VenuePage;
-import com.siit.ticketist.selenium.VenuesPage;
+import selenium.Pages.EventsPage;
+import selenium.Pages.LoginPage;
+import selenium.Pages.VenuePage;
+import selenium.Pages.VenuesPage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.siit.ticketist.selenium;
+package selenium.Pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
