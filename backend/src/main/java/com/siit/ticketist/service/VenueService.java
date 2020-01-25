@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Venue service layer.
- */
 @Service
 public class VenueService {
 
@@ -28,41 +25,39 @@ public class VenueService {
         this.venueRepository = venueRepository;
     }
 
-    /**
-     * Returns a list of all available venues
-     *
-     * @return {@link List} of all {@link Venue} objects
-     */
-    public List<Venue> findAll() {
-        return this.venueRepository.findAll();
-    }
-
-    /**
-     * Finds a {@link Venue} with given ID.
-     * If no such venue is found, the method throws a {@link NotFoundException}
-     *
-     * @param id ID of the venue
-     * @return {@link Venue} instance
-     * @throws NotFoundException Exception thrown in case no venue with given ID is found.
-     */
     public Venue findOne(Long id) {
         return this.venueRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Venue not found."));
     }
 
+    public List<Venue> findAll() {
+        return this.venueRepository.findAll();
+    }
+
     public Page<Venue> findAll(Pageable page) { return this.venueRepository.findAll(page); }
+
+    public List<Venue> getAllActiveVenues() {
+        return venueRepository.findByIsActiveTrue();
+    }
 
     public Venue save(Venue venue) {
         int overlap = 0;
+        int sameNameCounter = 0;
         venue.setIsActive(true);
+        venue.setId(null);
         checkVenueNameAndLocation(venue.getName(), venue.getStreet(), venue.getCity());
         if (venue.getSectors().size() == 0) throw new BadRequestException("Venue must contain at least 1 sector");
         for (Sector firstSector: venue.getSectors()) {
             overlap = 0;
+            sameNameCounter = 0;
             for (Sector secondSector: venue.getSectors()) {
                 if (!sectorCanBeDrawn(firstSector, secondSector)) {
                     overlap++;
                     if (overlap > 1) throw new BadRequestException("Sectors overlap!");
+                }
+                if (firstSector.getName().equals(secondSector.getName())) {
+                    sameNameCounter++;
+                    if (sameNameCounter > 1) throw new BadRequestException("Sector name is not unique!");
                 }
             }
         }
@@ -75,17 +70,10 @@ public class VenueService {
         return venue.getIsActive();
     }
 
-    public Venue update(Venue venue) {
-        return venueRepository.save(venue);
-    }
     public Venue changeActiveStatus(Long venueID) {
         Venue venue = findOne(venueID);
         venue.setIsActive(!venue.getIsActive());
         return venueRepository.save(venue);
-    }
-
-    public List<Venue> getAllActiveVenues() {
-        return venueRepository.findByIsActiveTrue();
     }
 
     public Venue updateVenue(VenueBasicDTO venueInfo, Long venueID) {

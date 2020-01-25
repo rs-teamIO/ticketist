@@ -4,6 +4,7 @@ TRUNCATE TABLE tickets;
 TRUNCATE TABLE users;
 TRUNCATE TABLE sectors;
 TRUNCATE TABLE event_sectors;
+TRUNCATE TABLE reservations;
 
 INSERT INTO users
     (dtype, id, email, first_name, last_name, password, username, is_verified, verification_code)
