@@ -10,7 +10,6 @@ import {Subscription} from 'rxjs';
   styleUrls: ['./event-list.component.scss']
 })
 export class EventListComponent implements OnInit, AfterViewInit, OnDestroy {
-  // @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
   events: EventModel[] = [];
   totalSize: number;
   subscription: Subscription;

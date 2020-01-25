@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {EventModel} from '../../model/event.model';
 import {EventService} from '../../services/event.service';
+import {VenueService} from '../../services/venue.service';
 import {Venue} from '../../model/venue.model';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-event-details',
@@ -13,16 +15,17 @@ export class EventDetailsComponent implements OnInit {
   event: EventModel = new EventModel();
   venue: Venue = new Venue();
 
-  constructor(private eventService: EventService) { }
+  constructor(private eventService: EventService,
+              private venueService: VenueService,
+              private route: ActivatedRoute) { }
 
   ngOnInit() {
-    this.eventService.getEvent(12)
+    this.eventService.getEvent(this.route.snapshot.params.id)
       .subscribe(eventModel => {
         this.event = eventModel;
-        this.eventService.getVenue(this.event.venueId)
+        this.venueService.getVenue(this.event.venueId)
           .subscribe(responseData => {
             this.venue = responseData;
-            // console.log(this.event);
           });
       });
   }

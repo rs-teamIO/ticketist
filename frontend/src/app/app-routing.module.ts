@@ -27,7 +27,7 @@ const routes: Routes = [
   { path: 'profile', component: UserProfileComponent, canActivate: [AuthGuard] },
   { path: 'my-reservations', component: ReservationListComponent, canActivate: [AuthGuard] },
   { path: 'not-found', component: ErrorPageComponent },
-  { path: 'event-details', component: EventDetailsComponent },
+  { path: 'event/:id', component: EventDetailsComponent },
   { path: 'checkout', component: CheckoutComponent },
   { path: 'checkout/:resId', component: CheckoutComponent },
   { path: '**', redirectTo: '/not-found'},

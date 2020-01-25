@@ -53,8 +53,10 @@ export class EventService {
   searchParamsChanged = new Subject<ISearchParams>();
 
   private readonly getEventsPath = `http://localhost:${PORT}/api/events/paged`;
+  private readonly getEventPath = `http://localhost:${PORT}/api/events/`;
   private readonly searchEventsPath = `http://localhost:${PORT}/api/events/search`;
   private readonly postEventPath = `http://localhost:${PORT}/api/events`;
+  private readonly cancelEventPath = `http://localhost:${PORT}/api/events/cancel/`;
 
   private searchParams = {
     eventName: '',
@@ -118,11 +120,12 @@ export class EventService {
   }
 
   getEvent(id: number): Observable<EventModel> {
-    return this.http.get<EventModel>(`http://localhost:${PORT}/api/events/` + id);
+    return this.http.get<EventModel>(this.getEventPath + id);
   }
 
-  getVenue(id: number): Observable<Venue> {
-    return this.http.get<Venue>(`http://localhost:${PORT}/api/venues/` + id);
+  cancelEvent(id: number): Observable<EventModel> {
+    return this.http.get<EventModel>(this.cancelEventPath + id);
   }
+
 
 }

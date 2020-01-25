@@ -1,5 +1,5 @@
 <div fxLayout="column" fxLayoutAlign="center center" style="height: 100%;">
-  <div *ngIf="events.length === 0; else eventsLoaded" style="margin-top: 150px;">
+  <div *ngIf="events.length === 0; else eventsLoaded" style="margin-top: 150px;" >
     <mat-spinner color="accent" strokeWidth="4"></mat-spinner>
   </div>
 
@@ -11,7 +11,7 @@
 
       <div fxLayout="row wrap" class="card-deck-container" fxLayout.xs="column wrap">
         <div fxFlex="24" fxFlex.sm="30" fxFlex.xs="80" class="card-item" *ngFor="let eventItem of events">
-          <app-event-item [eventModel]="eventItem"></app-event-item>
+          <app-event-item (eventCancelled)="loadData()" [eventModel]="eventItem"></app-event-item>
         </div>
       </div>
     </mat-card>
