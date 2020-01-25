@@ -3,8 +3,11 @@ mat-card {
   background-color: whitesmoke;
 }
 
-td{
+td {
   border: 1px solid #ddd;
   padding: 8px;
+}
 
+.cell{
+  display: inline-block;
 }

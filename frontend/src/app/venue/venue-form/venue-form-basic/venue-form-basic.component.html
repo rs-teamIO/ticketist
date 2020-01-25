@@ -1,67 +1,34 @@
 <div fxLayout="row" fxLayoutAlign="center center" class="main">
-<mat-card class="example-card">
-  <mat-card-header>
-    <mat-card-title>Profile</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <form [formGroup]="venueForm" (ngSubmit)="onSubmit()">
-      <table class="example-full-width" cellspacing="0">
-        <tr>
-          <td>
-            <mat-form-field class="example-full-width">
-              <input
-                matInput
-                placeholder="Name"
-                formControlName="name"
-              >
-              <mat-error *ngIf="name.errors && name.touched">
-                <p>Name is not correct</p>
-              </mat-error>
-            </mat-form-field>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <mat-form-field class="example-full-width">
-              <input
-                matInput
-                placeholder="City"
-                formControlName="city"
-              >
-              <mat-error *ngIf="city.errors && city.touched">
-                <p>City is not correct</p>
-              </mat-error>
-            </mat-form-field>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <mat-form-field class="example-full-width">
-              <input
-                matInput
-                placeholder="Street"
-                formControlName="street"
-              >
-              <mat-error *ngIf="street.errors && street.touched">
-                <p>Street is not correct</p>
-              </mat-error>
-            </mat-form-field>
-          </td>
-        </tr>
-        <tr *ngIf="error">
-          <td>
-            <p>{{error}}</p>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <button mat-raised-button type="submit" color="primary" [disabled]="venueForm.invalid">Submit</button>
-          </td>
-        </tr>
-      </table>
-    </form>
-
-    <button mat-raised-button (click)="viewOnMap()" [disabled]="venueForm.invalid">View on map</button>
-  </mat-card-content>
-</mat-card>
+  <mat-card fxFlex="100" fxFlex.sm="60" fxFlex.xs="100" class="example-card">
+    <mat-card-header>
+      <mat-card-title>Profile</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="venueForm" (ngSubmit)="onSubmit()" class="example-full-width">
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="Name" formControlName="name">
+          <mat-error *ngIf="name.invalid && name.touched">
+            First name is required!
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="Street" formControlName="street">
+          <mat-error *ngIf="street.invalid && street.touched">
+            Last name is required!
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="example-full-width">
+          <input matInput placeholder="City" formControlName="city">
+          <mat-error *ngIf="city.invalid && city.touched">
+            Username is required!
+          </mat-error>
+        </mat-form-field>
+        <button mat-raised-button type="submit" color="primary"  class="example-full-width" [disabled]="venueForm.invalid">
+          Submit
+        </button>
+        <p class="centralError">{{error}}</p>
+      </form>
+      <button mat-raised-button (click)="viewOnMap()" class="example-full-width" [disabled]="venueForm.invalid">View on map</button>
+    </mat-card-content>
+  </mat-card>
 </div>
