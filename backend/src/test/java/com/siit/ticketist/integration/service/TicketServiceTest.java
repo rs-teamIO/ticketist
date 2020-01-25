@@ -3,8 +3,10 @@ package com.siit.ticketist.integration.service;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.Event;
+import com.siit.ticketist.model.Reservation;
 import com.siit.ticketist.model.Ticket;
 import com.siit.ticketist.model.TicketStatus;
+import com.siit.ticketist.repository.ReservationRepository;
 import com.siit.ticketist.service.TicketService;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -42,6 +45,9 @@ public class TicketServiceTest {
 
     @Autowired
     AuthenticationManager authenticationManager;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @Before
     public void before(){
@@ -327,6 +333,59 @@ public class TicketServiceTest {
         ticketService.reserveTickets(tickets);
     }
 
+    //---------------------------------------------
+    @Test
+    public void checkStatusIsValid_ShouldPass_whenStatusIsValid(){
+        ticketService.checkStatusIsValid(TicketStatus.FREE);
+        ticketService.checkStatusIsValid(TicketStatus.PAID);
+    }
 
+    @Test
+    public void checkStatusIsValid_ShouldThrowException_whenStatusIsInvalid(){
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Status is not valid");
+        ticketService.checkStatusIsValid(TicketStatus.USED);
+    }
+
+    @Test
+    public void acceptOrCancelReservations_ShouldThrowBadRequestException_whenReservationIsInvalid(){
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Reservation does not exist");
+        Reservation reservation = new Reservation();
+        reservation.setId(10l);
+        ticketService.acceptOrCancelReservations(reservation.getId(),TicketStatus.PAID);
+    }
+
+    @Test
+    public void acceptOrCancelReservations_ShouldThrowBadRequestException_whenItDoesntBelongToThatUser(){
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Reservation does not belong to that user!");
+        Reservation reservation = new Reservation();
+        reservation.setId(3l);
+
+        ticketService.acceptOrCancelReservations(reservation.getId(), TicketStatus.PAID);
+    }
+
+    @Test
+    public void acceptOrCancelReservations_ShouldReturnTrue_whenTicketsAndStatusAreValid() {
+        Reservation reservation = new Reservation();
+        reservation.setId(1l);
+
+        ticketService.acceptOrCancelReservations(reservation.getId(), TicketStatus.PAID);
+    }
+
+    @Test
+    public void getUsersBoughtTickets_ShouldPass_whenUserIsValid(){
+        List<Ticket> tickets = this.ticketService.getUsersBoughtTickets();
+        assertEquals(3,tickets.size());
+
+    }
+
+    @Test
+    public void getTotalNumberOfUsersReservations_ShouldPass_whenUserIsValid(){
+        Long ticketSize = this.ticketService.getTotalNumberOfUsersReservations();
+        assertTrue(ticketSize.equals(2l));
+
+    }
 
 }

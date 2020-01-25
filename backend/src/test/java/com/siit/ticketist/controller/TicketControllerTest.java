@@ -53,8 +53,8 @@ public class TicketControllerTest {
     public void ticketAccept_ShouldThrowBadRequestException_whenReservationIsInvalid(){
         HttpEntity request = new HttpEntity<>(headers);
 
-        ResponseEntity<Boolean> result = testRestTemplate.exchange("/api/tickets/reservations/accept/100", HttpMethod.POST, request, Boolean.class);
-
+//        ResponseEntity<Boolean> result = testRestTemplate.exchange("/api/tickets/reservations/accept/100", HttpMethod.POST, request, Boolean.class);
+            ResponseEntity<Boolean> result = testRestTemplate.postForEntity("/api/tickets/reservations/accept/100/",request,Boolean.class);
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
         assertNull(result.getBody().booleanValue());
     }

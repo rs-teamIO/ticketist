@@ -1,7 +1,7 @@
 package selenium;
 
-import com.siit.ticketist.selenium.EventsPage;
-import com.siit.ticketist.selenium.LoginPage;
+import selenium.Pages.EventsPage;
+import selenium.Pages.LoginPage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

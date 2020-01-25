@@ -36,7 +36,8 @@ VALUES
 INSERT INTO reservations (id, event_id, user_id)
 VALUES
     (1, 1, 1),
-    (2, 1, 1);
+    (2, 1, 1),
+       (3,1,2);
 
 INSERT INTO tickets (id, number_column, number_row, price, status, event_id, event_sector_id, user_id, version, reservation_id)
 VALUES
@@ -59,7 +60,8 @@ INSERT INTO users
     (dtype, id, email, first_name, last_name, password, username, is_verified, verification_code)
 VALUES
     ('REGISTERED_USER', 1, 'kacjica+1@gmail.com', 'Katarina', 'Tukelic', '$2a$10$6HhA6auhomFftE468xtynuk40nllNZAbKLkkyyps/uX6QY1YqIbjO', 'kaca', 1, null),
-    ('ADMIN', 2, 'f.ivkovic16+1@gmail.com', 'Filip', 'Ivkovic', '$2a$10$6HhA6auhomFftE468xtynuk40nllNZAbKLkkyyps/uX6QY1YqIbjO', 'filip', 1, null);
+    ('ADMIN', 2, 'f.ivkovic16+1@gmail.com', 'Filip', 'Ivkovic', '$2a$10$6HhA6auhomFftE468xtynuk40nllNZAbKLkkyyps/uX6QY1YqIbjO', 'filip', 1, null),
+    ('REGISTERED_USER', 3, 'rocky+1@gmail.com', 'Rocky', 'Balboa', 'rocky', 'rocky123', 1, null);
 
 INSERT INTO user_role
 VALUES
