@@ -13,7 +13,6 @@ import {Router} from '@angular/router';
 })
 export class SeatsDisplayComponent implements OnInit, OnChanges {
   value = '';
-  allDays = false;
   selectedSeats: ITicket[] = [];
 
   @Input() event: EventModel = new EventModel();
@@ -23,10 +22,10 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
   eventSectorForm: FormGroup;
   seats: any[] = [];
   seatRows: number[] = [];
-  seatsMap: {[key: number]: ITicket[]} = {};
+  seatsMap: { [key: number]: ITicket[] } = {};
 
 
-  constructor(private ticketService: TicketService, 
+  constructor(private ticketService: TicketService,
               private renderer: Renderer2,
               private router: Router) {
   }
@@ -34,7 +33,6 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.eventSectorForm = new FormGroup({
       eventDate: new FormControl({value: '', disabled: false}),
-      allDaysSelected: new FormControl({value: false}),
       selectedSector: new FormControl()
     });
   }
@@ -43,7 +41,11 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
     // this.router.navigate(['/checkout']).then(() => this.ticketService.ticketsSelected.next(this.selectedSeats));
   }
 
-  onSectorChange() {
+  onReserve() {
+    return;
+  }
+
+  onLoadSectorSeats() {
     this.seatsMap = {};
     this.seatRows = [];
 
@@ -90,5 +92,11 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
       currDate = moment(currDate).add(1, 'days');
     }
     return dateArray;
+  }
+
+  private getTotalPrice(): number {
+    let total = 0;
+    this.selectedSeats.forEach(seat => total += seat.price);
+    return total;
   }
 }

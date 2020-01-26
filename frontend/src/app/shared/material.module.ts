@@ -17,7 +17,7 @@ import {
   MatSelectModule,
   MatTableModule,
   MatToolbarModule,
-  MatCheckboxModule
+  MatCheckboxModule, MatTooltipModule
 } from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
 
@@ -41,7 +41,8 @@ import {FlexLayoutModule} from '@angular/flex-layout';
     MatNativeDateModule,
     MatPaginatorModule,
     MatDividerModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatTooltipModule
   ],
   exports: [
     CommonModule,
@@ -63,7 +64,8 @@ import {FlexLayoutModule} from '@angular/flex-layout';
     MatNativeDateModule,
     MatPaginatorModule,
     MatDividerModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatTooltipModule
   ],
 })
 export class CustomMaterialModule {

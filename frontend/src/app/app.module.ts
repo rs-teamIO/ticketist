@@ -43,7 +43,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { MapViewComponent } from './venue/venue-form/map-view/map-view.component';
 import {GridsterModule} from 'angular-gridster2';
 
-
 @NgModule({
   declarations: [
     AppComponent,
