@@ -30,8 +30,7 @@ import {EventItemComponent} from './event/event-list/event-item/event-item.compo
 import {VenueItemComponent} from './venue/venue-list/venue-item/venue-item.component';
 import { ErrorPageComponent } from './error-page/error-page.component';
 import { CheckoutComponent } from './checkout/checkout.component';
-import { TicketListComponent } from './checkout/ticket-list/ticket-list.component';
-import { TicketItemComponent } from './checkout/ticket-list/ticket-item/ticket-item.component';
+import { TicketItemComponent } from './checkout/ticket-item/ticket-item.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CustomMaterialModule } from './shared/material.module';
@@ -71,7 +70,6 @@ import {GridsterModule} from 'angular-gridster2';
     EventItemComponent,
     VenueItemComponent,
     CheckoutComponent,
-    TicketListComponent,
     TicketItemComponent,
     UserProfileComponent,
     ErrorPageComponent,
@@ -91,7 +89,7 @@ import {GridsterModule} from 'angular-gridster2';
         }),
         MatDividerModule,
         MatPaginatorModule,
-        GridsterModule
+        GridsterModule,
     ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }],
   bootstrap: [AppComponent]

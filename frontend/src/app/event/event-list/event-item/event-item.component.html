@@ -1,4 +1,4 @@
-<mat-card class="mat-card-flat">
+<mat-card class="mat-card-flat mat-elevation-z5">
   <img mat-card-image
        src="https://www.sveopoznatima.com/wp-content/uploads/2018/12/Zorica-Brunclik-Biografija-Visina-Te%C5%BEina-Godi%C5%A1te.jpg" alt="aa">
   <mat-card-title style="font-weight: lighter">
@@ -13,8 +13,10 @@
   </mat-card-subtitle>
   <mat-divider></mat-divider>
   <mat-card-actions>
-    <button mat-button color="primary">EDIT</button>
-    <button mat-button color="warn">CANCEL</button>
+<!--    [routerLink]="['/events', eventModel.id]"-->
+    <button mat-button color="primary" disabled>EDIT</button>
+    <button mat-button color="warn" type="button" (click)="onCancelEvent()">CANCEL</button>
+    <button mat-button color="primary" [routerLink]="['/event', eventModel.id]">DETAILS</button>
   </mat-card-actions>
 </mat-card>
 
