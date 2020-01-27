@@ -1,3 +1,5 @@
+import {IEventSector} from '../services/event.service';
+
 export class EventModel {
 
   constructor(private _id?: number,
@@ -7,7 +9,8 @@ export class EventModel {
               public startDate?: Date,
               public endDate?: Date,
               public description?: string,
-              public eventSectors?: {id: number, date: Date, sectorId: number}[]) {
+              public reservationLimit?: number,
+              public eventSectors?: IEventSector[]) {
   }
 
   get id(): number {

@@ -4,8 +4,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
 import {Page} from '../model/page.model';
 import {PageEvent} from '@angular/material';
-import { PORT } from '../shared/constants';
-import {Venue} from '../model/venue.model';
+import {PORT} from '../shared/constants';
 
 export interface IEventPage {
   events: EventModel[];
@@ -38,10 +37,12 @@ export interface IEventBasic {
 }
 
 export interface IEventSector {
+  id?: number;
   sectorId: number;
   ticketPrice: number;
   numeratedSeats: boolean;
   capacity?: number;
+  date?: number;
 }
 
 @Injectable({providedIn: 'root'})

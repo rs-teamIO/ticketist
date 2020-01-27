@@ -5,6 +5,8 @@ import * as moment from 'moment';
 import {FormControl, FormGroup} from '@angular/forms';
 import {ITicket, TicketService} from '../../../services/ticket.service';
 import {Router} from '@angular/router';
+import Swal from 'sweetalert2';
+import {IEventSector} from '../../../services/event.service';
 
 @Component({
   selector: 'app-seats-display',
@@ -12,18 +14,19 @@ import {Router} from '@angular/router';
   styleUrls: ['./seats-display.component.scss']
 })
 export class SeatsDisplayComponent implements OnInit, OnChanges {
-  value = '';
   selectedSeats: ITicket[] = [];
+  selectedEventSector: IEventSector = {} as IEventSector;
+  notNumeratedTickets: ITicket[] = [];
 
   @Input() event: EventModel = new EventModel();
   @Input() venue: Venue = new Venue();
   dates: Date[] = [];
 
   eventSectorForm: FormGroup;
-  seats: any[] = [];
+
   seatRows: number[] = [];
   seatsMap: { [key: number]: ITicket[] } = {};
-
+  counterValue = 0;
 
   constructor(private ticketService: TicketService,
               private renderer: Renderer2,
@@ -42,7 +45,17 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
   }
 
   onReserve() {
-    return;
+    if (this.selectedSeats.length <= this.event.reservationLimit) {
+      this.ticketService.reserveTickets(this.selectedSeats.map(seat => seat.id)).subscribe(
+        (response) => {
+          Swal.fire({icon: 'success', title: 'Reservation successful', text: 'You will be redirected to front page now', timer: 3000})
+            .then(() => this.router.navigate(['/']));
+        }, (error) => {
+          Swal.fire({icon: 'error', title: 'Reservation failed', text: error.error.message});
+        });
+    } else {
+      Swal.fire({icon: 'error', text: 'You can reserve ' + this.event.reservationLimit + ' seats maximum'});
+    }
   }
 
   onLoadSectorSeats() {
@@ -53,15 +66,24 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
       if (moment(moment(el.date)).format('YYYY-MM-DD HH:mm:ss') === this.eventSectorForm.get('eventDate').value &&
         el.sectorId === this.eventSectorForm.get('selectedSector').value.id) {
 
+        this.selectedEventSector = el;
+
         this.ticketService.getEventSectorTickets(el.id).subscribe(responseData => {
-          this.seatRows = Array(this.eventSectorForm.get('selectedSector').value.rowsCount).fill(1);
-          for (const t of responseData) {
-            if (this.seatsMap.hasOwnProperty(t.numberRow)) {
-              this.seatsMap[t.numberRow].push(t);
-            } else {
-              this.seatsMap[t.numberRow] = [t];
+
+          if (el.numeratedSeats) {
+            this.seatRows = Array(this.eventSectorForm.get('selectedSector').value.rowsCount).fill(1);
+            for (const t of responseData) {
+              if (this.seatsMap.hasOwnProperty(t.numberRow)) {
+                this.seatsMap[t.numberRow].push(t);
+              } else {
+                this.seatsMap[t.numberRow] = [t];
+              }
             }
+          } else {
+            this.notNumeratedTickets = responseData.filter((ticket: ITicket) => ticket.status === 'FREE');
+            console.log(this.notNumeratedTickets)
           }
+
         });
       }
     });
@@ -75,6 +97,26 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
     } else {
       this.renderer.addClass(event.target, 'selected');
       this.selectedSeats.push(seat);
+    }
+  }
+
+  onAddTicket() {
+    const ticket = this.notNumeratedTickets.length !== 0 ? this.notNumeratedTickets[0] : null;
+    if (ticket) {
+      this.selectedSeats.push(ticket);
+      this.notNumeratedTickets.splice(this.notNumeratedTickets.indexOf(ticket), 1);
+      this.counterValue++;
+    } else {
+      Swal.fire({ icon: 'warning', text: 'No more tickets available for this sector', toast: true});
+    }
+  }
+
+  onRemoveTicket() {
+    if (this.counterValue > 0) {
+      const removedSeat = this.selectedSeats.find(t => t.numberRow === -1 && t.numberColumn === -1);
+      this.selectedSeats.splice(this.selectedSeats.indexOf(removedSeat), 1);
+      this.notNumeratedTickets.push(removedSeat);
+      this.counterValue = this.counterValue -= 1;
     }
   }
 

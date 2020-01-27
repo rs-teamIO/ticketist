@@ -112,6 +112,6 @@ export class VenueService {
   }
 
   getVenue(venueId: number): Observable<Venue> {
-    return this.http.get<Venue>(this.venueBasicPath + 'venueId');
+    return this.http.get<Venue>(this.venueBasicPath + venueId);
   }
 }

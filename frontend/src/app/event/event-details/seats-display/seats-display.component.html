@@ -38,12 +38,25 @@
   </form>
 
   <div class="table-container">
-    <table>
+    <table *ngIf="selectedEventSector.numeratedSeats === true">
       <tr *ngFor="let seatRow of seatRows; let i = index;">
         <td *ngFor="let seat of seatsMap[i+1]" [ngClass]="seat.status.toLowerCase()"
             (click)="onSeatSelected($event, seat)"></td>
       </tr>
     </table>
+
+    <div fxLayout="column" fxLayoutAlign="center center" *ngIf="selectedEventSector.numeratedSeats === false">
+      <h3>How many tickets do you want?</h3>
+      <div fxLayout="row">
+        <button mat-button class="counter-buttons" (click)="onRemoveTicket()"><mat-icon>remove</mat-icon></button>
+        <mat-form-field appearance="outline">
+          <input matInput type="number" min="0" readonly value="{{counterValue}}">
+        </mat-form-field>
+        <button mat-button class="counter-buttons" (click)="onAddTicket()"><mat-icon>add</mat-icon></button>
+      </div>
+    </div>
+
+
   </div>
 
 </mat-card>

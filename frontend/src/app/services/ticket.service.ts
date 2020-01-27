@@ -25,6 +25,7 @@ export class TicketService {
   private readonly getEventSectorTicketsPath = `http://localhost:${PORT}/api/tickets/event/sector/`;
   private readonly getReservationTicketsPath = `http://localhost:${PORT}/api/tickets/reservations/`;
   private readonly buyTicketsPath = `http://localhost:${PORT}/api/tickets/`;
+  private readonly reserveTicketsPath = `http://localhost:${PORT}/api/tickets/reservations`;
 
   constructor(private http: HttpClient) {
   }
@@ -39,5 +40,9 @@ export class TicketService {
 
   buyTickets(ticketList: number[]): Observable<ITicket[]> {
     return this.http.post<ITicket[]>(this.buyTicketsPath, ticketList);
+  }
+
+  reserveTickets(ticketList: number[]): Observable<ITicket[]> {
+    return this.http.post<ITicket[]>(this.reserveTicketsPath, ticketList);
   }
 }
