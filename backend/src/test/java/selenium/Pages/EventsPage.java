@@ -9,7 +9,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class EventsPage {
     private WebDriver driver;
 
-    @FindBy(xpath = "/html/body/app-root/app-header/mat-toolbar/div/button[4]")
+    @FindBy(xpath = "//button[@routerlink=\"/my-reservations\"]")
+    private WebElement myReservationsButton;
+
+    @FindBy(xpath = "//button[@routerlink=\"/profile\"]")
     private WebElement profileButton;
 
     @FindBy(xpath = "/html/body/app-root/app-header/mat-toolbar/div/button[3]")
@@ -33,6 +36,11 @@ public class EventsPage {
                 .until(ExpectedConditions.visibilityOf(searchButton));
     }
 
+    public void ensureMyReservationsButtonIsDisplayed() {
+        (new WebDriverWait(driver, 10))
+                .until(ExpectedConditions.visibilityOf(myReservationsButton));
+    }
+
     public void ensureIsDisplayed2(){
         (new WebDriverWait(driver, 10))
                 .until(ExpectedConditions.visibilityOf(profileButton));
@@ -41,6 +49,10 @@ public class EventsPage {
     public void ensureIsDisplayed3(){
         (new WebDriverWait(driver, 10))
                 .until(ExpectedConditions.visibilityOf(venuesButton));
+    }
+
+    public void navigateToMyReservations() {
+        myReservationsButton.click();
     }
 
     public void submitProfile() {
