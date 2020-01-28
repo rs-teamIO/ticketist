@@ -17,8 +17,6 @@ import {EventFormSectorsComponent} from './event/event-form/event-form-sectors/e
 import {VenueComponent} from './venue/venue.component';
 import {VenueListComponent} from './venue/venue-list/venue-list.component';
 import {VenueFormComponent} from './venue/venue-form/venue-form.component';
-import {VenueFormBasicComponent} from './venue/venue-form/venue-form-basic/venue-form-basic.component';
-import {VenueFormSectorsComponent} from './venue/venue-form/venue-form-sectors/venue-form-sectors.component';
 import {ReportComponent} from './report/report.component';
 import {ReportChartComponent} from './report/report-chart/report-chart.component';
 import {ReportTableComponent} from './report/report-table/report-table.component';
@@ -58,8 +56,6 @@ import {GridsterModule} from 'angular-gridster2';
     VenueComponent,
     VenueListComponent,
     VenueFormComponent,
-    VenueFormBasicComponent,
-    VenueFormSectorsComponent,
     ReportComponent,
     ReportChartComponent,
     ReportTableComponent,
