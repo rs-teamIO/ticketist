@@ -50,8 +50,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
      *
      * @param event {@link Event} Cancelled event whose tickets are to be deactivated
      */
-    @Modifying
-    @Query("UPDATE Ticket t SET t.status = 4 WHERE t.event = :event")
-    void deactivateTickets(@Param("event") Event event);
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Ticket t SET t.status = 4 WHERE t.event.id = :eventId")
+    void deactivateTickets(@Param("eventId") Long eventId);
 
 }

@@ -1,32 +1,34 @@
 package com.siit.ticketist.service;
-import static org.junit.Assert.*;
 
 import com.siit.ticketist.exceptions.BadRequestException;
+import com.siit.ticketist.exceptions.ForbiddenException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
-import com.siit.ticketist.repository.EventRepository;
-import com.siit.ticketist.repository.SectorRepository;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.event.annotation.BeforeTestMethod;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import java.math.BigDecimal;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -36,8 +38,20 @@ public class EventServiceTest {
     @Autowired
     private EventService eventService;
 
+    @Autowired
+    private TicketService ticketService;
+
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
+
+    @Test
+    public void findAllWithPagesShouldReturnPagedActiveEvents() {
+        Page<Event> eventPage = eventService.findAll(PageRequest.of(0, 10));
+        assertEquals(10, eventPage.getNumberOfElements());
+        assertEquals(12, eventPage.getTotalElements());
+        List<Long> eventIds = eventPage.getContent().stream().map(event -> event.getId()).collect(Collectors.toList());
+        assertThat(eventIds, containsInAnyOrder(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 10L, 11L));
+    }
 
     @Test
     public void findOne_ShouldThrowException_whenIdIsWrong(){
@@ -506,4 +520,42 @@ public class EventServiceTest {
         Event ev = eventService.save(event);
         assertEquals(ev.getName(),event.getName());
     }
+
+    @Test
+    public void getTotalNumberOfActiveEventsShouldReturnHowManyEventsAreNotCancelled() {
+        assertEquals(Long.valueOf(12), eventService.getTotalNumberOfActiveEvents());
+    }
+
+    @Test
+    public void filterEventsByDeadlineShouldReturnActiveEventsWithReservationDeadlineThreeDaysFromNow() {
+        List<Event> events = eventService.filterEventsByDeadline();
+        assertThat("Only active events with reservation deadline 3 days from now are returned", events, hasSize(2));
+        assertThat(events, containsInAnyOrder(
+                hasProperty("id", is(Long.valueOf(7))),
+                hasProperty("id", is(Long.valueOf(8)))
+        ));
+    }
+
+    @Test
+    public void cancelEventShouldThrowBadRequestExceptionWhenTheEventHasPassed() throws MessagingException {
+        exceptionRule.expect(BadRequestException.class);
+        eventService.cancelEvent(Long.valueOf(2));
+    }
+
+    @Test
+    public void cancelEventShouldThrowForbiddenExceptionWhenTheEventIsAlreadyCancelled() throws MessagingException {
+        exceptionRule.expect(ForbiddenException.class);
+        eventService.cancelEvent(Long.valueOf(9));
+    }
+
+    @Test
+    public void cancelEventShouldSetEventToCancelledUpdateTicketsAndNotifyUsersAboutEventCancellation() throws MessagingException {
+        eventService.cancelEvent(Long.valueOf(8));
+        Event cancelledEvent = eventService.findOne(Long.valueOf(8));
+        assertEquals(true, cancelledEvent.getIsCancelled());
+        List<TicketStatus> eventTicketStatuses = ticketService.findAllByEventId(cancelledEvent.getId()).stream()
+                .map(ticket -> ticket.getStatus()).collect(Collectors.toList());
+        assertThat(eventTicketStatuses, everyItem(equalTo(TicketStatus.EVENT_CANCELLED)));
+    }
+
 }

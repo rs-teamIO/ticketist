@@ -100,7 +100,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND LOWER(v.name) LIKE concat('%', LOWER(:venueName), '%') " +
             "AND COALESCE( (e.start_date >= :startDate), true) AND COALESCE( (e.start_date <= ((:endDate)+INTERVAL 1 DAY)), true)",
             nativeQuery = true)
-    List<Event> search(@Param("eventName") String eventName,
+    Page<Event> search(@Param("eventName") String eventName,
                        @Param("category") String category,
                        @Param("venueName") String venueName,
                        @Param("startDate") Date startDate,

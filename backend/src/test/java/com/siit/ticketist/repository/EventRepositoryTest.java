@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -28,6 +29,13 @@ public class EventRepositoryTest {
     @Autowired
     private EventRepository eventRepository;
 
+    private static final Long VENUE_TICKETS_RESERVATIONS = Long.valueOf(1);
+    private static final Long VENUE_RESERVATIONS = Long.valueOf(2);
+    private static final Long VENUE_NO_TICKETS_RESERVATIONS = Long.valueOf(3);
+    private static final Long VENUE_NO_EVENTS = Long.valueOf(4);
+    private static final Long VENUE_NON_EXISTENT = Long.valueOf(-1);
+
+
     @Test
     public void findAllEventsReport_ReturnsListOfEventsItsVenueSoldTicketsAndTotalRevenue() {
         List<Object[]> events = eventRepository.findAllEventsReport();
@@ -49,7 +57,7 @@ public class EventRepositoryTest {
     //---------------------------------------------------------------------------------------------
     @Test
     public void findAllEventReportsByVenue_ReturnsListOfEventsSoldTicketsAndTotalRevenueForWantedVenue() {
-        List<Object[]> events = eventRepository.findAllEventReportsByVenue(Long.valueOf(1));
+        List<Object[]> events = eventRepository.findAllEventReportsByVenue(VENUE_TICKETS_RESERVATIONS);
         assertThat(events, hasSize(2));
         events.stream().forEach(obj -> {
             if (((String) obj[0]).equals("Event 1")) {
@@ -65,13 +73,13 @@ public class EventRepositoryTest {
 
     @Test
     public void findAllEventReportsByVenue_ReturnsEmptyListWhenVenueDoesNotHaveAnyEvents() {
-        List<Object[]> events = eventRepository.findAllEventReportsByVenue(Long.valueOf(4));
+        List<Object[]> events = eventRepository.findAllEventReportsByVenue(VENUE_NO_EVENTS);
         assertTrue(events.isEmpty());
     }
 
     @Test
     public void findAllEventReportsByVenue_ReturnsEmptyListWhenVenueWithGivenIdDoesNotExist() {
-        List<Object[]> events = eventRepository.findAllEventReportsByVenue(Long.valueOf(-1));
+        List<Object[]> events = eventRepository.findAllEventReportsByVenue(VENUE_NON_EXISTENT);
         assertTrue(events.isEmpty());
     }
 
@@ -82,7 +90,7 @@ public class EventRepositoryTest {
             If event has sold tickets, but happened over a year ago, it will not be considered for the report
             If a month has 0 sold tickets, it will not be in the list
          */
-        List<Object[]> venues = eventRepository.getVenueTicketsReport(Long.valueOf(1));
+        List<Object[]> venues = eventRepository.getVenueTicketsReport(VENUE_TICKETS_RESERVATIONS);
         assertThat(venues, hasSize(1));
         assertEquals("Month number (1-12) with more than 0 sold tickets", 11, (int) venues.get(0)[0]);
         assertEquals("Number of sold tickets for that month", BigInteger.valueOf(2), (BigInteger) venues.get(0)[1]);
@@ -90,13 +98,13 @@ public class EventRepositoryTest {
 
     @Test
     public void getVenueTicketsReport_ReturnsEmptyListWhenVenueDoesNotHaveAnyEvents() {
-        List<Object[]> venues = eventRepository.getVenueTicketsReport(Long.valueOf(4));
+        List<Object[]> venues = eventRepository.getVenueTicketsReport(VENUE_NO_EVENTS);
         assertTrue(venues.isEmpty());
     }
 
     @Test
     public void getVenueTicketsReport_ReturnsEmptyListWhenVenueWithGivenIdDoesNotExist() {
-        List<Object[]> venues = eventRepository.getVenueTicketsReport(Long.valueOf(-1));
+        List<Object[]> venues = eventRepository.getVenueTicketsReport(VENUE_NON_EXISTENT);
         assertTrue(venues.isEmpty());
     }
 
@@ -107,7 +115,7 @@ public class EventRepositoryTest {
             Any earnings made over a year ago will not be considered for the report
             If a month has no revenue, it will not be in the list
          */
-        List<Object[]> venues = eventRepository.getVenueRevenueReport(Long.valueOf(1));
+        List<Object[]> venues = eventRepository.getVenueRevenueReport(VENUE_TICKETS_RESERVATIONS);
         assertThat(venues, hasSize(1));
         assertEquals("Month number (1-12) with revenue biger than 0", 11, (int) venues.get(0)[0]);
         assertThat("Accumulated earnings for that month", new BigDecimal(80), comparesEqualTo((BigDecimal) venues.get(0)[1]));
@@ -115,20 +123,21 @@ public class EventRepositoryTest {
 
     @Test
     public void getVenueRevenueReport_ReturnsEmptyListWhenVenueDoesNotHaveAnyEvents() {
-        List<Object[]> venues = eventRepository.getVenueTicketsReport(Long.valueOf(4));
+        List<Object[]> venues = eventRepository.getVenueTicketsReport(VENUE_NO_EVENTS);
         assertTrue(venues.isEmpty());
     }
 
     @Test
     public void getVenueRevenueReport_ReturnsEmptyListWhenVenueWithGivenIdDoesNotExist() {
-        List<Object[]> venues = eventRepository.getVenueTicketsReport(Long.valueOf(-1));
+        List<Object[]> venues = eventRepository.getVenueTicketsReport(VENUE_NON_EXISTENT);
         assertTrue(venues.isEmpty());
     }
 
     //---------------------------------------------------------------------------------------------
     @Test
     public void searchWithEmptyParamsShouldReturnAllEvents() {
-        List<Event> events = eventRepository.search("", "", "", null, null, PageRequest.of(0, 8));
+        List<Event> events = eventRepository.search("", "", "", null, null, PageRequest.of(0, 8))
+                .getContent();
         assertThat("All events are returned", events, hasSize(4));
         assertAllEventsInList(events);
     }
@@ -136,12 +145,14 @@ public class EventRepositoryTest {
     @Test
     public void searchWithNameParamShouldReturnEventsWhichNameContainsWantedParam() {
         //Full name
-        List<Event> events = eventRepository.search("event 1", "", "", null, null, PageRequest.of(0, 8));
+        List<Event> events = eventRepository.search("event 1", "", "", null, null, PageRequest.of(0, 8))
+                .getContent();
         assertThat(events, hasSize(1));
         assertThat(events, containsInAnyOrder(hasProperty("name", is("Event 1"))));
 
         //Partial name
-        events = eventRepository.search("event", "", "", null, null, PageRequest.of(0, 8));
+        events = eventRepository.search("event", "", "", null, null, PageRequest.of(0, 8))
+                .getContent();
         assertThat(events, hasSize(4));
         assertAllEventsInList(events);
     }
@@ -149,14 +160,16 @@ public class EventRepositoryTest {
     @Test
     public void searchWithCategoryParamShouldReturnEventsWhichCategoryContainsWantedParam() {
         //Full name
-        List<Event> events = eventRepository.search("", "entertainment", "", null, null, PageRequest.of(0, 8));
+        List<Event> events = eventRepository.search("", "entertainment", "", null, null, PageRequest.of(0, 8))
+                .getContent();
         assertThat(events, hasSize(1));
         assertThat(events, containsInAnyOrder(
                 hasProperty("name", is("Event 3"))
         ));
 
         //Partial name
-        events = eventRepository.search("", "enter", "", null, null, PageRequest.of(0, 8));
+        events = eventRepository.search("", "enter", "", null, null, PageRequest.of(0, 8))
+                .getContent();
         assertThat(events, hasSize(1));
         assertThat(events, containsInAnyOrder(
                 hasProperty("name", is("Event 3"))
@@ -166,7 +179,8 @@ public class EventRepositoryTest {
     @Test
     public void searchWithVenueNameParamShouldReturnEventsWhichVenueNameContainsWantedParam() {
         //Full name
-        List<Event> events = eventRepository.search("", "", "spens", null, null, PageRequest.of(0, 8));
+        List<Event> events = eventRepository.search("", "", "spens", null, null, PageRequest.of(0, 8))
+                .getContent();
         assertThat(events, hasSize(2));
         assertThat(events, containsInAnyOrder(
                 hasProperty("name", is("Event 1")),
@@ -174,7 +188,8 @@ public class EventRepositoryTest {
         ));
 
         //Partial name
-        events = eventRepository.search("", "", "sp", null, null, PageRequest.of(0, 8));
+        events = eventRepository.search("", "", "sp", null, null, PageRequest.of(0, 8))
+                .getContent();
         assertThat(events, hasSize(2));
         assertThat(events, containsInAnyOrder(
                 hasProperty("name", is("Event 1")),
@@ -187,7 +202,8 @@ public class EventRepositoryTest {
         //Full name
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = sdf.parse(sdf.format(new Date(Long.valueOf("1573516800000")))); // 2019-11-12 00:00:00
-        List<Event> events = eventRepository.search("", "", "", date, null, PageRequest.of(0, 8));
+        List<Event> events = eventRepository.search("", "", "", date, null, PageRequest.of(0, 8))
+                .getContent();
         assertThat(events, hasSize(2));
         assertThat(events, containsInAnyOrder(
                 hasProperty("name", is("Event 3")),
@@ -200,7 +216,8 @@ public class EventRepositoryTest {
         //Full name
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = sdf.parse(sdf.format(new Date(Long.valueOf("1583362800000")))); // 2019-03-05 00:00:00
-        List<Event> events = eventRepository.search("", "", "", null, date, PageRequest.of(0, 8));
+        List<Event> events = eventRepository.search("", "", "", null, date, PageRequest.of(0, 8))
+                .getContent();
         assertThat(events, hasSize(4));
         assertAllEventsInList(events);
     }
@@ -211,7 +228,8 @@ public class EventRepositoryTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = sdf.parse(sdf.format(new Date(Long.valueOf("1573340400000")))); // 2019-11-10 00:00:00
         Date endDate = sdf.parse(sdf.format(new Date(Long.valueOf("1583362800000")))); // 2019-03-05 00:00:00
-        List<Event> events = eventRepository.search("event", "sports", "spens", startDate, endDate, PageRequest.of(0, 8));
+        List<Event> events = eventRepository.search("event", "sports", "spens", startDate, endDate, PageRequest.of(0, 8))
+                .getContent();
         assertThat("Only 'Event 1' satisfies every search param", events, hasSize(1));
         assertThat(events, containsInAnyOrder(
                 hasProperty("name", is("Event 1"))
@@ -220,7 +238,8 @@ public class EventRepositoryTest {
 
     @Test
     public void searchWithParamsThatNoneOfTheEventsSatifyShouldReturnEmptyList(){
-        List<Event> events = eventRepository.search("event", "cultural", "spens", null, null, PageRequest.of(0, 8));
+        List<Event> events = eventRepository.search("event", "cultural", "spens", null, null, PageRequest.of(0, 8))
+                .getContent();
         assertTrue(events.isEmpty());
     }
 

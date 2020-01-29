@@ -10,6 +10,7 @@ import com.siit.ticketist.model.MediaFile;
 import com.siit.ticketist.service.EventSectorService;
 import com.siit.ticketist.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -240,11 +241,12 @@ public class EventController {
      */
     @PostMapping(value = "/search")
     public ResponseEntity search(@RequestBody SearchDTO dto, Pageable pageable) {
-        List<Event> events = eventService.search(dto.getEventName(), dto.getCategory(), dto.getVenueName(), dto.getStartDate(), dto.getEndDate(), pageable);
-        List<EventDTO> eventDTOs = events.stream()
+        Page<Event> eventsPage = eventService.search(dto.getEventName(), dto.getCategory(), dto.getVenueName(), dto.getStartDate(), dto.getEndDate(), pageable);
+
+        List<EventDTO> eventDTOs = eventsPage.getContent().stream()
                 .map(EventDTO::new)
                 .collect(Collectors.toList());
-        return new ResponseEntity<>(new EventPageDTO(eventDTOs, eventService.getTotalNumberOfActiveEvents()), HttpStatus.OK);
+        return new ResponseEntity<>(new EventPageDTO(eventDTOs, eventsPage.getTotalElements()), HttpStatus.OK);
     }
 
     /**

@@ -279,7 +279,7 @@ public class EventService {
             throw new ForbiddenException("Wanted event is already cancelled");
         event.setIsCancelled(true);
         emailService.sendEventCancelledEmails(event);
-        ticketRepository.deactivateTickets(event);
+        ticketRepository.deactivateTickets(event.getId());
         return eventRepository.save(event);
     }
 
@@ -340,7 +340,7 @@ public class EventService {
      * @param millisecondsTo milliseconds to be converted to Date
      * @return List<Event> result list
      */
-    public List<Event> search(String eventName, String category, String venueName, Long millisecondsFrom, Long millisecondsTo, Pageable pageable){
+    public Page<Event> search(String eventName, String category, String venueName, Long millisecondsFrom, Long millisecondsTo, Pageable pageable){
         return eventRepository.search(eventName, category, venueName,
                 convertMillisToDate(millisecondsFrom), convertMillisToDate(millisecondsTo), pageable);
     }
@@ -361,7 +361,7 @@ public class EventService {
 
         List<Event> filteredEvents = new ArrayList<>();
         eventRepository.findAll().forEach(event -> {
-            if(sdf.format(event.getReservationDeadline()).equals(threeDaysFromNow))
+            if(!event.getIsCancelled() && sdf.format(event.getReservationDeadline()).equals(threeDaysFromNow))
                 filteredEvents.add(event);
         });
         return filteredEvents;

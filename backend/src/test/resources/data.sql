@@ -18,21 +18,21 @@ VALUE
     (2, 3, 2, 6, 'Zapad', 20, 20, 1);
 
 INSERT INTO events
-	(id, name, description, category, start_date, end_date, reservation_deadline, reservation_limit, venue_id)
+	(id, name, description, category, start_date, end_date, reservation_deadline, reservation_limit, is_cancelled, venue_id)
 VALUES
-	(1, 'Danasnji event', 'Opis eventa koji se odrzava danas na Spensu', 'SPORTS', CURDATE(), CURDATE(), CURDATE(), 3, 1),
-    (2, 'Koncert Adila', 'Koncert Adila', 'ENTERTAINMENT', '2019-11-12', '2019-11-12', '2019-11-01', 3, 1),          -- potrebno dodati sate odrzavanja
-    (3, 'Sajam knjiga', 'Novosadski sajam knjiga', 'CULTURAL', '2020-03-05', '2020-03-11', '2020-03-01', 3, 2),
-    (4, 'Poljoprivredni sajam', 'Medjunarodni sajam poljoprivrede', 'CULTURAL', '2020-05-11', '2020-05-17', '2020-05-01', 3, 2),
-    (5, 'Spens event 1', 'Opis spens eventa 1', 'SPORTS', '2019-11-12', '2019-11-12', '2019-11-11', 3, 1),
-    (6, 'Spens event 2', 'Opis spens eventa 2', 'SPORTS', '2019-09-10', '2019-09-11', '2019-09-5', 3, 1),
-    (7, 'Spens event 3', 'Opis spens eventa 3', 'SPORTS', '2019-08-10', '2019-08-11', '2019-08-5', 3, 1),
-    (8, 'Spens event 4', 'Opis spens eventa 4', 'CULTURAL', '2019-07-10', '2019-07-11', '2019-07-5', 3, 1),
-    (9, 'Spens event 5', 'Opis spens eventa 5', 'CULTURAL', '2019-06-10', '2019-06-11', '2019-06-5', 3, 1),
-    (10, 'Spens event 6', 'Opis spens eventa 6', 'ENTERTAINMENT', '2019-06-12', '2019-06-13', '2019-06-5', 3, 1),
-    (11, 'Spens event 7', 'Opis spens eventa 7', 'ENTERTAINMENT', '2020-03-14', '2020-03-15', '2019-06-5', 3, 1),
-    (12, 'Spens event 8', 'Opis spens eventa 8', 'ENTERTAINMENT', '2020-06-14', '2020-06-15', '2020-06-5', 3, 1),
-    (13, 'Spens event 9', 'Opis spens eventa 9', 'ENTERTAINMENT', '2020-07-14', '2020-07-15', '2020-07-5', 3, 1);
+	(1, 'Danasnji event', 'Opis eventa koji se odrzava danas na Spensu', 'SPORTS', CURDATE(), CURDATE(), CURDATE(), 3, 0, 1),
+    (2, 'Koncert Adila', 'Koncert Adila', 'ENTERTAINMENT', '2019-11-12', '2019-11-12', '2019-11-01', 3, 0, 1),          -- potrebno dodati sate odrzavanja
+    (3, 'Sajam knjiga', 'Novosadski sajam knjiga', 'CULTURAL', '2020-03-05', '2020-03-11', '2020-03-01', 3, 0, 2),
+    (4, 'Poljoprivredni sajam', 'Medjunarodni sajam poljoprivrede', 'CULTURAL', '2020-05-11', '2020-05-17', '2020-05-01', 3, 0, 2),
+    (5, 'Spens event 1', 'Opis spens eventa 1', 'SPORTS', '2019-11-12', '2019-11-12', '2019-11-11', 3, 0, 1),
+    (6, 'Spens event 2', 'Opis spens eventa 2', 'SPORTS', '2019-09-10', '2019-09-11', '2019-09-5', 3, 0, 1),
+    (7, 'Spens event 3', 'EVENT WITH RESERVATION DEADLINE 3 DAYS FROM NOW', 'SPORTS', ADDDATE(CURDATE(), 5), ADDDATE(CURDATE(), 5), ADDDATE(CURDATE(), 3), 3, 0, 1),
+    (8, 'Spens event 4', 'EVENT TO BE CANCELLED', 'CULTURAL', ADDDATE(CURDATE(), 5), ADDDATE(CURDATE(), 5), ADDDATE(CURDATE(), 3), 3, 0, 1),
+    (9, 'Spens event 5', 'CANCELLED EVENT', 'CULTURAL', ADDDATE(CURDATE(), 5), ADDDATE(CURDATE(), 5), ADDDATE(CURDATE(), 3), 3, 1, 1),
+    (10, 'Spens event 6', 'Opis spens eventa 6', 'ENTERTAINMENT', '2019-06-12', '2019-06-13', '2019-06-5', 3, 0, 1),
+    (11, 'Spens event 7', 'Opis spens eventa 7', 'ENTERTAINMENT', '2020-03-14', '2020-03-15', '2019-06-5', 3, 0, 1),
+    (12, 'Spens event 8', 'Opis spens eventa 8', 'ENTERTAINMENT', '2020-06-14', '2020-06-15', '2020-06-5', 3, 0, 1),
+    (13, 'Spens event 9', 'Opis spens eventa 9', 'ENTERTAINMENT', '2020-07-14', '2020-07-15', '2020-07-5', 3, 0, 1);
 
 
 INSERT INTO event_sectors (id, capacity, date, numerated_seats, ticket_price, event_id, sector_id)

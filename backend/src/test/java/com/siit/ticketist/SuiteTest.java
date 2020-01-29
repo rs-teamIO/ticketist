@@ -11,8 +11,7 @@ import org.springframework.test.context.TestPropertySource;
         TicketRepositoryTest.class,
         SectorRepositoryTest.class,
         EventRepositoryTest.class,
-        VenueRepositoryTest.class,
-        EmailNotificationTest.class
+        VenueRepositoryTest.class
 })
 //@ActiveProfiles("test")
 //@TestPropertySource(locations = "classpath:application.properties")

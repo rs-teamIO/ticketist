@@ -1,126 +1,71 @@
 package com.siit.ticketist.repository;
 
 import com.siit.ticketist.model.Ticket;
+import com.siit.ticketist.model.TicketStatus;
+import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql("/data.sql")
+@Sql("/email-notif.sql")
 public class TicketRepositoryTest {
 
     @Autowired
     private TicketRepository ticketRepository;
 
+    private static final Long EVENT_1 = Long.valueOf(1);
+    private static final Long EVENT_2 = Long.valueOf(2);
+    private static final Long EVENT_3 = Long.valueOf(3);
+
     @Test
-    public void findTicketsByEventId_ShouldReturnEmptyList_whenEventIDisInvalid() {
-        List<Ticket> foundTickets = ticketRepository.findByEventId(88L);
-        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
+    public void findEmailsToBeNotifiedReturnsUserEmailsWhenThereAreReservations_ForReservationDeadline() {
+        Set<String> emails = ticketRepository.findEmailsToBeNotified(EVENT_1, TicketStatus.RESERVED.ordinal());
+        assertThat(emails, hasSize(1));
+        assertThat("Email of user who reserved the event should be returned", emails, hasItems("user1@gmail.com"));
     }
 
     @Test
-    public void findTicketsByEventId_ShouldReturnListWithTickets_whenEventIDisValid() {
-        List<Ticket> foundTickets = ticketRepository.findByEventId((12L));
-        assertEquals("ticket list is not empty (8 elements)", 8, foundTickets.size());
+    public void findEmailsToBeNotifiedReturnsEmptySetWhenThereAreTicketsButNoReservations_ForReservationDeadline() {
+        Set<String> emails = ticketRepository.findEmailsToBeNotified(EVENT_2, TicketStatus.RESERVED.ordinal());
+        assertThat("No emails are returned when there are no reservations for the event", emails, IsEmptyCollection.empty());
     }
 
     @Test
-    public void findTicketsByEventSectorId_ShouldReturnEmptyList_whenEventSectorIDisInvalid() {
-        List<Ticket> foundTickets = ticketRepository.findByEventSectorId(100L);
-        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
+    public void findEmailsToBeNotifiedReturnsAllUserEmailsWhenThereAreReservationsAndTickets_ForEventCancellation() {
+        TicketStatus a = TicketStatus.PAID;
+        Set<String> emails = ticketRepository.findEmailsToBeNotified(EVENT_1, TicketStatus.PAID.ordinal());
+        assertThat(emails, hasSize(2));
+        assertThat("Emails of the user who bought the ticket, and the user who reserved should be returned",
+                emails, containsInAnyOrder("user1@gmail.com", "user2@gmail.com"));
     }
 
     @Test
-    public void findTicketsByEventSectorId_ShouldReturnListWithTickets_whenEventSectorIDisValid() {
-        List<Ticket> foundTickets = ticketRepository.findByEventSectorId((1L));
-        assertEquals("ticket list is not empty (12 elements)", 12, foundTickets.size());
+    public void findEmailsToBeNotifiedReturnsEmptySetWhenThereAreNoTicketsAndNoReservationsForGivenEvent() {
+        Set<String> emails = ticketRepository.findEmailsToBeNotified(EVENT_3, TicketStatus.RESERVED.ordinal());
+        assertThat("No emails are returned when there are no reservations and no tickets for the event", emails, IsEmptyCollection.empty());
     }
 
-//    @Test
-//    public void findAllReservationsByUser_ShouldReturnEmptyList_whenUserIsNotRegistered() {
-//        List<Ticket> foundTickets = ticketRepository.findAllReservationsByUser(100L);
-//        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
-//    }
-//
-//    @Test
-//    public void findAllReservationsByUser_ShouldReturnEmptyList_whenUserIsRegisteredButDontHaveAnyTicketReserved() {
-//        List<Ticket> foundTickets = ticketRepository.findAllReservationsByUser(4L);
-//        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
-//    }
-//
-//    @Test
-//    public void findAllReservationsByUser_ShouldReturnListWithTickets_whenUserIsRegisteredAndHasReservedTickets() {
-//        List<Ticket> foundTickets = ticketRepository.findAllReservationsByUser(1L);
-//        assertEquals("ticket list is empty (4 elements)", 4, foundTickets.size());
-//    }
+    @Test
+    @Transactional
+    public void deactivateTicketsSetsTicketStatusToCancelledWhenEventWithGivenIdExists() {
+        ticketRepository.deactivateTickets(EVENT_1);
+        List<TicketStatus> ticketStatuses = ticketRepository.findByEventId(EVENT_1).stream()
+                .map(ticket -> ticket.getStatus()).collect(Collectors.toList());
+        assertThat(ticketStatuses, everyItem(equalTo(TicketStatus.EVENT_CANCELLED)));
+    }
 
-//    @Test
-//    public void findAllReservationsByUserAndEvent_ShouldReturnEmptyList_whenUserIsRegisteredButWrongEventId() {
-//        List<Ticket> foundTickets = ticketRepository.findUsersReservationsByEvent(1L,40L);
-//        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
-//    }
-//
-//
-//    @Test
-//    public void findAllReservationsByUserAndEvent_ShouldReturnEmptyList_whenEventIsCorrectButWrongUserId() {
-//        List<Ticket> foundTickets = ticketRepository.findUsersReservationsByEvent(6L,12L);
-//        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
-//    }
-//
-//
-//    @Test
-//    public void findAllReservationsByUserAndEvent_ShouldReturnList_whenUserIsRegisteredAndCorrectEventId() {
-//        List<Ticket> foundTickets = ticketRepository.findUsersReservationsByEvent(1L,12L);
-//        assertEquals("ticket list is not empty (2 elements)", 2, foundTickets.size());
-//    }
-
-//    @Test
-//    public void findUserTickets_ShouldReturnEmptyList_whenUserIdIsWrong(){
-//        List<Ticket> foundTickets = ticketRepository.findUsersBoughtTickets(10L);
-//        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
-//    }
-//
-//
-//    @Test
-//    public void findUserTickets_ShouldReturnList_whenUserIdIsCorrect(){
-//        List<Ticket> foundTickets = ticketRepository.findUsersBoughtTickets(1L);
-//        assertEquals("ticket list is not empty (4 elements)", 4, foundTickets.size());
-//    }
-
-//    @Test
-//    public void findTicketsByIdGroup_ShouldReturnEmptyList_whenUserIdIsWrong(){
-//        List<Long> temp = new ArrayList<>();
-//        temp.add(2l);
-//        temp.add(5l);
-//        List<Ticket> foundTickets = ticketRepository.findTicketsByIdGroup(temp,11l);
-//        assertEquals("ticket list is empty (0 elements)", 0, foundTickets.size());
-//    }
-//
-//    @Test
-//    public void findTicketsByIdGroup_ShouldReturnWrongList_whenSendindTicketsThatAreBought(){
-//        List<Long> temp = new ArrayList<>();
-//        temp.add(1l);
-//        temp.add(2l);
-//        List<Ticket> foundTickets = ticketRepository.findTicketsByIdGroup(temp,1l);
-//        assertEquals("ticket list size is wronge (1 elements)", 1, foundTickets.size());
-//    }
-//
-//    @Test
-//    public void findTicketsByIdGroup_ShouldReturnList_whenTicketsAndUserIdIsCorrect(){
-//        List<Long> temp = new ArrayList<>();
-//        temp.add(2l);
-//        temp.add(5l);
-//        List<Ticket> foundTickets = ticketRepository.findTicketsByIdGroup(temp,1l);
-//        assertEquals("ticket list is not empty (2 elements)", 2, foundTickets.size());
-//    }
 }
