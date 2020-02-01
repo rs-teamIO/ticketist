@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -304,7 +303,7 @@ public class TicketServiceTest {
         assertSame("Ticket status is RESERVED", TicketStatus.RESERVED, ticket3.getStatus());
         assertNotNull("Ticket is related to user", ticket3.getUser());
         assertSame("Ticket is related to user 1", 1L, ticket3.getUser().getId());
-        assertSame("Ticket reservation id is 3", 3L, ticket3.getReservation().getId());
+        assertSame("Ticket reservation id is 4", 4L, ticket3.getReservation().getId());
     }
 
     @Test
