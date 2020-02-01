@@ -100,7 +100,7 @@ public class TicketController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
-    public ResponseEntity<Object> buyTickets(@Valid @RequestBody List<Long> tickets) throws MessagingException {
+    public ResponseEntity<List<TicketDTO>> buyTickets(@Valid @RequestBody List<Long> tickets) throws MessagingException {
         List<Ticket> ticket = ticketService.buyTickets(tickets);
         List<TicketDTO> ticketsDTO = new ArrayList<>();
         for (Ticket t : ticket) {
@@ -111,7 +111,7 @@ public class TicketController {
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping(value = "/reservations")
-    public ResponseEntity<Object> makeReservations(@Valid @RequestBody List<Long> tickets) throws MessagingException {
+    public ResponseEntity<List<TicketDTO>> makeReservations(@Valid @RequestBody List<Long> tickets) throws MessagingException {
         List<Ticket> ticket = ticketService.reserveTickets(tickets);
         List<TicketDTO> ticketsDTO = new ArrayList<>();
         for (Ticket t : ticket) {

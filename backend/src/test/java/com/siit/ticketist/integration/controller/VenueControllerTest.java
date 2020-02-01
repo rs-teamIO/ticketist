@@ -120,7 +120,7 @@ public class VenueControllerTest {
         httpHeaders.set("Authorization", token);
         HttpEntity<VenueDTO> request = new HttpEntity<>(venueDTO, httpHeaders);
         ResponseEntity<VenueDTO> response = testRestTemplate.exchange("/api/venues", HttpMethod.POST, request, VenueDTO.class);
-        assertEquals("Expected status Unauthorized", HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals("Expected status Forbidden", HttpStatus.FORBIDDEN, response.getStatusCode());
     }
 
     @Test
