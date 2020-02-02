@@ -241,5 +241,4 @@ public class TicketControllerTest {
         ResponseEntity<Object> response = testRestTemplate.exchange("/api/tickets/reservations", HttpMethod.POST, request, Object.class);
         assertEquals("Expected status FORBIDDEN", HttpStatus.FORBIDDEN, response.getStatusCode());
     }
-
 }

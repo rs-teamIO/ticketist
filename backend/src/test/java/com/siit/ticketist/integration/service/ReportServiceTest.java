@@ -31,14 +31,13 @@ public class ReportServiceTest {
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
+    private static final Long INVALID_VENUE_ID = Long.valueOf(-1);
     private static final Long VENUE_TICKETS_RESERVATIONS = Long.valueOf(1);
-    private static final Long VENUE_RESERVATIONS = Long.valueOf(2);
-    private static final Long VENUE_NO_TICKETS_RESERVATIONS = Long.valueOf(3);
     private static final Long VENUE_NO_EVENTS = Long.valueOf(4);
 
     private static final String CRITERIA_TICKETS = "TICKETS";
     private static final String CRITERIA_REVENUE = "REVENUE";
-    private static final String INVVALID_CRITERIA = "This criteria is not valid";
+    private static final String INVALID_CRITERIA = "This criteria is not valid";
 
     @Test
     public void getAllVenueRevenuesShouldReturnMapOfVenuesAndTheirCorrespondingRevenues() {
@@ -55,37 +54,36 @@ public class ReportServiceTest {
     @Test
     public void getVenueChartShouldThrowNotFoundExceptionWhenVenueWithGivenIdDoesNotExist() {
         exceptionRule.expect(NotFoundException.class);
-        reportService.getVenueChart(CRITERIA_TICKETS, Long.valueOf(-1));
+        reportService.getVenueChart(CRITERIA_TICKETS, INVALID_VENUE_ID);
     }
 
     @Test
     public void getVenueChartShouldThrowBadRequestExceptionWhenGivenCriteriaIsNotValid() {
         exceptionRule.expect(BadRequestException.class);
-        reportService.getVenueChart(INVVALID_CRITERIA, Long.valueOf(1));
+        reportService.getVenueChart(INVALID_CRITERIA, VENUE_TICKETS_RESERVATIONS);
     }
 
     @Test
     public void getVenueChartShouldReturnMapOfMonthsAndNumberOfTicketsSoldInThatMonthWhenCriteriaIsTickets() {
-        Map<Integer, Float> monthsMap = reportService.getVenueChart(CRITERIA_TICKETS, Long.valueOf(1));
+        Map<Integer, Float> monthsMap = reportService.getVenueChart(CRITERIA_TICKETS, VENUE_TICKETS_RESERVATIONS);
         assertThat("Only november (11) has more than 0 tickets sold",
                 monthsMap, hasEntry(equalTo(11), equalTo(Float.valueOf(2))));
     }
 
     @Test
     public void getVenueChartShouldReturnEmptyMapWhenWantedVenueHasNoEventsAndCriteriaIsTickets() {
-        assertThat(reportService.getVenueChart(CRITERIA_TICKETS, Long.valueOf(4)).size(), is(0));
+        assertThat(reportService.getVenueChart(CRITERIA_TICKETS, VENUE_NO_EVENTS).size(), is(0));
     }
-
 
     @Test
     public void getVenueChartShouldReturnMapOfMonthsAndThatMonthsRevenueWhenCriteriaIsRevenue() {
-        Map<Integer, Float> monthsMap = reportService.getVenueChart(CRITERIA_REVENUE, Long.valueOf(1));
+        Map<Integer, Float> monthsMap = reportService.getVenueChart(CRITERIA_REVENUE, VENUE_TICKETS_RESERVATIONS);
         assertThat("Only november (11) has revenue bigger than 0",
                 monthsMap, hasEntry(equalTo(11), equalTo(Float.valueOf(80))));
     }
 
     @Test
     public void getVenueChartShouldReturnEmptyMapWhenWantedVenueHasNoEventsAndCriteriaIsRevenue() {
-        assertThat(reportService.getVenueChart(CRITERIA_REVENUE, Long.valueOf(4)).size(), is(0));
+        assertThat(reportService.getVenueChart(CRITERIA_REVENUE, VENUE_NO_EVENTS).size(), is(0));
     }
 }

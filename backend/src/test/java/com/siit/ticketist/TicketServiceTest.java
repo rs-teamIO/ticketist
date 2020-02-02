@@ -1,4 +1,4 @@
-package com.siit.ticketist.service;
+package com.siit.ticketist;
 
 import com.itextpdf.text.log.SysoCounter;
 import com.siit.ticketist.dto.AuthenticationRequest;
@@ -8,6 +8,8 @@ import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.ReservationRepository;
 import com.siit.ticketist.security.TokenUtils;
 import com.siit.ticketist.security.UserDetailsServiceImpl;
+import com.siit.ticketist.service.TicketService;
+import com.siit.ticketist.service.UserService;
 import lombok.With;
 import org.junit.Before;
 import org.junit.Rule;

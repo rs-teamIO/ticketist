@@ -1,50 +1,63 @@
-package com.siit.ticketist.service;
-import static org.junit.Assert.*;
+package com.siit.ticketist.unit.service;
 
 import com.siit.ticketist.exceptions.BadRequestException;
+import com.siit.ticketist.exceptions.ForbiddenException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.SectorRepository;
+import com.siit.ticketist.repository.TicketRepository;
+import com.siit.ticketist.service.EmailService;
+import com.siit.ticketist.service.EventService;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Example;
-import org.springframework.test.context.event.annotation.BeforeTestMethod;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.mail.MessagingException;
 import java.math.BigDecimal;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql("/data.sql")
-public class EventServiceUnitTest {
+import static org.apache.commons.lang3.time.DateUtils.addDays;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-    @Autowired
+public class EventServiceTest {
+
+    @InjectMocks
     private EventService eventService;
 
-    @MockBean
+    @Mock
     private EventRepository eventRepository;
 
-    @MockBean
+    @Mock
     private SectorRepository sectorRepository;
+
+    @Mock
+    private TicketRepository ticketRepository;
+
+    @Mock
+    private EmailService emailService;
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        ReflectionTestUtils.setField(eventService, "emailService", this.emailService);
+    }
 
     @Test
     public void checkVenueAvailability_ShouldReturnTrue_whenVenueIsFreeUnit(){
@@ -73,7 +86,7 @@ public class EventServiceUnitTest {
         ev.setEndDate(dateTest);
         List<Event> evList = new ArrayList<Event>();
         evList.add(ev);
-        Mockito.when(eventRepository.findByVenueId(ven.getId())).thenReturn(evList);
+        when(eventRepository.findByVenueId(ven.getId())).thenReturn(evList);
 
         Boolean check = eventService.checkVenueAvailability(event);
         assertTrue("venue is avaliable for this event",check);
@@ -106,7 +119,7 @@ public class EventServiceUnitTest {
         ev.setEndDate(date2);
         List<Event> evList = new ArrayList<Event>();
         evList.add(ev);
-        Mockito.when(eventRepository.findByVenueId(ven.getId())).thenReturn(evList);
+        when(eventRepository.findByVenueId(ven.getId())).thenReturn(evList);
 
         Boolean check = eventService.checkVenueAvailability(event);
         assertFalse("venue is not avaliable for this event",check);
@@ -117,7 +130,7 @@ public class EventServiceUnitTest {
     public void checkSectorMaxCapacity_ShouldReturnFalse_whenCapacityIsGreaterThanSectorLimitUnit(){
         Sector sector = new Sector();
         sector.setMaxCapacity(5);
-        Mockito.when(sectorRepository.findById(1l)).thenReturn(Optional.of(sector));
+        when(sectorRepository.findById(1l)).thenReturn(Optional.of(sector));
         Boolean check = eventService.checkSectorMaxCapacity(1l,10);
         assertFalse("capacity is greater than max capacity",check);
     }
@@ -126,7 +139,7 @@ public class EventServiceUnitTest {
     public void checkSectorMaxCapacity_ShouldReturnTrue_whenCapacityIsLowerThanSectorLimitUnit(){
         Sector sector = new Sector();
         sector.setMaxCapacity(5);
-        Mockito.when(sectorRepository.findById(1l)).thenReturn(Optional.of(sector));
+        when(sectorRepository.findById(1l)).thenReturn(Optional.of(sector));
         Boolean check = eventService.checkSectorMaxCapacity(1l,2);
         assertTrue("capacity is lesser than max capacity",check);
     }
@@ -148,7 +161,7 @@ public class EventServiceUnitTest {
 
         eSector.setEvent(event);
 
-        Mockito.when(sectorRepository.findById(1l)).thenReturn(Optional.of(sector));
+        when(sectorRepository.findById(1l)).thenReturn(Optional.of(sector));
         Set<Ticket> tickets = eventService.generateTickets(eSector);
         assertEquals("ticket list is not empty",4,tickets.size());
 
@@ -163,7 +176,7 @@ public class EventServiceUnitTest {
         sector.setId(10l);
         eSector.setSector(sector);
         eSector.setNumeratedSeats(true);
-        Mockito.when(sectorRepository.findById(10l)).thenReturn(Optional.empty());
+        when(sectorRepository.findById(10l)).thenReturn(Optional.empty());
         Set<Ticket> tickets = eventService.generateTickets(eSector);
         assertEquals("ticket list is empty",0,tickets.size());
     }
@@ -210,7 +223,7 @@ public class EventServiceUnitTest {
         eventSectors.add(eSector);
         event.setEventSectors(eventSectors);
 
-        Mockito.when(sectorRepository.findOne(Example.of(sec))).thenReturn(Optional.empty());
+        when(sectorRepository.findOne(Example.of(sec))).thenReturn(Optional.empty());
 
         eventService.save(event);
     }
@@ -261,9 +274,98 @@ public class EventServiceUnitTest {
         eventSectors.add(eSector);
         event.setEventSectors(eventSectors);
 
-        Mockito.when(sectorRepository.findById(sec.getId())).thenReturn(Optional.of(sec));
+        when(sectorRepository.findById(sec.getId())).thenReturn(Optional.of(sec));
         eventService.save(event);
 
+    }
+
+    @Test
+    public void filterEventsByDeadlineShouldReturnActiveEventsWithReservationDeadlineThreeDaysFromNow() throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String threeDaysFromNow = sdf.format(addDays(new Date(), 3));
+        String fiveDaysFromNow = sdf.format(addDays(new Date(), 5));
+
+        Event cancelledEvent = new Event();
+        cancelledEvent.setName("Cancelled Event");
+        cancelledEvent.setIsCancelled(true);
+        cancelledEvent.setReservationDeadline(sdf.parse(threeDaysFromNow));
+
+        Event activeEventNotToBeNotified = new Event();
+        activeEventNotToBeNotified.setName("Active Event Not To Be Notified");
+        activeEventNotToBeNotified.setIsCancelled(false);
+        activeEventNotToBeNotified.setReservationDeadline(sdf.parse(fiveDaysFromNow));
+
+        Event activeEvent = new Event();
+        activeEvent.setName("Active Event");
+        activeEvent.setIsCancelled(false);
+        activeEvent.setReservationDeadline(sdf.parse(threeDaysFromNow));
+
+        when(eventRepository.findAll()).thenReturn(new ArrayList(){{
+            add(cancelledEvent);
+            add(activeEventNotToBeNotified);
+            add(activeEvent);
+        }});
+
+        List<Event> filteredEvents = eventService.filterEventsByDeadline();
+        assertThat(filteredEvents, hasSize(1));
+        assertThat(filteredEvents, contains(hasProperty("name", is("Active Event"))));
+    }
+
+    @Test
+    public void getTotalNumberOfActiveEventsShouldReturnHowManyEventsAreNotCancelled() {
+        when(eventRepository.countByIsCancelled(false)).thenReturn(8L);
+        assertEquals(Long.valueOf(8), eventService.getTotalNumberOfActiveEvents());
+    }
+
+    @Test
+    public void cancelEventShouldThrowBadRequestExceptionWhenTheEventHasPassed() throws MessagingException {
+        exceptionRule.expect(BadRequestException.class);
+
+        Event event = new Event();
+        event.setStartDate(new Date(System.currentTimeMillis() - 86400000));
+        when(eventRepository.findById(Long.valueOf(1))).thenReturn(Optional.of(event));
+
+        eventService.cancelEvent(Long.valueOf(1));
+    }
+
+    @Test
+    public void cancelEventShouldThrowForbiddenExceptionWhenTheEventIsAlreadyCancelled() throws MessagingException {
+        exceptionRule.expect(ForbiddenException.class);
+
+        Event event = new Event();
+        event.setStartDate(new Date(System.currentTimeMillis() + 86400000));
+        event.setIsCancelled(true);
+        when(eventRepository.findById(Long.valueOf(1))).thenReturn(Optional.of(event));
+
+        eventService.cancelEvent(Long.valueOf(1));
+    }
+
+    @Test
+    public void cancelEventShouldSetEventToCancelledUpdateTicketsAndNotifyUsersAboutEventCancellation() throws MessagingException {
+        Event event = new Event();
+        event.setId(Long.valueOf(1));
+        event.setStartDate(new Date(System.currentTimeMillis() + 86400000));
+        event.setIsCancelled(false);
+        when(eventRepository.findById(Long.valueOf(1))).thenReturn(Optional.of(event));
+
+        eventService.cancelEvent(Long.valueOf(1));
+        assertTrue(event.getIsCancelled());
+        verify(emailService).sendEventCancelledEmails(event);
+        verify(ticketRepository).deactivateTickets(event.getId());
+        verify(eventRepository).save(event);
+    }
+
+    @Test
+    public void searchShouldCallRepositoryMethodAndPassCorrectParametersToIt() {
+        // Used to test a private method convertMillisToDate(Long)
+        Long millisecondsFrom = 1583362800000L;
+        Long millisecondsTo = null;
+        PageRequest pageReq = PageRequest.of(0, 8);
+
+        eventService.search("", "", "",
+                millisecondsFrom, millisecondsTo, pageReq);
+        verify(eventRepository).search("", "", "",
+                new Date(millisecondsFrom), null, pageReq);
     }
 
 }

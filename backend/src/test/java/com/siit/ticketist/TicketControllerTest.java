@@ -1,4 +1,4 @@
-package com.siit.ticketist.controller;
+package com.siit.ticketist;
 
 import com.siit.ticketist.dto.RegisteredUserDTO;
 import com.siit.ticketist.dto.TicketDTO;

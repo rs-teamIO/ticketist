@@ -1,9 +1,11 @@
-package com.siit.ticketist.service;
+package com.siit.ticketist.integration.service;
 
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.ForbiddenException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
+import com.siit.ticketist.service.EventService;
+import com.siit.ticketist.service.TicketService;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -50,7 +53,7 @@ public class EventServiceTest {
         assertEquals(10, eventPage.getNumberOfElements());
         assertEquals(12, eventPage.getTotalElements());
         List<Long> eventIds = eventPage.getContent().stream().map(event -> event.getId()).collect(Collectors.toList());
-        assertThat(eventIds, containsInAnyOrder(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 10L, 11L));
+        assertThat(eventIds, containsInAnyOrder(1L,  2L, 3L, 4L, 5L, 6L, 7L, 8L, 10L, 11L));
     }
 
     @Test
@@ -556,6 +559,19 @@ public class EventServiceTest {
         List<TicketStatus> eventTicketStatuses = ticketService.findAllByEventId(cancelledEvent.getId()).stream()
                 .map(ticket -> ticket.getStatus()).collect(Collectors.toList());
         assertThat(eventTicketStatuses, everyItem(equalTo(TicketStatus.EVENT_CANCELLED)));
+    }
+
+    @Test
+    public void searchShouldCallRepositoryMethodAndPassCorrectParametersToIt() {
+        // Used to test a private method convertMillisToDate(Long)
+        Long millisecondsFrom = 1594677600000L;     // 2020-07-14 00:00:00
+        Long millisecondsTo = null;
+        PageRequest pageReq = PageRequest.of(0, 1);
+
+        List<Event> events = eventService.search("", "", "",
+                millisecondsFrom, millisecondsTo, pageReq).getContent();
+        assertThat(events, hasSize(1));
+        assertThat(events, contains(hasProperty("id", is(13L))));
     }
 
 }

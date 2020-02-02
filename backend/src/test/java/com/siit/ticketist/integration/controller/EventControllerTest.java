@@ -1,28 +1,22 @@
-package com.siit.ticketist.controller;
+package com.siit.ticketist.integration.controller;
 
-import static org.junit.Assert.*;
-
-import com.siit.ticketist.dto.*;
-import com.siit.ticketist.exceptions.AuthorizationException;
-import com.siit.ticketist.model.*;
+import com.siit.ticketist.dto.EventDTO;
+import com.siit.ticketist.dto.EventPageDTO;
+import com.siit.ticketist.dto.EventSectorDTO;
+import com.siit.ticketist.dto.SearchDTO;
+import com.siit.ticketist.model.Category;
 import com.siit.ticketist.security.TokenUtils;
 import com.siit.ticketist.security.UserDetailsServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -31,12 +25,23 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql("/data.sql")
 public class EventControllerTest {
+
+    private static final String GET_EVENTS_PAGED_PATH = "/api/events/paged?page={page}&size={size}";
+    private static final String SEARCH_EVENTS_PATH = "/api/events/search?page={page}&size={size}";
+    private static final String CANCEL_EVENT_PATH = "/api/events/cancel/{eventId}";
+
     @Autowired
     private TestRestTemplate testRestTemplate;
 
@@ -71,6 +76,16 @@ public class EventControllerTest {
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(13, result.getBody().size());
+    }
+
+    @Test
+    public void getEventsWithPagesEndpointShouldPassWhenCalledWithPageableObject() {
+        ResponseEntity<EventPageDTO> result = testRestTemplate
+                .getForEntity(GET_EVENTS_PAGED_PATH, EventPageDTO.class, 0, 8);
+        assertEquals(result.getStatusCode(), HttpStatus.OK);
+        assertNotNull(result.getBody());
+        assertThat(result.getBody().getEvents(), hasSize(8));
+        assertEquals(Long.valueOf(12), result.getBody().getTotalSize());
     }
 
     @Test
@@ -376,4 +391,71 @@ public class EventControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody().getId());
     }
+
+    @Test
+    public void searchEndpoint_ShouldPassWhenAllSearchFieldsAreEmpty() {
+        SearchDTO emptyDTO = new SearchDTO();
+        ResponseEntity<EventPageDTO> result = testRestTemplate
+                .postForEntity(SEARCH_EVENTS_PATH, emptyDTO, EventPageDTO.class, 0, 8);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertThat(result.getBody().getEvents(), hasSize(8));
+        assertEquals(Long.valueOf(12), result.getBody().getTotalSize());
+    }
+
+    @Test
+    public void searchEndpoint_ShouldPassWhenSearchFieldsArePartiallyOrFullyFilled() {
+        //Partial
+        SearchDTO searchDTO = new SearchDTO("", "ENTERTAINMENT", "Spens", null, null);
+        ResponseEntity<EventPageDTO> result = testRestTemplate
+                .postForEntity(SEARCH_EVENTS_PATH, searchDTO, EventPageDTO.class, 0, 8);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertThat(result.getBody().getEvents(), hasSize(5));
+        assertEquals(Long.valueOf(5), result.getBody().getTotalSize());
+
+        //Full
+        searchDTO = new SearchDTO("event", "ENTERTAINMENT", "Spens", 1594677600000L, 1594764000000L);
+        result = testRestTemplate.postForEntity(SEARCH_EVENTS_PATH, searchDTO, EventPageDTO.class, 0, 8);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertThat(result.getBody().getEvents(), hasSize(1));
+        assertEquals(Long.valueOf(1), result.getBody().getTotalSize());
+    }
+
+    @Test
+    public void cancelEventEndpointShouldReturnNotFoundWhenVenueWithGivenIdIsNotFound() {
+        HttpEntity request = new HttpEntity(headers);
+        ResponseEntity<EventDTO> result = testRestTemplate
+                .exchange(CANCEL_EVENT_PATH, HttpMethod.GET, request, EventDTO.class, -1L);
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+    }
+
+    @Test
+    public void cancelEventEndpointShouldReturnBadRequestWhenTheEventHasPassed() {
+        HttpEntity request = new HttpEntity(headers);
+        ResponseEntity<EventDTO> result = testRestTemplate
+                .exchange(CANCEL_EVENT_PATH, HttpMethod.GET, request, EventDTO.class, 1L);
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+    }
+
+    @Test
+    public void cancelEventEndpointShouldReturnForbiddenWhenTheEventIsAlreadyCancelled() {
+        HttpEntity request = new HttpEntity(headers);
+        ResponseEntity<EventDTO> result = testRestTemplate
+                .exchange(CANCEL_EVENT_PATH, HttpMethod.GET, request, EventDTO.class, 9L);
+        assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
+    }
+
+    @Test
+    public void cancelEventEndpointShouldPassWhenEverythingIsValid() {
+        HttpEntity request = new HttpEntity(headers);
+        ResponseEntity<EventDTO> result = testRestTemplate
+                .exchange(CANCEL_EVENT_PATH, HttpMethod.GET, request, EventDTO.class, 8L);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertEquals(Long.valueOf(8), result.getBody().getId());
+    }
+
+
 }

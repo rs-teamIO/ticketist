@@ -1,16 +1,21 @@
-package com.siit.ticketist.service;
+package com.siit.ticketist.unit.service;
 import com.siit.ticketist.exceptions.AuthorizationException;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.RegisteredUser;
+import com.siit.ticketist.service.RegisteredUserService;
+import com.siit.ticketist.service.UserService;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,20 +26,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql("/data.sql")
-public class RegisteredUserServiceUnitTest {
+public class RegisteredUserServiceTest {
 
-    @Autowired
+    @InjectMocks
     private RegisteredUserService registeredUserService;
 
-    @MockBean
+    @Mock
     private UserService userService;
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     public void updateUser_ShouldThrowAuthorizationException_whenUserDoesntExistUnit(){

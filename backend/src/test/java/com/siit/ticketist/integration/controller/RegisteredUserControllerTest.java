@@ -1,4 +1,4 @@
-package com.siit.ticketist.controller;
+package com.siit.ticketist.integration.controller;
 
 import static org.junit.Assert.*;
 

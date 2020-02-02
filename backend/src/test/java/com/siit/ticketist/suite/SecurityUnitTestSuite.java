@@ -1,5 +1,6 @@
-package com.siit.ticketist.security;
+package com.siit.ticketist.suite;
 
+import com.siit.ticketist.security.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

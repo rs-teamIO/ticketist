@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -240,7 +241,7 @@ public class EventController {
      * @return {@link ResponseEntity} containing the events that satisfy search criteria
      */
     @PostMapping(value = "/search")
-    public ResponseEntity search(@RequestBody SearchDTO dto, Pageable pageable) {
+        public ResponseEntity search(@RequestBody SearchDTO dto, Pageable pageable) {
         Page<Event> eventsPage = eventService.search(dto.getEventName(), dto.getCategory(), dto.getVenueName(), dto.getStartDate(), dto.getEndDate(), pageable);
 
         List<EventDTO> eventDTOs = eventsPage.getContent().stream()

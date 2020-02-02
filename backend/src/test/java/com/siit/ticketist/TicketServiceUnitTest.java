@@ -1,4 +1,4 @@
-package com.siit.ticketist.service;
+package com.siit.ticketist;
 
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.ForbiddenException;
@@ -8,43 +8,44 @@ import com.siit.ticketist.model.Ticket;
 import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.repository.ReservationRepository;
 import com.siit.ticketist.repository.TicketRepository;
+import com.siit.ticketist.service.TicketService;
+import com.siit.ticketist.service.UserService;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.event.annotation.BeforeTestExecution;
-import org.springframework.test.context.event.annotation.BeforeTestMethod;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.math.BigDecimal;
 import java.util.*;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql("/data.sql")
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 public class TicketServiceUnitTest {
 
-    @Autowired
+    @InjectMocks
     private TicketService ticketService;
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
-    @MockBean
+    @Mock
     private UserService userService;
 
-    @MockBean
+    @Mock
     private TicketRepository ticketRepository;
 
-    @MockBean
+    @Mock
     private ReservationRepository reservationRepository;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     public void acceptOrCancelReservations_ShouldThrowBadRequestException_whenReservationIsInvalid(){

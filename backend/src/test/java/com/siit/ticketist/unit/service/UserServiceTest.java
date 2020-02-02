@@ -1,4 +1,4 @@
-package com.siit.ticketist.service;
+package com.siit.ticketist.unit.service;
 
 import com.siit.ticketist.exceptions.AuthorizationException;
 import com.siit.ticketist.exceptions.BadRequestException;
@@ -9,6 +9,7 @@ import com.siit.ticketist.model.Role;
 import com.siit.ticketist.model.User;
 import com.siit.ticketist.repository.UserRepository;
 import com.siit.ticketist.security.SpringSecurityUser;
+import com.siit.ticketist.service.UserService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,7 +32,7 @@ import static org.mockito.Mockito.*;
 /**
  * This class contains unit test methods for {@link UserService}.
  */
-public class UserServiceUnitTest {
+public class UserServiceTest {
 
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";

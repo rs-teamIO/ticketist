@@ -1,6 +1,7 @@
-package com.siit.ticketist.service;
+package com.siit.ticketist.unit.service;
 
 import com.siit.ticketist.exceptions.BadRequestException;
+import com.siit.ticketist.service.QrCodeService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,7 +14,7 @@ import static org.junit.Assert.*;
 /**
  * This class contains unit test methods for {@link QrCodeService}.
  */
-public class QrCodeServiceUnitTest {
+public class QrCodeServiceTest {
 
     private static final String CONTENT = "content";
     private static final int WIDTH = 200;

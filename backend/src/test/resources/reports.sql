@@ -13,7 +13,7 @@ VALUES
 INSERT INTO events
 	(id, name, description, category, start_date, end_date, reservation_deadline, reservation_limit, venue_id)
 VALUES
-	(1, 'Event 1', 'Opis eventa koji se odrzava danas na Spensu', 'SPORTS', '2019-11-10', '2019-11-11', '2019-11-10', 3, 1),
+	(1, 'Event 1', 'Opis eventa koji se odrzava na Spensu', 'SPORTS', '2019-11-10', '2019-11-11', '2019-11-10', 3, 1),
 	(2, 'Event 2', 'Opis eventa koji se odrzava danas na Spensu', 'SPORTS', CURDATE()-INTERVAL 12 MONTH-INTERVAL 1 DAY, CURDATE()-INTERVAL 12 MONTH, CURDATE()-INTERVAL 13 MONTH, 3, 1),		-- event out of the 12 month interval
     (3, 'Event 3', 'Koncert Adila', 'ENTERTAINMENT', '2019-11-12', '2019-11-12', '2019-11-01', 3, 2),
     (4, 'Event 4', 'Novosadski sajam knjiga', 'CULTURAL', '2020-03-05', '2020-03-11', '2020-03-01', 3, 3);
@@ -38,8 +38,10 @@ VALUES
 INSERT INTO users
     (dtype, id, email, first_name, last_name, password, username, is_verified, verification_code)
 VALUES
-    ('REGISTERED_USER', 1, 'kacjica+1@gmail.com', 'Katarina', 'Tukelic', 'kaca', 'kaca', 1, null);
+    ('REGISTERED_USER', 1, 'kacjica+1@gmail.com', 'Katarina', 'Tukelic', '$2a$10$6HhA6auhomFftE468xtynuk40nllNZAbKLkkyyps/uX6QY1YqIbjO', 'kaca', 1, null),
+    ('ADMIN', 2, 'f@gmail.com', 'Filip', 'Ivkovic', '$2a$10$6HhA6auhomFftE468xtynuk40nllNZAbKLkkyyps/uX6QY1YqIbjO', 'filip', 1, null);
 
 INSERT INTO ticketist.user_role
 VALUES
-    (1, 'REGISTERED_USER');
+    (1, 'REGISTERED_USER'),
+    (2, 'ADMIN');
