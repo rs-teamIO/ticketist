@@ -17,6 +17,8 @@ import {
   MatSelectModule,
   MatTableModule,
   MatToolbarModule,
+  MatCheckboxModule,
+  MatTooltipModule, 
   MatSortModule
 } from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
@@ -42,6 +44,8 @@ import {FlexLayoutModule} from '@angular/flex-layout';
     MatPaginatorModule,
     MatDividerModule,
     MatSortModule
+    MatCheckboxModule,
+    MatTooltipModule
   ],
   exports: [
     CommonModule,
@@ -64,6 +68,8 @@ import {FlexLayoutModule} from '@angular/flex-layout';
     MatPaginatorModule,
     MatDividerModule,
     MatSortModule
+    MatCheckboxModule,
+    MatTooltipModule
   ],
 })
 export class CustomMaterialModule {

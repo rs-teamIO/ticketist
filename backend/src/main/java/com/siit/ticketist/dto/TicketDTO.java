@@ -9,6 +9,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Getter @Setter @NoArgsConstructor
 public class TicketDTO {
@@ -30,6 +31,11 @@ public class TicketDTO {
     @NotBlank(message = "event id cannot be blank")
     private Long eventId;
 
+    private String eventName;
+    private String venueName;
+    private String sectorName;
+    private Date date;
+
     private Long userId;
 
     public TicketDTO(Ticket ticket){
@@ -37,7 +43,7 @@ public class TicketDTO {
         this.status = ticket.getStatus();
         this.price = ticket.getPrice();
         this.numberColumn = ticket.getNumberColumn();
-        this.numberRow = ticket.getNumberColumn();
+        this.numberRow = ticket.getNumberRow();
         this.eventId = ticket.getEvent().getId();
         if (ticket.getUser() == null) {
             this.userId = null;
@@ -45,6 +51,10 @@ public class TicketDTO {
             this.userId = ticket.getUser().getId();
         }
         this.eventSectorId = ticket.getEventSector().getId();
+        this.eventName = ticket.getEvent().getName();
+        this.venueName = ticket.getEvent().getVenue().getName();
+        this.sectorName = ticket.getEventSector().getSector().getName();
+        this.date = ticket.getEventSector().getDate();
     }
 
     public Ticket convertToEntity(){

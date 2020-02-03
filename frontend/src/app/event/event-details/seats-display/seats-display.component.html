@@ -1,1 +1,62 @@
-<p>seats-display works!</p>
+<mat-card class="example-card mat-card-flat">
+
+  <form [formGroup]="eventSectorForm">
+    <div fxLayout="row">
+
+      <div>
+        <div fxLayout="row" fxLayoutAlign="start center" style="width: 500px;">
+          <mat-form-field color="primary" appearance="outline" fxFlexFill>
+            <mat-select formControlName="eventDate" placeholder="Pick a day" (selectionChange)="onLoadSectorSeats()">
+              <mat-option *ngFor="let datum of dates; let i = index" [value]="datum">
+                Day {{i + 1}} - {{datum | date}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+<!--          <mat-checkbox fxFlex="20" class="example-margin" formControlName="allDaysSelected">All days</mat-checkbox>-->
+        </div>
+
+        <div style="padding-left: 5px;">
+          <mat-card-subtitle>Date: {{eventSectorForm.get('eventDate').value | date: 'MMM d, y, HH:mm'}}</mat-card-subtitle>
+          <mat-card-subtitle>Tickets: {{selectedSeats.length}}</mat-card-subtitle>
+          <mat-card-subtitle>Price: {{getTotalPrice() | currency }}</mat-card-subtitle>
+        </div>
+      </div>
+
+      <div fxLayout="column" fxLayoutAlign="start center" style="width: 100%; margin-left:5px;">
+        <button mat-stroked-button color="primary" type="button" (click)="onReserve()" [disabled]="selectedSeats.length === 0">Reserve</button>
+        <button mat-stroked-button color="primary" type="button" (click)="onBuy()" [disabled]="selectedSeats.length === 0">Buy</button>
+      </div>
+
+    </div>
+
+    <mat-form-field color="primary" appearance="outline" class="sector-select">
+      <mat-select placeholder="Pick a sector" formControlName="selectedSector" (selectionChange)="onLoadSectorSeats()">
+        <mat-option *ngFor="let sector of venue.sectors" [value]="sector">{{sector.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+  </form>
+
+  <div class="table-container">
+    <table *ngIf="selectedEventSector.numeratedSeats === true">
+      <tr *ngFor="let seatRow of seatRows; let i = index;">
+        <td *ngFor="let seat of seatsMap[i+1]" [ngClass]="seat.status.toLowerCase()"
+            (click)="onSeatSelected($event, seat)"></td>
+      </tr>
+    </table>
+
+    <div fxLayout="column" fxLayoutAlign="center center" *ngIf="selectedEventSector.numeratedSeats === false">
+      <h3>How many tickets do you want?</h3>
+      <div fxLayout="row">
+        <button mat-button class="counter-buttons" (click)="onRemoveTicket()"><mat-icon>remove</mat-icon></button>
+        <mat-form-field appearance="outline">
+          <input matInput type="number" min="0" readonly value="{{counterValue}}">
+        </mat-form-field>
+        <button mat-button class="counter-buttons" (click)="onAddTicket()"><mat-icon>add</mat-icon></button>
+      </div>
+    </div>
+
+
+  </div>
+
+</mat-card>

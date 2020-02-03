@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {EventModel} from '../model/event.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {Page} from '../model/page.model';
 import {PageEvent} from '@angular/material';
-import { PORT } from '../shared/constants';
+import {PORT} from '../shared/constants';
 
 export interface IEventPage {
   events: EventModel[];
@@ -37,10 +37,12 @@ export interface IEventBasic {
 }
 
 export interface IEventSector {
+  id?: number;
   sectorId: number;
   ticketPrice: number;
   numeratedSeats: boolean;
   capacity?: number;
+  date?: number;
 }
 
 @Injectable({providedIn: 'root'})
@@ -52,8 +54,10 @@ export class EventService {
   searchParamsChanged = new Subject<ISearchParams>();
 
   private readonly getEventsPath = `http://localhost:${PORT}/api/events/paged`;
+  private readonly getEventPath = `http://localhost:${PORT}/api/events/`;
   private readonly searchEventsPath = `http://localhost:${PORT}/api/events/search`;
   private readonly postEventPath = `http://localhost:${PORT}/api/events`;
+  private readonly cancelEventPath = `http://localhost:${PORT}/api/events/cancel/`;
 
   private searchParams = {
     eventName: '',
@@ -115,5 +119,14 @@ export class EventService {
       }
     );
   }
+
+  getEvent(id: number): Observable<EventModel> {
+    return this.http.get<EventModel>(this.getEventPath + id);
+  }
+
+  cancelEvent(id: number): Observable<EventModel> {
+    return this.http.get<EventModel>(this.cancelEventPath + id);
+  }
+
 
 }
