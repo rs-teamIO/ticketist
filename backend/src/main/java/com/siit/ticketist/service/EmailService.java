@@ -5,14 +5,15 @@ import com.siit.ticketist.model.Event;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.repository.TicketRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -26,6 +27,7 @@ import java.util.*;
  * E-mail generation and delivery service implementation.
  */
 @Service
+@RequiredArgsConstructor
 public class EmailService {
 
     private static final int DEADLINE_NOTIFICATIONS_RATE = 86400000;
@@ -46,19 +48,10 @@ public class EmailService {
     private String eventCancelledTemplateName;
 
     private final JavaMailSender mailSender;
-    private final SpringTemplateEngine springTemplateEngine;
+    private final ITemplateEngine springTemplateEngine;
     private final PdfService pdfService;
     private final EventService eventService;
     private final TicketRepository ticketRepository;
-
-    public EmailService(JavaMailSender mailSender, SpringTemplateEngine springTemplateEngine, PdfService pdfService, EventService eventService, TicketRepository ticketRepository) {
-        this.mailSender = mailSender;
-        this.springTemplateEngine = springTemplateEngine;
-        this.pdfService = pdfService;
-        this.eventService = eventService;
-        this.ticketRepository = ticketRepository;
-    }
-
 
     /**
      * Sends an email.
@@ -142,7 +135,7 @@ public class EmailService {
     public void sendDeadlineNotificationEmails() throws MessagingException {
         List<Event> events = this.eventService.filterEventsByDeadline();
         Set<String> emailsToBeNotified = new LinkedHashSet<>();
-        events.forEach(event -> emailsToBeNotified.addAll(this.ticketRepository.findEmailsToBeNotified(event.getId(), TicketStatus.RESERVED)));
+        events.forEach(event -> emailsToBeNotified.addAll(this.ticketRepository.findEmailsToBeNotified(event.getId(), TicketStatus.RESERVED.ordinal())));
         for (String emailAddress : emailsToBeNotified) {
             this.sendEmail(emailAddress, "Your reservation is about to expire", this.generateDeadlineNotificationMail());
         }
@@ -209,7 +202,7 @@ public class EmailService {
      * @throws MessagingException Exception thrown in case an error on the SMTP server occurs
      */
     public void sendEventCancelledEmails(Event event) throws MessagingException {
-        Set<String> emails = ticketRepository.findEmailsToBeNotified(event.getId(), TicketStatus.PAID);
+        Set<String> emails = ticketRepository.findEmailsToBeNotified(event.getId(), TicketStatus.PAID.ordinal());
         for (String userEmail : emails)
             sendEmail(userEmail, "Event " + event.getName() + " has been cancelled.", generateEventCancelledEmail(event));
     }

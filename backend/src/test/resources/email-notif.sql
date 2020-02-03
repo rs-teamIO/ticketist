@@ -16,11 +16,11 @@ VALUES
 
 INSERT INTO tickets (id, number_column, number_row, price, status, event_id, user_id)
 VALUES
-    (1,1,1,100.00,0,1,1),		-- reservation
-    (2,1,1,100.00,1,1,2),		-- ticket
+    (1,1,1,100.00,1,1,1),		-- reservation
+    (2,1,1,100.00,2,1,2),		-- ticket
 
-    (3,1,1,100.00,1,2,2),		-- ticket
-    (4,1,1,100.00,1,2,2);		-- ticket
+    (3,1,1,100.00,2,2,2),		-- ticket
+    (4,1,1,100.00,2,2,2);		-- ticket
 
 INSERT INTO users
     (dtype, id, email, first_name, last_name, password, username, is_verified, verification_code)

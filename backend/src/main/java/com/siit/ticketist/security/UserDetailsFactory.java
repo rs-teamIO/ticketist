@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 public class UserDetailsFactory {
 
     /**
-     * Private constructor created to hide the implicit public constructor
+     * Package private constructor created to hide the implicit public constructor
      */
-    private UserDetailsFactory() {
+    UserDetailsFactory() {
         throw new IllegalStateException("This class shouldn't be instantiated.");
     }
 
@@ -28,7 +28,9 @@ public class UserDetailsFactory {
     public static SpringSecurityUser create(User user) {
         Collection<? extends GrantedAuthority> authorities;
         try {
-            authorities = user.getAuthorities().stream().map(a -> new SimpleGrantedAuthority(a.toString())).collect(Collectors.toList());
+            authorities = user.getAuthorities().stream()
+                    .map(a -> new SimpleGrantedAuthority(a.toString()))
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             authorities = null;
         }

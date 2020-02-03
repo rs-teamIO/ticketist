@@ -98,9 +98,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "WHERE LOWER(e.name) LIKE concat('%', LOWER(:eventName), '%') " +
             "AND IFNULL(LOWER(e.category), '') LIKE concat('%', LOWER(:category), '%') " +
             "AND LOWER(v.name) LIKE concat('%', LOWER(:venueName), '%') " +
-            "AND COALESCE( (e.start_date >= :startDate), true) AND COALESCE( (e.start_date <= ((:endDate)+INTERVAL 1 DAY)), true)",
+            "AND COALESCE( (e.start_date >= :startDate), true) AND COALESCE( (e.start_date <= ((:endDate)+INTERVAL 1 DAY)), true) " +
+            "AND e.is_cancelled = 0",
             nativeQuery = true)
-    List<Event> search(@Param("eventName") String eventName,
+    Page<Event> search(@Param("eventName") String eventName,
                        @Param("category") String category,
                        @Param("venueName") String venueName,
                        @Param("startDate") Date startDate,

@@ -1,1 +1,7 @@
-<p>venue-item works!</p>
+  <td>{{venue.name}}</td>
+  <td>{{venue.city}}, {{venue.street}}</td>
+  <td>{{sectorSize}}</td>
+  <td><button mat-stroked-button [routerLink]="['/venues/',venue.id]" >View</button></td>
+  <td>{{venue.isActive ? 'Active' : 'Inactive'}}</td>
+  <td><button mat-stroked-button (click)="activate(venue.id)">{{venue.isActive ? 'Deactivate' : 'Activate'}}</button></td>
+

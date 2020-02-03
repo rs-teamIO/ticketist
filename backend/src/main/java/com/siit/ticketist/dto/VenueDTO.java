@@ -1,6 +1,7 @@
 package com.siit.ticketist.dto;
 
 import com.siit.ticketist.model.Venue;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class VenueDTO {
 
     private Long id;
@@ -33,6 +34,8 @@ public class VenueDTO {
     @NotNull(message ="sector list cannot be null")
     private Set<SectorDTO> sectors;
 
+    private Boolean isActive;
+
     public VenueDTO(Venue venue) {
         this.id = venue.getId();
         this.name = venue.getName();
@@ -44,6 +47,7 @@ public class VenueDTO {
         venue.getSectors().stream()
                 .map(SectorDTO::new)
                 .forEach(this.sectors::add);
+        this.isActive = venue.getIsActive();
     }
 
     public Venue convertToEntity() {
@@ -54,7 +58,7 @@ public class VenueDTO {
         venue.setCity(this.city);
         venue.setLongitude(this.longitude);
         venue.setLatitude(this.latitude);
-        venue.setIsActive(true);
+        venue.setIsActive(this.isActive);
 
         this.sectors.stream()
                 .map(SectorDTO::convertToEntity)

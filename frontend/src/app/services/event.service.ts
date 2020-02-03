@@ -4,6 +4,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Subject} from 'rxjs';
 import {Page} from '../model/page.model';
 import {PageEvent} from '@angular/material';
+import { PORT } from '../shared/constants';
 
 export interface IEventPage {
   events: EventModel[];
@@ -18,17 +19,42 @@ export interface ISearchParams {
   endDate: Date;
 }
 
+export interface IEvent {
+  basicInfo: IEventBasic;
+  eventSectors: IEventSector[];
+  mediaFiles: any[];
+}
+
+export interface IEventBasic {
+  venueId: number;
+  name: string;
+  category: string;
+  startDate: number;
+  endDate: number;
+  reservationDeadline: number;
+  description: string;
+  reservationLimit: number;
+}
+
+export interface IEventSector {
+  sectorId: number;
+  ticketPrice: number;
+  numeratedSeats: boolean;
+  capacity?: number;
+}
+
 @Injectable({providedIn: 'root'})
 export class EventService {
 
-  eventsChanged = new Subject<IEventPage>();
-  private readonly getEventsPath = 'http://localhost:8080/api/events/paged';
-  private readonly searchEventsPath = 'http://localhost:8080/api/events/search';
-
-  pageChanged = new Subject<PageEvent>();
   private page: Page = new Page(0, 8);
-
+  eventsChanged = new Subject<IEventPage>();
+  pageChanged = new Subject<PageEvent>();
   searchParamsChanged = new Subject<ISearchParams>();
+
+  private readonly getEventsPath = `http://localhost:${PORT}/api/events/paged`;
+  private readonly searchEventsPath = `http://localhost:${PORT}/api/events/search`;
+  private readonly postEventPath = `http://localhost:${PORT}/api/events`;
+
   private searchParams = {
     eventName: '',
     category: '',
@@ -76,6 +102,18 @@ export class EventService {
       .subscribe(responseData => {
         this.eventsChanged.next(responseData);
       });
+  }
+
+  createEvent(event: IEvent) {
+    const { eventSectors, mediaFiles, basicInfo } = event;
+    return this.http.post<any>(
+      this.postEventPath,
+      {
+        ...basicInfo,
+        eventSectors,
+        mediaFiles
+      }
+    );
   }
 
 }

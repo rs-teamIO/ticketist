@@ -38,6 +38,12 @@ import {AuthInterceptorService} from './services/auth-interceptor.service';
 import {NgxChartsModule} from '@swimlane/ngx-charts';
 import {ToMonthChartPipe} from './pipes/to-month-chart.pipe';
 import { ToInitialChartPipe } from './pipes/to-initial-chart.pipe';
+import { ErrorPageComponent } from './error-page/error-page.component';
+import { AgmCoreModule } from '@agm/core';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { BrowserModule } from '@angular/platform-browser';
+import { MapViewComponent } from './venue/venue-form/map-view/map-view.component';
 
 @NgModule({
   declarations: [
@@ -71,15 +77,25 @@ import { ToInitialChartPipe } from './pipes/to-initial-chart.pipe';
     TicketItemComponent,
     UserProfileComponent,
     ToMonthChartPipe,
-    ToInitialChartPipe
+    ToInitialChartPipe,
+    ErrorPageComponent,
+    MapViewComponent
   ],
     imports: [
+        BrowserModule,
         AppRoutingModule,
         BrowserAnimationsModule,
         ReactiveFormsModule,
         CustomMaterialModule,
         HttpClientModule,
-        NgxChartsModule
+        NgxChartsModule,
+        AgmCoreModule.forRoot({
+            apiKey: 'AIzaSyCn40xrisQWoIytZzAEohvAWPQfTIk1SR4',
+            libraries: ['places', 'geometry']
+            /* apiKey is required, unless you are a premium customer, in which case you can use clientId */
+        }),
+        MatDividerModule,
+        MatPaginatorModule
     ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }],
   bootstrap: [AppComponent]

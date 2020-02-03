@@ -1,1 +1,22 @@
-<p>reservation-list works!</p>
+<div class="main">
+  <mat-card class="mat-card-flat card-deck-container">
+    <div fxLayout="column wrap" class="card-deck-container">
+      <div fxFlex="100" class="card-item" *ngFor="let reservation of reservations">
+        <app-reservation-item [reservation]="reservation"></app-reservation-item>
+      </div>
+      <div fxFlex="100" class="card-item" *ngIf="reservations.length === 0">
+        <h4>Unfortunately you don't have any reservation yet!</h4>
+      </div>
+    </div>
+
+  </mat-card>
+
+  <div *ngIf="reservations.length > 0" class="paginator mat-elevation-z5">
+    <mat-paginator
+      [length]="totalSize"
+      pageSize="3"
+      pageIndex="0"
+      (page)="onPageChanged($event)">
+    </mat-paginator>
+  </div>
+</div>

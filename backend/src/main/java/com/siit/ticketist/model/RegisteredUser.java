@@ -3,7 +3,6 @@ package com.siit.ticketist.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -14,6 +13,7 @@ import java.util.Set;
  * A registered user can reserve and buy tickets, etc.
  */
 @Entity
+@DiscriminatorValue("REGISTERED_USER")
 @Getter @Setter
 public class RegisteredUser extends User {
 
@@ -26,9 +26,8 @@ public class RegisteredUser extends User {
    /**
     * Holds the information whether the user is verified or not
     */
-   @Column(nullable = false)
-   @ColumnDefault("false")
-   private Boolean isVerified;
+   @Column(nullable = false, columnDefinition = "boolean default false")
+   private Boolean isVerified = false;
 
    /**
     * Verification code for the user's account
@@ -43,8 +42,16 @@ public class RegisteredUser extends User {
    @JsonBackReference(value = "registeredUser-tickets")
    private Set<Ticket> tickets;
 
+   /**
+    * Collection of user's reservations
+    */
+   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+   @JsonBackReference(value = "registeredUser-reservations")
+   private Set<Reservation> reservations;
+
    public RegisteredUser() {
       this.tickets = new HashSet<>();
+      this.reservations = new HashSet<>();
    }
 
    public RegisteredUser(String username, String password, String email, String firstName, String lastName) {

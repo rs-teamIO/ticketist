@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { IUserRegister, AuthService } from '../../services/auth.service';
-import {Router} from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sign-up',
@@ -11,28 +11,24 @@ import {Router} from '@angular/router';
 export class SignUpComponent implements OnInit {
 
   signupForm: FormGroup;
-  isLoading = false;
-  error = '';
+  errorMessage = '';
 
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
     this.signupForm = new FormGroup({
-      username: new FormControl(null, Validators.required),
-      firstName: new FormControl(null, Validators.required),
-      lastName: new FormControl(null, Validators.required),
-      email: new FormControl(null, [Validators.required, Validators.email]),
-      password: new FormControl(null, Validators.required),
+      username: new FormControl('', Validators.required),
+      firstName: new FormControl('', Validators.required),
+      lastName: new FormControl('', Validators.required),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', Validators.required),
     });
   }
 
   onSubmit() {
-    if (!this.signupForm.valid) {
-      this.error = 'Wrong inputs!';
+    if (this.signupForm.invalid) {
       return;
     }
-
-    this.isLoading = true;
 
     const { email, password, lastName, firstName, username } = this.signupForm.value;
     const newUser: IUserRegister = {
@@ -43,21 +39,42 @@ export class SignUpComponent implements OnInit {
       lastName,
     };
 
-    this.error = '';
+    this.errorMessage = '';
 
     this.authService.signup(newUser).subscribe(
       resData => {
         console.log(resData);
         this.signupForm.reset();
-        this.isLoading = false;
         this.router.navigate(['/login']);
       },
       error => {
-        console.log('Error: ', error);
-        this.error = 'An error occured!';
-        this.isLoading = false;
+        if (error.status === 400) {
+          this.errorMessage = error.error.message;
+        } else {
+          this.errorMessage = 'Error';
+        }
       }
     );
+  }
+
+  get username() {
+    return this.signupForm.get('username');
+  }
+
+  get firstName() {
+    return this.signupForm.get('firstName');
+  }
+
+  get lastName() {
+    return this.signupForm.get('lastName');
+  }
+
+  get email() {
+    return this.signupForm.get('email');
+  }
+
+  get password() {
+    return this.signupForm.get('password');
   }
 
 }

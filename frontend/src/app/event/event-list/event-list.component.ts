@@ -37,7 +37,6 @@ export class EventListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadData() {
-    // this.eventService.getAll(new Page(this.paginator.pageIndex, this.paginator.pageSize));
     this.eventService.getEvents();
   }
 

@@ -1,0 +1,83 @@
+.main {
+  margin: 15px 15px 15px 15px;
+  box-shadow: 0px 0px 16px -8px rgba(0,0,0,0.76);
+  border-radius: 15px;
+}
+
+.mat-form-field {
+  display: block;
+}
+
+.basicInfoPanel {
+  padding: 15px;
+}
+
+.imagePanel {
+  padding: 15px;
+}
+
+.venueSectorPanel {
+  padding: 15px;
+}
+
+.submitButton {
+  width: 100%;
+}
+
+
+#sectorTable {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#sectorTable td, #sectorTable th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#sectorTable tr:nth-child(even){background-color: white;}
+
+// #sectorTable tr:hover {background-color: #ddd;}
+
+#sectorTable th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: purple;
+  color: white;
+}
+
+.tableInput {
+  text-align: center;
+}
+
+.errorMessage {
+  font-size: 12px;
+  text-align: right;
+  color: red;
+}
+
+.errorMessageDate {
+  font-size: 12px;
+  color: red;
+}
+
+.centralError {
+  font-size: 16px;
+  color: red;
+  text-align: center;
+}
+
+// table {
+//   border-collapse: collapse;
+//   width: 100%;
+// }
+
+// th, td {
+//   padding: 8px;
+//   text-align: left;
+//   border-bottom: 1px solid #ddd;
+// }
+
+// tr:hover {background-color:white;}

@@ -1,11 +1,15 @@
 package com.siit.ticketist.service;
 
 import com.siit.ticketist.exceptions.BadRequestException;
+import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.exceptions.OptimisticLockException;
 import com.siit.ticketist.dto.PdfTicket;
 import com.siit.ticketist.model.*;
+import com.siit.ticketist.repository.ReservationRepository;
 import com.siit.ticketist.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,61 +21,118 @@ import java.util.*;
 @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
 public class TicketService {
 
-    @Autowired
-    private TicketRepository ticketRepository;
+    private final TicketRepository ticketRepository;
+
+    private final UserService userService;
+
+    private final EmailService emailService;
+
+    private final ReservationRepository reservationRepository;
 
     @Autowired
-    private UserService userService;
+    public TicketService(TicketRepository ticketRepository, UserService userService, EmailService emailService,
+                         ReservationRepository ticketGroupRepository) {
+        this.userService = userService;
+        this.emailService = emailService;
+        this.ticketRepository = ticketRepository;
+        this.reservationRepository = ticketGroupRepository;
+    }
 
-    @Autowired
-    private EmailService emailService;
+    public Ticket findOne(Long id) {
+        return this.ticketRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Ticket not found."));
+    }
+
+    public Ticket findOneLock(Long id) {
+        return this.ticketRepository.findOneById(id)
+                .orElseThrow(() -> new NotFoundException("Ticket not found"));
+    }
 
     public List<Ticket> findAllByEventId(Long id) {
         return ticketRepository.findByEventId(id);
     }
 
     public List<Ticket> findAllByEventSectorId(Long id) {
-        return ticketRepository.findTicketsByEventSectorId(id);
+        return ticketRepository.findByEventSectorId(id);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false, rollbackFor = OptimisticLockException.class)
-    public List<Ticket> buyTickets(List<Long> ticketIDS, boolean isBuy) throws MessagingException {
+    public List<Ticket> buyTickets(List<Long> ticketIDS) throws MessagingException {
 
-        // Basic checks
+        // Check ticket list min length
         checkNumberOfTickets(ticketIDS);
+
+        // Check ticket duplicates
         checkTicketDuplicates(ticketIDS);
 
-        // Check tickets and reservations
+        // Check are tickets free
         checkTicketsAndReservationsAvailability(ticketIDS);
 
-        if(!isBuy) {
-            //Check reservation rules
-            checkReservationDate(ticketIDS.get(0));
-            checkMaxNumberOfReservationsPerUser(ticketIDS);
-        } else {
-            checkBuyTicketsDate(ticketIDS.get(0));
+        // Check if all tickets are related to same event
+        checkTicketGroupEvent(ticketIDS);
+
+        // Check event start date
+        checkBuyTicketsDate(ticketIDS.get(0));
+
+        // Initialization
+        RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
+        List<Ticket> resultTickets = new ArrayList<>();
+        List<PdfTicket> pdfTickets = new ArrayList<>();
+        Ticket dbTicket;
+
+        for(Long ticketID : ticketIDS) {
+            dbTicket = findOneLock(ticketID);
+            dbTicket.setUser(registeredUser);
+            dbTicket.setStatus(TicketStatus.PAID);
+            resultTickets.add(dbTicket);
+            pdfTickets.add(new PdfTicket(dbTicket));
         }
+
+        this.emailService.sendTicketsPurchaseEmail(registeredUser, pdfTickets);
+
+        return resultTickets;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false, rollbackFor = OptimisticLockException.class)
+    public List<Ticket> reserveTickets(List<Long> ticketIDS) throws MessagingException {
+
+        // Check ticket list min length
+        checkNumberOfTickets(ticketIDS);
+
+        // Check ticket duplicates
+        checkTicketDuplicates(ticketIDS);
+
+        // Check are tickets free
+        checkTicketsAndReservationsAvailability(ticketIDS);
+
+        // Check if all tickets are related to same event
+        checkTicketGroupEvent(ticketIDS);
+
+        // Check reservation deadline date
+        checkReservationDate(ticketIDS.get(0));
+
+        // Check maximum number of reservations per user
+        checkMaxNumberOfReservationsPerUser(ticketIDS);
 
         //Initialization
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
         List<Ticket> resultTickets = new ArrayList<>();
-        Optional<Ticket> dbTicket;
-
         List<PdfTicket> pdfTickets = new ArrayList<>();
+        Reservation reservation = new Reservation();
+        Ticket dbTicket;
+
+        reservation.setEvent(findOne(ticketIDS.get(0)).getEvent());
+        reservation.setUser(registeredUser);
+        reservationRepository.save(reservation);
 
         for(Long ticketID : ticketIDS) {
-            dbTicket = ticketRepository.findOneById(ticketID);
-
-            if (dbTicket.isPresent()) {
-                dbTicket.get().setUser(registeredUser);
-                if (isBuy) {
-                    dbTicket.get().setStatus(TicketStatus.PAID);
-                } else {
-                    dbTicket.get().setStatus(TicketStatus.RESERVED);
-                }
-                resultTickets.add(dbTicket.get());
-                pdfTickets.add(new PdfTicket(dbTicket.get()));
-            }
+            dbTicket = findOneLock(ticketID);
+            dbTicket.setUser(registeredUser);
+            dbTicket.setStatus(TicketStatus.RESERVED);
+            dbTicket.setReservation(reservation);
+            reservation.getTickets().add(dbTicket);
+            resultTickets.add(dbTicket);
+            pdfTickets.add(new PdfTicket(dbTicket));
         }
 
         this.emailService.sendTicketsPurchaseEmail(registeredUser, pdfTickets);
@@ -80,27 +141,49 @@ public class TicketService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public Boolean acceptOrCancelReservations (List<Long> reservations, TicketStatus newStatus) {
-        checkNumberOfTickets(reservations);
+    public Boolean acceptOrCancelReservations (Long reservationId, TicketStatus newStatus) {
+
+        // Check wanted status
         checkStatusIsValid(newStatus);
+
+        //Initialization
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
-        List<Ticket> tickets = ticketRepository.findTicketsByIdGroup(reservations, registeredUser.getId());
+        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
 
-        if(tickets.size() != reservations.size()) throw new BadRequestException("Some of tickets cannot be found/already sold");
-
-        Optional<Ticket> ticket;
-
-        for(Long ticketId : reservations) {
-            ticket = ticketRepository.findOneById(ticketId);
-            if(ticket.isPresent()) {
-                ticket.get().setStatus(newStatus);
-                if(newStatus == TicketStatus.FREE) {
-                    ticket.get().setUser(null);
+        if (reservation.isPresent()) {
+            if (reservation.get().getUser().getId().equals(registeredUser.getId())) {
+                for (Ticket ticket : reservation.get().getTickets()) {
+                    ticket.setStatus(newStatus);
+                    ticket.setReservation(null);
+                    if (newStatus == TicketStatus.FREE) {
+                        ticket.setUser(null);
+                    }
                 }
+            } else {
+                throw new BadRequestException("Reservation does not belong to that user!");
             }
+        } else {
+            throw new BadRequestException("Reservation does not exist");
         }
 
+        reservationRepository.delete(reservation.get());
+
         return true;
+    }
+
+    public Page<Reservation> getUsersReservations(Pageable page) {
+        RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
+        return reservationRepository.findAllByUserId(registeredUser.getId(), page);
+    }
+
+    public long getTotalNumberOfUsersReservations() {
+        RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
+        return reservationRepository.countByUserId(registeredUser.getId());
+    }
+
+    public List<Ticket> getUsersBoughtTickets() {
+        RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
+        return ticketRepository.findAllByUserIdAndStatus(registeredUser.getId(), TicketStatus.PAID);
     }
 
     public void checkStatusIsValid(TicketStatus newStatus) {
@@ -108,39 +191,42 @@ public class TicketService {
             throw new BadRequestException("Status is not valid");
     }
 
-    public List<Ticket> getUsersReservations() {
-        RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
-        return ticketRepository.findAllReservationsByUser(registeredUser.getId());
-    }
-
-    public List<Ticket> getUsersTickets() {
-        RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
-        return ticketRepository.findUsersTickets(registeredUser.getId());
-    }
-
     public void checkNumberOfTickets(List<Long> tickets) {
         if(tickets.isEmpty()) throw new BadRequestException("Ticket array is empty!");
     }
 
     public void checkMaxNumberOfReservationsPerUser(List<Long> reservations) {
-        Optional<Ticket> ticket = ticketRepository.findById(reservations.get(0));
-        if(ticket.isPresent()) {
-            int numberOfReservations = ticketRepository.findUsersReservationsByEvent(userService.findCurrentUser().getId(), ticket.get().getEvent().getId()).size() + reservations.size();
-            if(numberOfReservations > ticket.get().getEvent().getReservationLimit()) {
-                throw new BadRequestException("Event limit of reservations is " + ticket.get().getEvent().getReservationLimit());
+        Ticket ticket = findOne(reservations.get(0));
+        int numberOfReservations = ticketRepository.findAllByUserIdAndStatusAndEventId(userService.findCurrentUser().getId(), TicketStatus.RESERVED, ticket.getEvent().getId()).size() + reservations.size();
+        if (numberOfReservations > ticket.getEvent().getReservationLimit()) {
+            throw new BadRequestException("Event limit of reservations is " + ticket.getEvent().getReservationLimit());
+        }
+    }
+
+    public void checkTicketGroupEvent(List<Long> reservations) {
+        Ticket ticket;
+        Long eventID = -1L;
+        for(int i = 0 ; i < reservations.size(); i++) {
+            ticket = findOne(reservations.get(i));
+            if (i==0) {
+                eventID = ticket.getEvent().getId();
+            } else {
+                if (!ticket.getEvent().getId().equals(eventID)) {
+                    throw new BadRequestException("Every ticket should be for same event!");
+                }
             }
         }
     }
 
     public void checkReservationDate(Long reservationID) {
-        Optional<Ticket> ticket = ticketRepository.findById(reservationID);
-        if(ticket.isPresent() && new Date().after(ticket.get().getEvent().getReservationDeadline()))
+        Ticket ticket = findOne(reservationID);
+        if(new Date().after(ticket.getEvent().getReservationDeadline()))
             throw new BadRequestException("Reservation deadline passed! Now you can only buy a ticket");
     }
 
     public void checkBuyTicketsDate(Long ticketID) {
-        Optional<Ticket> ticket = ticketRepository.findById(ticketID);
-        if(ticket.isPresent() && new Date().after(ticket.get().getEvent().getStartDate())) {
+        Ticket ticket = findOne(ticketID);
+        if(new Date().after(ticket.getEvent().getStartDate())) {
             throw new BadRequestException("Event already started!");
         }
     }
@@ -155,21 +241,17 @@ public class TicketService {
                 }
             }
             if(num > 1) {
-                throw new BadRequestException("You cannot buy or reserve same ticket more than once!");
+                throw new BadRequestException("Same tickets detected!");
             }
         }
     }
 
     public void checkTicketsAndReservationsAvailability(List<Long> ticketIDS) {
-        Optional<Ticket> ticket;
+        Ticket ticket;
         for(Long ticketID : ticketIDS) {
-            ticket = ticketRepository.findById(ticketID);
-            if(ticket.isPresent()) {
-                if(!ticket.get().getStatus().equals(TicketStatus.FREE)) {
-                    throw new BadRequestException("Tickets are already taken");
-                }
-            } else {
-                throw new BadRequestException("Ticket not found!");
+            ticket = findOne(ticketID);
+            if(!ticket.getStatus().equals(TicketStatus.FREE)) {
+                throw new BadRequestException("Tickets are already taken");
             }
         }
     }

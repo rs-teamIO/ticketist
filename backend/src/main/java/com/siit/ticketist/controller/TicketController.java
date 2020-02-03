@@ -1,10 +1,15 @@
 package com.siit.ticketist.controller;
 
+import com.siit.ticketist.dto.ReservationDTO;
+import com.siit.ticketist.dto.ReservationPageDTO;
 import com.siit.ticketist.dto.SuccessResponse;
+import com.siit.ticketist.model.Reservation;
 import com.siit.ticketist.model.Ticket;
 import com.siit.ticketist.dto.TicketDTO;
 import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.service.TicketService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +29,7 @@ public class TicketController {
 
     private final TicketService ticketService;
 
+    @Autowired
     public TicketController(TicketService ticketService) {
         this.ticketService = ticketService;
     }
@@ -68,12 +74,12 @@ public class TicketController {
      */
     @GetMapping(value="/reservations")
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
-    public ResponseEntity<List<TicketDTO>> findUserReservations() {
-        List<TicketDTO> tickets = new ArrayList<>();
-        ticketService.getUsersReservations().stream()
-                .map(TicketDTO::new)
-                .forEachOrdered(tickets::add);
-        return new ResponseEntity<>(tickets, HttpStatus.OK);
+    public ResponseEntity<ReservationPageDTO> findUserReservations(Pageable pageable) {
+        List<ReservationDTO> reservations = new ArrayList<>();
+        ticketService.getUsersReservations(pageable).stream()
+                .map(ReservationDTO::new)
+                .forEachOrdered(reservations::add);
+        return new ResponseEntity<>(new ReservationPageDTO(reservations, ticketService.getTotalNumberOfUsersReservations()), HttpStatus.OK);
     }
 
     /**
@@ -86,7 +92,7 @@ public class TicketController {
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     public ResponseEntity<List<TicketDTO>> findUsersTickets() {
         List<TicketDTO> tickets = new ArrayList<>();
-        ticketService.getUsersTickets().stream()
+        ticketService.getUsersBoughtTickets().stream()
                 .map(TicketDTO::new)
                 .forEachOrdered(tickets::add);
         return new ResponseEntity<>(tickets, HttpStatus.OK);
@@ -94,8 +100,8 @@ public class TicketController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
-    public ResponseEntity<Object> buyTickets(@Valid @RequestBody List<Long> tickets) throws MessagingException {
-        List<Ticket> ticket = ticketService.buyTickets(tickets,true);
+    public ResponseEntity<List<TicketDTO>> buyTickets(@Valid @RequestBody List<Long> tickets) throws MessagingException {
+        List<Ticket> ticket = ticketService.buyTickets(tickets);
         List<TicketDTO> ticketsDTO = new ArrayList<>();
         for (Ticket t : ticket) {
             ticketsDTO.add(new TicketDTO(t));
@@ -105,8 +111,8 @@ public class TicketController {
 
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
     @PostMapping(value = "/reservations")
-    public ResponseEntity<Object> makeReservations(@Valid @RequestBody List<Long> tickets) throws MessagingException {
-        List<Ticket> ticket = ticketService.buyTickets(tickets,false);
+    public ResponseEntity<List<TicketDTO>> makeReservations(@Valid @RequestBody List<Long> tickets) throws MessagingException {
+        List<Ticket> ticket = ticketService.reserveTickets(tickets);
         List<TicketDTO> ticketsDTO = new ArrayList<>();
         for (Ticket t : ticket) {
             ticketsDTO.add(new TicketDTO(t));
@@ -114,16 +120,16 @@ public class TicketController {
         return new ResponseEntity<>(ticketsDTO, HttpStatus.OK);
     }
 
+    @PostMapping(value="/reservations/accept/{id}")
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
-    @PostMapping(value="/reservations/accept")
-    public ResponseEntity<Boolean> acceptReservations(@Valid @RequestBody List<Long> reservations) {
-        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, TicketStatus.PAID), HttpStatus.OK);
+    public ResponseEntity<Boolean> acceptReservations(@PathVariable("id") Long reservationId) {
+        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservationId, TicketStatus.PAID), HttpStatus.OK);
     }
 
+    @PostMapping(value="/reservations/cancel/{id}")
     @PreAuthorize("hasAuthority('REGISTERED_USER')")
-    @PostMapping(value="/reservations/cancel")
-    public ResponseEntity<Boolean> cancelReservations(@Valid @RequestBody List<Long> reservations) {
-        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservations, TicketStatus.FREE), HttpStatus.OK);
+    public ResponseEntity<Boolean> cancelReservations(@PathVariable("id") Long reservationId) {
+        return new ResponseEntity<>(ticketService.acceptOrCancelReservations(reservationId, TicketStatus.FREE), HttpStatus.OK);
     }
 
     /**

@@ -6,6 +6,7 @@ import com.siit.ticketist.model.EventSector;
 import com.siit.ticketist.model.Ticket;
 import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.repository.EventSectorRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,15 +21,11 @@ import static java.lang.Math.abs;
  * {@link EventSector} service layer.
  */
 @Service
+@RequiredArgsConstructor
 public class EventSectorService {
 
     private final EventService eventService;
     private final EventSectorRepository eventSectorRepository;
-
-    public EventSectorService(EventService eventService, EventSectorRepository eventSectorRepository) {
-        this.eventService = eventService;
-        this.eventSectorRepository = eventSectorRepository;
-    }
 
     /**
      * Performs check if the {@link EventSector} with given ID
@@ -159,7 +156,7 @@ public class EventSectorService {
         if(capacityDifference > 0) {
             Set<Ticket> newTickets = IntStream.range(0, capacityDifference).parallel()
                     .mapToObj(i -> new Ticket(null, -1, -1, eventSector.getTicketPrice(),
-                            TicketStatus.FREE, 0L, eventSector, eventSector.getEvent(), null))
+                            TicketStatus.FREE, 0L, eventSector, eventSector.getEvent(), null, null))
                     .collect(Collectors.toSet());
             eventSector.getTickets().addAll(newTickets);
         } else {

@@ -1,54 +1,27 @@
-<mat-card class="example-card">
+<div fxLayout="row" fxLayoutAlign="center center" class="main">
+  <mat-card fxFlex="30" fxFlex.sm="60" fxFlex.xs="100" class="mat-card-flat card-deck-container box">
     <mat-card-header>
-        <mat-card-title>Login</mat-card-title>
+      <mat-card-title>Login</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-        <div *ngIf="isLoading">
-            <p>Loading ...</p>
-        </div>
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-            <table class="example-full-width" cellspacing="0">
-                <tr>
-                    <td>
-                        <mat-form-field class="example-full-width">
-                            <input
-                                matInput
-                                placeholder="Username"
-                                formControlName="username"
-                            >
-                            <!-- <span *ngIf="!signupForm.get('username').valid && signupForm.get('username').touched">
-                                Please enter a valid username!
-                            </span> -->
-                        </mat-form-field>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <mat-form-field class="example-full-width">
-                            <input
-                                matInput
-                                placeholder="Password"
-                                formControlName="password"
-                                type="password"
-                            >
-                            <!-- <span *ngIf="!signupForm.get('password').valid && signupForm.get('password').touched">
-                                Please enter a valid password!
-                            </span> -->
-                        </mat-form-field>
-                    </td>
-                </tr>
-                <tr *ngIf="error">
-                    <td>
-                        <p>{{error}}</p>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button mat-raised-button type="submit" color="primary">Login</button>
-                    </td>
-                </tr>
-            </table>
-        </form>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-form-field>
+          <input matInput placeholder="Username" formControlName="username">
+          <mat-error *ngIf="username.invalid && username.touched">
+            Username is required!
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput type="password" placeholder="Password" formControlName="password">
+          <mat-error *ngIf="password.invalid && password.touched">
+            Password is required!
+          </mat-error>
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit" class="submitButton" [disabled]="loginForm.invalid">
+          <span>Login</span>
+        </button>
+        <p class="centralError">{{errorMessage}}</p>
+      </form>
     </mat-card-content>
-</mat-card>
-
+  </mat-card>
+</div>

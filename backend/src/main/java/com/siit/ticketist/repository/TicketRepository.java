@@ -21,28 +21,21 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     List<Ticket> findByEventId(Long id);
 
-    @Query(value = "select * from tickets t where t.event_sector_id = ?1", nativeQuery = true)
-    List<Ticket> findTicketsByEventSectorId(Long id);
+    List<Ticket> findByEventSectorId(Long id);
 
-    @Query(value = "select * from tickets t where t.user_id = ?1 and t.status = 0", nativeQuery = true)
-    List<Ticket> findAllReservationsByUser(Long userId);
+    List<Ticket> findAllByUserIdAndStatusAndEventId(Long userId, TicketStatus ticketStatus, Long eventId);
 
-    @Query(value = "select * from tickets t where t.user_id = ?1 and t.event_id = ?2 and t.status = 0", nativeQuery = true)
-    List<Ticket> findUsersReservationsByEvent(Long userId, Long eventID);
-
-    @Query(value = "select * from tickets t where t.user_id = ?1 and t.status = 1", nativeQuery = true)
-    List<Ticket> findUsersTickets(Long userId);
-
-    @Query(value = "select * from tickets t where t.id in :ids and t.user_id = :userId and t.status = 0", nativeQuery = true)
-    List<Ticket> findTicketsByIdGroup(@Param("ids") List<Long> ticketIds, @Param("userId") Long userId);
+    List<Ticket> findAllByUserIdAndStatus(Long userId, TicketStatus ticketStatus);
 
     /**
-     * Retrieves a set of e-mails that should be notified about something.
+     * Retrieves a set of e-mails that should be notified about:
+     *  - reservation about to expire
+     *  - event cancelled
      *
      * @param eventId ID of the event whose ticket users should be notified
      * @param ticketStatus {@link TicketStatus.RESERVED} used when only reservations are needed
      *                     {@link TicketStatus.PAID} used when both reservations and bought tickets are needed
-     * @return List of strings containing emails
+     * @return Set of strings containing emails
      */
     @Query(value =
             "SELECT u.email " +
@@ -50,15 +43,15 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "ON t.user_id = u.id " +
             "WHERE t.event_id = :eventId AND (t.status = 1 OR t.status = :ticketStatus)" +
             "GROUP BY u.id", nativeQuery = true)
-    Set<String> findEmailsToBeNotified(Long eventId, TicketStatus ticketStatus);
+    Set<String> findEmailsToBeNotified(Long eventId, Integer ticketStatus);
 
     /**
-     * Deactivates tickets by setting their status to EVENT_CANCELLED
+     * Deactivates tickets by setting their status to {@link TicketStatus.EVENT_CANCELLED}
      *
      * @param event {@link Event} Cancelled event whose tickets are to be deactivated
      */
-    @Modifying
-    @Query("UPDATE Ticket t SET t.status = 4 WHERE t.event = :event")
-    void deactivateTickets(@Param("event") Event event);
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Ticket t SET t.status = 4 WHERE t.event.id = :eventId")
+    void deactivateTickets(@Param("eventId") Long eventId);
 
 }

@@ -39,7 +39,11 @@ public class TicketDTO {
         this.numberColumn = ticket.getNumberColumn();
         this.numberRow = ticket.getNumberColumn();
         this.eventId = ticket.getEvent().getId();
-        this.userId = ticket.getUser().getId();
+        if (ticket.getUser() == null) {
+            this.userId = null;
+        } else {
+            this.userId = ticket.getUser().getId();
+        }
         this.eventSectorId = ticket.getEventSector().getId();
     }
 
