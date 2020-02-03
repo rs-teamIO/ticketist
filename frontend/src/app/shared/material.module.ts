@@ -17,7 +17,9 @@ import {
   MatSelectModule,
   MatTableModule,
   MatToolbarModule,
-  MatCheckboxModule, MatTooltipModule
+  MatCheckboxModule,
+  MatTooltipModule, 
+  MatSortModule
 } from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
 
@@ -41,6 +43,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
     MatNativeDateModule,
     MatPaginatorModule,
     MatDividerModule,
+    MatSortModule
     MatCheckboxModule,
     MatTooltipModule
   ],
@@ -64,6 +67,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
     MatNativeDateModule,
     MatPaginatorModule,
     MatDividerModule,
+    MatSortModule
     MatCheckboxModule,
     MatTooltipModule
   ],

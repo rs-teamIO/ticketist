@@ -1,1 +1,44 @@
-<p>report-chart works!</p>
+<mat-card class="mat-elevation-z8">
+  <div>
+    <ngx-charts-bar-vertical
+      *ngIf="!selectedVenue; else specificVenueReport"
+      [scheme]="colorScheme"
+      [results]="allVenuesChart "
+      xAxis="true"
+      yAxis="true"
+      legend="true"
+      showYAxisLabel="true"
+      [yAxisLabel]="yAxisLabel"
+      (select)="onSelect($event)">
+    </ngx-charts-bar-vertical>
+
+    <ng-template #specificVenueReport>
+      <ngx-charts-line-chart
+        [scheme]="colorScheme"
+        [results]="singleVenueChart"
+        legend="true"
+        showXAxisLabel="true"
+        showYAxisLabel="true"
+        xAxis="true"
+        yAxis="true"
+        xAxisLabel="Month"
+        [yAxisLabel]="yAxisLabel">
+      </ngx-charts-line-chart>
+
+      <mat-form-field color="primary" appearance="outline">
+        <mat-select [(value)]="selectedCriteria" (valueChange)="onCriteriaValueChange()" #criteriaRef>
+          <mat-option value="revenue">Revenue ($)</mat-option>
+          <mat-option value="tickets">Tickets sold (No.)</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-stroked-button color="primary" style="width: 190px;" (click)="onGetAllVenuesReport()">All venues</button>
+    </ng-template>
+  </div>
+</mat-card>
+
+
+
+
+
+
