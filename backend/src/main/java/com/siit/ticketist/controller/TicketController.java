@@ -3,9 +3,8 @@ package com.siit.ticketist.controller;
 import com.siit.ticketist.dto.ReservationDTO;
 import com.siit.ticketist.dto.ReservationPageDTO;
 import com.siit.ticketist.dto.SuccessResponse;
-import com.siit.ticketist.model.Reservation;
-import com.siit.ticketist.model.Ticket;
 import com.siit.ticketist.dto.TicketDTO;
+import com.siit.ticketist.model.Ticket;
 import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Tickets REST controller.
@@ -80,6 +80,16 @@ public class TicketController {
                 .map(ReservationDTO::new)
                 .forEachOrdered(reservations::add);
         return new ResponseEntity<>(new ReservationPageDTO(reservations, ticketService.getTotalNumberOfUsersReservations()), HttpStatus.OK);
+    }
+
+    @GetMapping(value="reservations/{id}")
+    @PreAuthorize("hasAuthority('REGISTERED_USER')")
+    public ResponseEntity<List<TicketDTO>> findReservationTickets(@PathVariable("id") Long resId) {
+        List<TicketDTO> tickets = new ArrayList<>();
+        ticketService.findAllByReservationId(resId).stream()
+                .map(TicketDTO::new)
+                .forEachOrdered(tickets::add);
+        return new ResponseEntity<>(tickets, HttpStatus.OK);
     }
 
     /**

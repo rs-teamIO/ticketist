@@ -16,7 +16,8 @@ import {
   MatProgressSpinnerModule,
   MatSelectModule,
   MatTableModule,
-  MatToolbarModule
+  MatToolbarModule,
+  MatCheckboxModule, MatTooltipModule
 } from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
 
@@ -39,7 +40,9 @@ import {FlexLayoutModule} from '@angular/flex-layout';
     MatDatepickerModule,
     MatNativeDateModule,
     MatPaginatorModule,
-    MatDividerModule
+    MatDividerModule,
+    MatCheckboxModule,
+    MatTooltipModule
   ],
   exports: [
     CommonModule,
@@ -60,7 +63,9 @@ import {FlexLayoutModule} from '@angular/flex-layout';
     MatDatepickerModule,
     MatNativeDateModule,
     MatPaginatorModule,
-    MatDividerModule
+    MatDividerModule,
+    MatCheckboxModule,
+    MatTooltipModule
   ],
 })
 export class CustomMaterialModule {
