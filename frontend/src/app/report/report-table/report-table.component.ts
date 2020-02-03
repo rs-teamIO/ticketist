@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatSort, MatTableDataSource} from '@angular/material';
 import {ReportService} from '../../services/report.service';
 import {Report} from '../../model/report.model';
@@ -9,7 +9,7 @@ import {Subscription} from 'rxjs';
   templateUrl: './report-table.component.html',
   styleUrls: ['./report-table.component.scss']
 })
-export class ReportTableComponent implements OnInit {
+export class ReportTableComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['name', 'venueName', 'ticketsSold', 'totalRevenue'];
   dataSource: MatTableDataSource<any>;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -24,5 +24,9 @@ export class ReportTableComponent implements OnInit {
   }
 
   constructor(private reportService: ReportService) {
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 }
