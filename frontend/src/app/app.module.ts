@@ -11,9 +11,6 @@ import {EventComponent} from './event/event.component';
 import {EventListComponent} from './event/event-list/event-list.component';
 import {EventSearchComponent} from './event/event-search/event-search.component';
 import {EventFormComponent} from './event/event-form/event-form.component';
-import {EventFormBasicComponent} from './event/event-form/event-form-basic/event-form-basic.component';
-import {EventFormMediaComponent} from './event/event-form/event-form-media/event-form-media.component';
-import {EventFormSectorsComponent} from './event/event-form/event-form-sectors/event-form-sectors.component';
 import {VenueComponent} from './venue/venue.component';
 import {VenueListComponent} from './venue/venue-list/venue-list.component';
 import {VenueFormComponent} from './venue/venue-form/venue-form.component';
@@ -51,9 +48,6 @@ import {GridsterModule} from 'angular-gridster2';
     EventListComponent,
     EventSearchComponent,
     EventFormComponent,
-    EventFormBasicComponent,
-    EventFormMediaComponent,
-    EventFormSectorsComponent,
     VenueComponent,
     VenueListComponent,
     VenueFormComponent,
