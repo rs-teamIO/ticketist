@@ -42,6 +42,12 @@ public class EventsPage extends BasePage {
     @FindBy(id = "number-of-results")
     private WebElement numberOfResults;
 
+    @FindBy(css = "button.mat-paginator-navigation-next")
+    private WebElement nextPageButton;
+
+    @FindBy(xpath = "//div[contains(@class, 'card-item')][4]/app-event-item//button")
+    private WebElement buyReserveEXITButton;
+
     public EventsPage(WebDriver driver) { super(driver); }
 
     public WebElement getSearchButton() {
@@ -88,6 +94,10 @@ public class EventsPage extends BasePage {
     public void clickVenuesButton() { clickElement(venuesButton); }
 
     public void clickSearchButton() { clickElement(searchButton); }
+
+    public void clickNextPageButton() { clickElement(nextPageButton); }
+
+    public void clickBuyReserveButton() { clickElement(buyReserveEXITButton); }
 
     public void enterEventName(String text) { enterText(searchEventName, text); }
 
