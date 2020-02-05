@@ -1,6 +1,10 @@
 package com.siit.ticketist.service;
 
+import com.siit.ticketist.dto.PdfTicket;
+import com.siit.ticketist.model.Event;
 import com.siit.ticketist.model.RegisteredUser;
+import com.siit.ticketist.model.TicketStatus;
+import com.siit.ticketist.repository.TicketRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -16,6 +20,9 @@ import javax.mail.Multipart;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -31,7 +38,7 @@ public class EmailServiceUnitTest {
     private static final String VERIFICATION_EMAIL_SUBJECT = "Please confirm your account";
     private static final String DEADLINE_NOTIFICATION_EMAIL_SUBJECT = "Your reservation is about to expire";
     private static final String TICKETS_PURCHASE_EMAIL_SUBJECT = "Tickets purchase confirmation";
-    private static final String EVENT_CANCELLED_EMAIL_SUBJECT = "Event has been cancelled";
+    private static final String EVENT_CANCELLED_EMAIL_SUBJECT = "Event %s has been cancelled.";
 
     private static final String CONTENT = "content";
     private static final String VERIFICATION_TEMPLATE_NAME = "verificationMail";
@@ -53,15 +60,15 @@ public class EmailServiceUnitTest {
 
     @Mock
     private ITemplateEngine springTemplateEngineMock;
-//
-//    @Mock
-//    private PdfService pdfServiceMock;
+
+    @Mock
+    private PdfService pdfServiceMock;
 //
 //    @Mock
 //    private EventService eventServiceMock;
-//
-//    @Mock
-//    private TicketRepository ticketRepositoryMock;
+
+    @Mock
+    private TicketRepository ticketRepositoryMock;
 
     @InjectMocks
     private EmailService emailService;
@@ -159,5 +166,116 @@ public class EmailServiceUnitTest {
         } catch (Exception e) {
             fail();
         }
+    }
+
+    // TODO: Doc
+    @Test
+    public void sendTicketsPurchaseEmail_shouldAlwaysSendTicketsPurchaseEmail() {
+        try {
+            // Arrange
+            ArrayList<PdfTicket> tickets = new ArrayList<>();
+            // TODO: Add tickets
+
+            final RegisteredUser registeredUser = new RegisteredUser(USERNAME, PASSWORD, RECIPIENT_EMAIL, FIRST_NAME, LAST_NAME);
+            when(this.springTemplateEngineMock.process(eq(TICKETS_PURCHASE_TEMPLATE_NAME), any(Context.class)))
+                    .thenReturn(CONTENT);
+            when(this.pdfServiceMock.generatePdfInvoice(tickets))
+                    .thenReturn(CONTENT.getBytes(StandardCharsets.UTF_8));
+
+            // Act
+            this.emailService.sendTicketsPurchaseEmail(registeredUser, tickets);
+
+            // Assert
+            verify(this.mailSenderMock, timeout(TIMEOUT).times(1)).createMimeMessage();
+            verify(this.mailSenderMock, timeout(TIMEOUT).times(1)).send(mimeMessage);
+            assertEquals(1, mimeMessage.getFrom().length);
+            assertEquals(EMAIL, mimeMessage.getFrom()[0].toString());
+            assertEquals(1, mimeMessage.getAllRecipients().length);
+            assertEquals(RECIPIENT_EMAIL, mimeMessage.getAllRecipients()[0].toString());
+            assertEquals(TICKETS_PURCHASE_EMAIL_SUBJECT, mimeMessage.getSubject());
+            assertNotNull(mimeMessage.getContent());
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    private static final Long EVENT_ID = 1L;
+    private static final String EVENT_NAME = "event name";
+
+    // TODO: Doc
+    @Test
+    public void sendEventCancelledEmails_shouldAlwaysSendEventCancelledEmails_whenThereIsOnlyOneEmailToBeNotified() {
+        try {
+            // Arrange
+            final Event event = new Event();
+            event.setId(EVENT_ID);
+            event.setName(EVENT_NAME);
+
+            final HashSet<String> emails = new HashSet<>();
+            emails.add(RECIPIENT_EMAIL);
+
+            when(this.ticketRepositoryMock.findEmailsToBeNotified(event.getId(), TicketStatus.PAID.ordinal()))
+                    .thenReturn(emails);
+            when(this.springTemplateEngineMock.process(eq(EVENT_CANCELLED_TEMPLATE_NAME), any(Context.class)))
+                    .thenReturn(CONTENT);
+
+            // Act
+            this.emailService.sendEventCancelledEmails(event);
+
+            // Assert
+            verify(this.mailSenderMock, timeout(TIMEOUT).times(1)).createMimeMessage();
+            verify(this.mailSenderMock, timeout(TIMEOUT).times(1)).send(mimeMessage);
+            assertEquals(1, mimeMessage.getFrom().length);
+            assertEquals(EMAIL, mimeMessage.getFrom()[0].toString());
+            assertEquals(1, mimeMessage.getAllRecipients().length);
+            assertEquals(RECIPIENT_EMAIL, mimeMessage.getAllRecipients()[0].toString());
+            assertEquals(String.format(EVENT_CANCELLED_EMAIL_SUBJECT, event.getName()), mimeMessage.getSubject());
+            assertEquals(CONTENT, mimeMessage.getContent());
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    // TODO: Doc
+    @Test
+    public void sendEventCancelledEmails_shouldAlwaysSendEventCancelledEmails_whenThereAreMultipleEmailsToBeNotified() {
+        try {
+            // Arrange
+            final Event event = new Event();
+            event.setId(EVENT_ID);
+            event.setName(EVENT_NAME);
+
+            final HashSet<String> emails = new HashSet<>();
+            emails.add(RECIPIENT_EMAIL);
+            emails.add("user2@ticketist.com");
+            emails.add("user3@ticketist.com");
+
+            when(this.ticketRepositoryMock.findEmailsToBeNotified(event.getId(), TicketStatus.PAID.ordinal()))
+                    .thenReturn(emails);
+            when(this.springTemplateEngineMock.process(eq(EVENT_CANCELLED_TEMPLATE_NAME), any(Context.class)))
+                    .thenReturn(CONTENT);
+
+            // Act
+            this.emailService.sendEventCancelledEmails(event);
+
+            // Assert
+            verify(this.mailSenderMock, timeout(TIMEOUT).times(3)).createMimeMessage();
+            verify(this.mailSenderMock, timeout(TIMEOUT).times(3)).send(mimeMessage);
+//            assertEquals(1, mimeMessage.getFrom().length);
+//            assertEquals(EMAIL, mimeMessage.getFrom()[0].toString());
+//            assertEquals(1, mimeMessage.getAllRecipients().length);
+//            assertEquals(RECIPIENT_EMAIL, mimeMessage.getAllRecipients()[0].toString());
+//            assertEquals(String.format(EVENT_CANCELLED_EMAIL_SUBJECT, event.getName()), mimeMessage.getSubject());
+//            assertEquals(CONTENT, mimeMessage.getContent());
+
+            // TODO: Should test each email for validity
+        } catch (Exception e) {
+            fail();
+        }
+
+        // TODO: Testing scheduled methods
+
+        // 1. https://www.baeldung.com/spring-testing-scheduled-annotation
+        // 2. https://stackoverflow.com/questions/32319640/how-to-test-spring-scheduled
     }
 }
