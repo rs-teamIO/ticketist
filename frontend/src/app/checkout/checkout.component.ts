@@ -77,8 +77,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           Swal.fire({
             text: 'Your payment is being processed, please wait',
             allowOutsideClick: false,
-            showConfirmButton: false,
-            timer: 30000
+            showConfirmButton: false
           });
           Swal.showLoading();
 

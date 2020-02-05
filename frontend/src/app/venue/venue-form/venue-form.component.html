@@ -28,12 +28,12 @@
               </mat-error>
             </mat-form-field>
             <button mat-raised-button type="submit" color="primary" class="example-full-width"
-                    [disabled]="venueForm.invalid">
+                    [disabled]="venueForm.invalid" id="add-venue-button">
               Add venue
             </button>
             <p class="centralError">{{error}}</p>
           </form>
-          <button mat-raised-button (click)="viewOnMap()" class="example-full-width" [disabled]="venueForm.invalid">
+          <button mat-raised-button (click)="viewOnMap()" class="example-full-width" [disabled]="venueForm.invalid" id="view-on-map-button">
             View on map
           </button>
         </mat-card-content>
@@ -49,7 +49,7 @@
           (ngSubmit)="onAddSector(formDirective); addSectorForm.reset()">
       <mat-form-field appearance="outline" >
         <mat-label>Sector name</mat-label>
-        <input matInput type="text" formControlName="sectorName">
+        <input matInput type="text" formControlName="sectorName" id="sector-name">
         <mat-error *ngIf="sectorName.invalid && sectorName.touched">
           Sector name can't be empty!
         </mat-error>
@@ -57,13 +57,13 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Max capacity</mat-label>
-        <input matInput type="number" formControlName="maxCapacity">
+        <input matInput type="number" formControlName="maxCapacity" id="max-capacity">
         <mat-error *ngIf="maxCapacity.invalid && maxCapacity.touched">
           Max capacity must be a positive number!
         </mat-error>
       </mat-form-field>
 
-      <button mat-raised-button color="primary" type="submit" [disabled]="addSectorForm.invalid || !new">
+      <button mat-raised-button color="primary" type="submit" [disabled]="addSectorForm.invalid || !new" id="add-sector-button">
         <mat-icon>add</mat-icon>
         <span>Add sector</span>
       </button>

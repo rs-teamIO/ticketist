@@ -15,7 +15,7 @@ public class EventsPage extends BasePage {
     @FindBy(xpath = "//button[@routerlink=\"/profile\"]")
     private WebElement profileButton;
 
-    @FindBy(xpath = "/html/body/app-root/app-header/mat-toolbar/div/button[3]")
+    @FindBy(xpath = "//button[@routerlink=\"/venues/list\"]")
     private WebElement venuesButton;
 
     @FindBy(xpath = "//form/button")
@@ -66,7 +66,7 @@ public class EventsPage extends BasePage {
         ensureIsDisplayed(profileButton);
     }
 
-    public void ensureIsDisplayed3(){
+    public void ensureVenuesButtonIsDisplayed(){
         ensureIsDisplayed(venuesButton);
     }
 
@@ -85,10 +85,7 @@ public class EventsPage extends BasePage {
         el.click();
     }
 
-    public void submitVenues() {
-        WebElement el = getVenuesButton();
-        el.click();
-    }
+    public void clickVenuesButton() { clickElement(venuesButton); }
 
     public void clickSearchButton() { clickElement(searchButton); }
 

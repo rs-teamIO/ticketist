@@ -34,6 +34,11 @@ public class BasePage {
                         element, text));
     }
 
+    protected void ensureTextToBe(By by, String text) {
+        (new WebDriverWait(driver, 10))
+                .until(ExpectedConditions.textToBe(by, text));
+    }
+
     protected void ensureNumberOfWindowsEquals(int number) {
         (new WebDriverWait(driver, 10))
                 .until(ExpectedConditions.numberOfWindowsToBe(number));

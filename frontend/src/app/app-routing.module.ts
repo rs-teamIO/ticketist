@@ -13,6 +13,7 @@ import { VenueFormComponent } from './venue/venue-form/venue-form.component';
 import { ReservationListComponent } from './reservation-list/reservation-list.component';
 import { EventDetailsComponent } from './event/event-details/event-details.component';
 import {CheckoutComponent} from './checkout/checkout.component';
+import {ReportComponent} from './report/report.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/events', pathMatch: 'full' },
@@ -28,8 +29,9 @@ const routes: Routes = [
   { path: 'my-reservations', component: ReservationListComponent, canActivate: [RegisteredUserAuthGuard] },
   { path: 'not-found', component: ErrorPageComponent },
   { path: 'event/:id', component: EventDetailsComponent },
-  { path: 'checkout', component: CheckoutComponent },
-  { path: 'checkout/:resId', component: CheckoutComponent },
+  { path: 'checkout', component: CheckoutComponent, canActivate: [RegisteredUserAuthGuard] },
+  { path: 'checkout/:resId', component: CheckoutComponent, canActivate: [RegisteredUserAuthGuard] },
+  { path: 'reports', component: ReportComponent, canActivate: [AdminAuthGuard] },
   { path: '**', redirectTo: '/not-found'},
 ];
 

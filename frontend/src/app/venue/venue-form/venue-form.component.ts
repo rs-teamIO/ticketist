@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {IVenue, IVenueBasic, VenueService} from '../../services/venue.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {FormControl, FormGroup, FormGroupDirective, Validators} from '@angular/forms';
 import {ISector} from '../../services/sector.service';
 import {GeocodeService} from '../../services/geocode.service';
@@ -29,6 +29,7 @@ export class VenueFormComponent implements OnInit {
 
   constructor(private venueService: VenueService,
               private route: ActivatedRoute,
+              private router: Router,
               private geocodeService: GeocodeService) {
   }
 
@@ -133,6 +134,14 @@ export class VenueFormComponent implements OnInit {
           resData => {
             this.venue = resData;
             this.isLoading = false;
+            Swal.fire({
+              icon: 'success',
+              title: 'Venue added successfully!',
+              allowEnterKey: true,
+              allowOutsideClick: false,
+              confirmButtonText: 'Okay',
+              confirmButtonColor: '#673AB7'
+            }).then(() => this.router.navigate(['/venues/list']));
           },
           error => {
             if (error.status === 401 || error.status === 400) {

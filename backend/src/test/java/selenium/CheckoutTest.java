@@ -67,7 +67,6 @@ public class CheckoutTest {
 //        eventsPage.ensureMyReservationsButtonIsDisplayed();
 //        eventsPage.navigateToMyReservations();
 
-        //go to checkout
         //myReservationsPage.payFirstReservationInList();
         eventsPage.ensureEventsAreLoaded();
         driver.navigate().to("http://localhost:4200/checkout/1");

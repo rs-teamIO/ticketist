@@ -22,6 +22,7 @@
   <div *ngIf="isAuthenticated && role==='ADMIN'">
     <button mat-button routerLink="/events/new">Add Event</button>
     <button mat-button routerLink="/venues/list">Venues</button>
+    <button mat-button routerLink="/reports">Reports</button>
     <button mat-button routerLink="/logout" (click)="onLogout()">Logout</button>
   </div>
 </mat-toolbar>
