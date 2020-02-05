@@ -43,7 +43,7 @@ public class VenueTest {
         loginPage.setPasswordInput("123456");
         assertTrue(loginPage.getLoginButton().isEnabled());
         loginPage.submitLogin();
-        eventsPage.ensureIsDisplayed();
+        eventsPage.ensureSearchButtonIsDisplayed();
         eventsPage.ensureIsDisplayed3();
         eventsPage.submitVenues();
         venuesPage.ensureIsDisplayed();

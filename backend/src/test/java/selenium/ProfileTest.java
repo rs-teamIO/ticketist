@@ -41,7 +41,7 @@ public class ProfileTest {
         loginPage.setPasswordInput("123456");
         assertTrue(loginPage.getLoginButton().isEnabled());
         loginPage.submitLogin();
-        eventsPage.ensureIsDisplayed();
+        eventsPage.ensureSearchButtonIsDisplayed();
         eventsPage.ensureIsDisplayed2();
         eventsPage.submitProfile();
         profilePage.ensureIsDisplayed();

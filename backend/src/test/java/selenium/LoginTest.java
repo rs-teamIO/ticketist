@@ -69,7 +69,7 @@ public class LoginTest {
         loginPage.setPasswordInput("123456");
         assertTrue(loginPage.getLoginButton().isEnabled());
         loginPage.submitLogin();
-        eventsPage.ensureIsDisplayed();
+        eventsPage.ensureSearchButtonIsDisplayed();
     }
 
     @After

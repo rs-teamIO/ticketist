@@ -40,7 +40,6 @@ export class EventSearchComponent implements OnInit {
       endDate: this.searchForm.get('endDate').value !== null ? this.searchForm.get('endDate').value.getTime() : null
     };
 
-    console.log(searchParams)
     this.eventService.searchParamsChanged.next(searchParams);
     this.eventService.getEvents();
   }

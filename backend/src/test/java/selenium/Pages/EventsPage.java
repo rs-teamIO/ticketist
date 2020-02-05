@@ -1,13 +1,13 @@
 package selenium.Pages;
 
+import com.siit.ticketist.model.Category;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.Select;
 
-public class EventsPage {
-    private WebDriver driver;
+public class EventsPage extends BasePage {
 
     @FindBy(xpath = "//button[@routerlink=\"/my-reservations\"]")
     private WebElement myReservationsButton;
@@ -21,7 +21,28 @@ public class EventsPage {
     @FindBy(xpath = "//form/button")
     private WebElement searchButton;
 
-    public EventsPage(WebDriver driver) { this.driver = driver; }
+    @FindBy(id = "search-event-name")
+    private WebElement searchEventName;
+
+    @FindBy(id = "search-category")
+    private WebElement searchCategory;
+
+    @FindBy(id = "search-venue-name")
+    private WebElement searchVenueName;
+
+    @FindBy(id = "search-start-date")
+    private WebElement searchStarDate;
+
+    @FindBy(id = "search-end-date")
+    private WebElement searchEndDate;
+
+    @FindBy(id = "loaded-events-list")
+    private WebElement eventsList;
+
+    @FindBy(id = "number-of-results")
+    private WebElement numberOfResults;
+
+    public EventsPage(WebDriver driver) { super(driver); }
 
     public WebElement getSearchButton() {
         return searchButton;
@@ -31,24 +52,28 @@ public class EventsPage {
 
     public WebElement getVenuesButton() { return this.venuesButton; }
 
-    public void ensureIsDisplayed() {
-        (new WebDriverWait(driver, 10))
-                .until(ExpectedConditions.visibilityOf(searchButton));
+    public WebElement getNumberOfResults() { return this.numberOfResults; }
+
+    public void ensureSearchButtonIsDisplayed() {
+        ensureIsDisplayed(searchButton);
     }
 
     public void ensureMyReservationsButtonIsDisplayed() {
-        (new WebDriverWait(driver, 10))
-                .until(ExpectedConditions.visibilityOf(myReservationsButton));
+        ensureIsDisplayed(myReservationsButton);
     }
 
     public void ensureIsDisplayed2(){
-        (new WebDriverWait(driver, 10))
-                .until(ExpectedConditions.visibilityOf(profileButton));
+        ensureIsDisplayed(profileButton);
     }
 
     public void ensureIsDisplayed3(){
-        (new WebDriverWait(driver, 10))
-                .until(ExpectedConditions.visibilityOf(venuesButton));
+        ensureIsDisplayed(venuesButton);
+    }
+
+    public void ensureEventsAreLoaded() { ensureIsDisplayed(eventsList); }
+
+    public void ensureNumberOfResultsIs(String text) {
+        ensureElementContainsText(numberOfResults, text);
     }
 
     public void navigateToMyReservations() {
@@ -63,5 +88,47 @@ public class EventsPage {
     public void submitVenues() {
         WebElement el = getVenuesButton();
         el.click();
+    }
+
+    public void clickSearchButton() { clickElement(searchButton); }
+
+    public void enterEventName(String text) { enterText(searchEventName, text); }
+
+    public void enterCategory(Category text) {
+        ensureIsDisplayed(searchCategory);
+        clear(searchCategory);
+        searchCategory.sendKeys(text.toString());
+    }
+
+    public void enterVenueName(String text) {
+        ensureIsDisplayed(searchVenueName);
+//        clear(searchVenueName);
+//        searchVenueName.sendKeys(text);
+        Select select = new Select(searchVenueName);
+        select.deselectAll();
+        select.selectByValue(text);
+    }
+
+    public void enterStarDate(String text) { enterText(searchStarDate, text); }
+
+    public void enterEndDate(String text) { enterText(searchEndDate, text); }
+
+    public void clearAllSearchFields() {
+        searchEventName.clear();
+        searchEventName.sendKeys("A");
+        searchEventName.sendKeys(Keys.BACK_SPACE);
+
+//        clear(searchCategory);
+//
+//        Select venueNameSelect = new Select(searchVenueName);
+//        venueNameSelect.deselectAll();
+
+        clear(searchStarDate);
+        searchStarDate.sendKeys("A");
+        searchStarDate.sendKeys(Keys.BACK_SPACE);
+
+        clear(searchEndDate);
+        searchEndDate.sendKeys("A");
+        searchEndDate.sendKeys(Keys.BACK_SPACE);
     }
 }

@@ -8,14 +8,11 @@
     <!--    fxLayout="row wrap" fxLayoutAlign="center center"-->
     <div style="max-height: 100vh; overflow: auto; height: 750px;" *ngIf="tickets">
       <app-ticket-item *ngFor="let ticket of tickets" [ticket]="ticket"></app-ticket-item>
-      <div *ngFor="let a of nesto">
-        <p>aaaa</p>
-      </div>
     </div>
 
     <mat-card-actions>
       <span fxFlex></span>
-      <p style="padding-right: 15px;">Total: <b>{{getTotalPrice() | currency}}</b></p>
+      <p style="padding-right: 15px;" id="total-price">Total: <b>{{getTotalPrice() | currency}}</b></p>
       <div #paypal id="paypal" style="padding-top: 10px; padding-right: 8px;"></div>
     </mat-card-actions>
   </mat-card>

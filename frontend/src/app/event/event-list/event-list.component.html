@@ -1,12 +1,14 @@
 <div fxLayout="column" fxLayoutAlign="center center" style="height: 100%;">
-  <div *ngIf="events.length === 0; else eventsLoaded" style="margin-top: 150px;" >
+  <div *ngIf="totalSize !== 0 && events.length === 0; else eventsLoaded" style="margin-top: 150px;" >
     <mat-spinner color="accent" strokeWidth="4"></mat-spinner>
   </div>
 
   <ng-template #eventsLoaded>
-    <mat-card class="mat-card-flat card-deck-container">
+    <mat-card class="mat-card-flat card-deck-container" id="loaded-events-list">
       <mat-card-header>
-        <mat-card-title>Future events</mat-card-title>
+        <p style="font-weight: bolder;">Future events</p>
+        <span fxFlex></span>
+        <p style="margin-right: 70px; font-weight: lighter" id="number-of-results">Results found: {{totalSize}}</p>
       </mat-card-header>
 
       <div fxLayout="row wrap" class="card-deck-container" fxLayout.xs="column wrap">
@@ -24,7 +26,6 @@
       </mat-paginator>
     </div>
   </ng-template>
-
 
 </div>
 

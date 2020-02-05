@@ -7,16 +7,21 @@
   <mat-card-subtitle fxLayout="column">
     <span>{{eventModel.venueName}}</span>
     <div>
-      {{eventModel.startDate | date}}
+      {{eventModel.startDate | date }}
       <span *ngIf="eventModel.startDate !== eventModel.endDate">- {{eventModel.endDate | date}}</span>
     </div>
   </mat-card-subtitle>
   <mat-divider></mat-divider>
-  <mat-card-actions>
-<!--    [routerLink]="['/events', eventModel.id]"-->
-    <button mat-button color="primary" disabled>EDIT</button>
-    <button mat-button color="warn" type="button" (click)="onCancelEvent()">CANCEL</button>
-    <button mat-button color="primary" [routerLink]="['/event', eventModel.id]">DETAILS</button>
+  <mat-card-actions fxLayoutAlign="end">
+    <span *ngIf="role === 'ADMIN'; else ticketsButton">
+      <!--    [routerLink]="['/events', eventModel.id]"-->
+      <button mat-button color="primary" disabled>EDIT</button>
+      <button mat-button color="warn" type="button" (click)="onCancelEvent()">CANCEL</button>
+    </span>
+
+    <ng-template #ticketsButton>
+      <button mat-button color="primary" [routerLink]="['/event', eventModel.id]">BUY/RESERVE</button>
+    </ng-template>
   </mat-card-actions>
 </mat-card>
 

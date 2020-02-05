@@ -16,6 +16,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   @ViewChild('paypal', {static: true}) paypalElement: ElementRef;
   tickets: ITicket[] = [];
   ticketSubscription: Subscription;
+  reservation = false;
+  resId: number;
 
   constructor(private ticketService: TicketService,
               private eventService: EventService,
@@ -25,6 +27,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     // ToDo: Problem kod refresha, gubi se sve iz korpe (ako proba da ode obavestis ga da ce izgubiti sve?)
     this.ticketSubscription = this.ticketService.ticketsSelected.subscribe(responseTickets => {
       this.tickets = responseTickets;
+      this.reservation = false;
     });
   }
 
@@ -33,6 +36,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       if (params.has('resId')) {
         this.ticketService.getReservationTickets(Number(params.get('resId'))).subscribe((response) => {
           this.tickets = response;
+          this.reservation = true;
+          this.resId = Number(params.get('resId'));
         }, (error) => {
           Swal.fire({
             title: 'Oops!',
@@ -73,10 +78,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             text: 'Your payment is being processed, please wait',
             allowOutsideClick: false,
             showConfirmButton: false,
+            timer: 30000
           });
           Swal.showLoading();
 
-          this.ticketService.buyTickets(this.tickets.map(ticket => ticket.id)).subscribe((response: ITicket[]) => {
+          this.ticketService.buyTickets(this.tickets.map(ticket => ticket.id), this.reservation, this.resId)
+            .subscribe((response: ITicket[]) => {
             actions.order.capture().then(order => {
               console.log(order);
               Swal.fire({

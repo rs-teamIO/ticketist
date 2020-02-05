@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
-import { PORT } from '../shared/constants';
+import {PORT} from '../shared/constants';
 
 export interface ITicket {
   id: number;
@@ -25,6 +25,7 @@ export class TicketService {
   private readonly getEventSectorTicketsPath = `http://localhost:${PORT}/api/tickets/event/sector/`;
   private readonly getReservationTicketsPath = `http://localhost:${PORT}/api/tickets/reservations/`;
   private readonly buyTicketsPath = `http://localhost:${PORT}/api/tickets/`;
+  private readonly acceptReservationPath = `http://localhost:${PORT}/api/tickets/reservations/accept/`;
   private readonly reserveTicketsPath = `http://localhost:${PORT}/api/tickets/reservations`;
 
   constructor(private http: HttpClient) {
@@ -38,8 +39,12 @@ export class TicketService {
     return this.http.get<ITicket[]>(this.getReservationTicketsPath + resId);
   }
 
-  buyTickets(ticketList: number[]): Observable<ITicket[]> {
-    return this.http.post<ITicket[]>(this.buyTicketsPath, ticketList);
+  buyTickets(ticketList: number[], reservation: boolean, resId?: number): Observable<ITicket[]> {
+    if (reservation) {
+      return this.http.post<ITicket[]>(this.acceptReservationPath + resId, {});
+    } else {
+      return this.http.post<ITicket[]>(this.buyTicketsPath, ticketList);
+    }
   }
 
   reserveTickets(ticketList: number[]): Observable<ITicket[]> {

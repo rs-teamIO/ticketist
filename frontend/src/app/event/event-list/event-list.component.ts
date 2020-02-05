@@ -27,10 +27,7 @@ export class EventListComponent implements OnInit, AfterViewInit, OnDestroy {
         this.totalSize = eventPage.totalSize;
       });
 
-    setTimeout(() => {
-      this.loadData();
-    }, 2000);
-    // this.loadData();
+    this.loadData();
   }
 
   onPageChanged(pageEvent: PageEvent) {

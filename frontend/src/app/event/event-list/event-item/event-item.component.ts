@@ -2,6 +2,8 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {EventModel} from '../../../model/event.model';
 import Swal from 'sweetalert2';
 import {EventService} from '../../../services/event.service';
+import {AuthService} from "../../../services/auth.service";
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-event-item',
@@ -11,11 +13,21 @@ import {EventService} from '../../../services/event.service';
 export class EventItemComponent implements OnInit {
   @Input() eventModel: EventModel;
   @Output() eventCancelled: EventEmitter<any> = new EventEmitter();
+  private userSub: Subscription;
+  role = null;
 
-  constructor(private eventService: EventService) {
+  constructor(private eventService: EventService,
+              private authService: AuthService) {
   }
 
   ngOnInit() {
+    this.userSub = this.authService.user.subscribe(user => {
+      if (!!user) {
+        this.role = user.authority;
+      } else {
+        this.role = null;
+      }
+    });
   }
 
   onCancelEvent() {
