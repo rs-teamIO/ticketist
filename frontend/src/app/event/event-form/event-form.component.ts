@@ -31,6 +31,7 @@ export class EventFormComponent implements OnInit, OnDestroy {
   newEventForm: FormGroup;
   sectorForm: FormGroup;
   errorMessage = '';
+  selectedFiles: File[] = [];
 
   constructor(private router: Router, private eventService: EventService, private venueService: VenueService) { }
 
@@ -128,19 +129,36 @@ export class EventFormComponent implements OnInit, OnDestroy {
       mediaFiles: []
     };
 
-    this.eventService.createEvent(newEvent).subscribe(
-      (resData: any) => {
+    this.eventService.createEvent(newEvent)
+    .subscribe((resData: any) => {
+      console.log('RES: ', resData);
+      if (this.selectedFiles.length > 0) {
+        this.eventService.uploadImages(this.selectedFiles, resData.id)
+        .subscribe((mediaData: any) => {
+          this.sectorForm.reset();
+          this.newEventForm.reset();
+          this.errorMessage = '';
+          this.router.navigate(['/events']);
+        }, (error: any) => {
+          this.errorMessage = error.status === 400 ? error.error.message : 'Error!';
+        });
+      } else {
         this.sectorForm.reset();
         this.newEventForm.reset();
         this.errorMessage = '';
         this.router.navigate(['/events']);
-      },
-      (error: any) => {
-        if (error.status === 400) {
-          this.errorMessage = error.error.message;
-        }
       }
-    );
+    },
+    (error: any) => {
+      console.log('ERROR: ', error);
+      if (error.status === 400) {
+        this.errorMessage = error.error.message;
+      }
+    });
+  }
+
+  onFileSelected(event: any) {
+    this.selectedFiles = (event.target.files as File[]);
   }
 
   get eventName() {
