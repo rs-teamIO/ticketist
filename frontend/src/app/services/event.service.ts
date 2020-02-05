@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {EventModel} from '../model/event.model';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpParams, HttpHeaders} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
 import {Page} from '../model/page.model';
 import {PageEvent} from '@angular/material';
@@ -118,6 +118,19 @@ export class EventService {
         mediaFiles
       }
     );
+  }
+
+  uploadImages(selectedFiles: File[], eventID: number) {
+    const fd = new FormData();
+
+    Array.from(selectedFiles).forEach((file: File) => {
+      fd.append('mediaFiles', file, file.name);
+    });
+
+    const headers = new HttpHeaders();
+    headers.append('Content-Type', 'odata=verbose');
+
+    return this.http.post(`http://localhost:${PORT}/api/events/${eventID}/media`, fd, { headers });
   }
 
   getEvent(id: number): Observable<EventModel> {
