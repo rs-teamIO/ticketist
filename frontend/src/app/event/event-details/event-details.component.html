@@ -1,1 +1,19 @@
-<p>event-details works!</p>
+<div fxLayout="row" fxLayoutAlign="center" class="outer-container">
+    <mat-card class="example-card mat-card-flat">
+        <img mat-card-image src="https://pb2eu.interticket.com/imgs/system-20/program/000/001/334/zdravko-colic-474-279-10882.jpg" alt="Event image">
+        <mat-card-content>
+        <mat-card-title>
+            {{event.name}}
+        </mat-card-title>
+        <mat-card-subtitle>
+            {{venue.name}}, {{venue.city}}
+        </mat-card-subtitle>
+        <p>{{event.description}}</p>
+        </mat-card-content>
+        <mat-card-actions>
+        <app-map-view [latitude]="venue.latitude" [longitude]="venue.longitude"></app-map-view>
+        </mat-card-actions>
+    </mat-card>
+
+    <app-seats-display [event]="event" [venue]="venue"></app-seats-display>
+</div>

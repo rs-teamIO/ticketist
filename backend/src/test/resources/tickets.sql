@@ -37,7 +37,7 @@ INSERT INTO reservations (id, event_id, user_id)
 VALUES
     (1, 1, 1),
     (2, 1, 1),
-       (3,1,2);
+    (3, 1, 2);
 
 INSERT INTO tickets (id, number_column, number_row, price, status, event_id, event_sector_id, user_id, version, reservation_id)
 VALUES

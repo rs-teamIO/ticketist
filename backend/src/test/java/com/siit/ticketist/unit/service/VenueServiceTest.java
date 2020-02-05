@@ -11,27 +11,22 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql("/data.sql")
 public class VenueServiceTest {
 
-    @Autowired
+    @InjectMocks
     private VenueService venueService;
 
-    @MockBean
+    @Mock
     private VenueRepository venueRepositoryMock;
 
     @Rule
@@ -43,6 +38,8 @@ public class VenueServiceTest {
 
     @Before
     public void setupVenueRepositoryMock() {
+        MockitoAnnotations.initMocks(this);
+
         Long sectorID = 1L;
         Sector sector = new Sector(sectorID, "Sever", 2, 2, 4, 1, 1);
         sectors = new HashSet<>();

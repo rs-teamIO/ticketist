@@ -39,13 +39,13 @@ public class VenueTest {
 
         assertEquals("http://localhost:4200/login", browser.getCurrentUrl());
 
-        loginPage.setUsernameInput("user2020");
+        loginPage.setUsernameInput("admin");
         loginPage.setPasswordInput("123456");
         assertTrue(loginPage.getLoginButton().isEnabled());
         loginPage.submitLogin();
-        eventsPage.ensureIsDisplayed();
-        eventsPage.ensureIsDisplayed3();
-        eventsPage.submitVenues();
+        eventsPage.ensureSearchButtonIsDisplayed();
+        eventsPage.ensureVenuesButtonIsDisplayed();
+        eventsPage.clickVenuesButton();
         venuesPage.ensureIsDisplayed();
         venuesPage.ensureIsDisplayed2();
 
@@ -63,7 +63,7 @@ public class VenueTest {
 
         //Add venue, empty form
         venuesPage.pressNewButton();
-        venuePage.ensureIsDisplayed();
+        venuePage.ensureSubmitButtonIsDisplayed();
         assertFalse(venuePage.getSubmitButton().isEnabled());
         assertFalse(venuePage.getViewMapButton().isEnabled());
 
@@ -72,7 +72,7 @@ public class VenueTest {
         venuePage.setStreetInput("Sutjeska 2");
         venuePage.setCityInput("Novi Sad");
         assertTrue(venuePage.getSubmitButton().isEnabled());
-        venuePage.submitButton();
+        venuePage.clickSubmitButton();
         venuePage.ensureResponseErrorMessageIsEqualToString("Venue name, street and city combination must be unique!");
         assertEquals("Venue name, street and city combination must be unique!",venuePage.getResponseErrorMessage().getText());
 
@@ -82,7 +82,7 @@ public class VenueTest {
 
         //Add venue, form valid
         venuePage.setNameInput("Tasmajdan");
-        venuePage.submitButton();
+        venuePage.clickSubmitButton();
         venuePage.ensureResponsePassed();
         venuePage.pressVenues();
 
@@ -92,7 +92,7 @@ public class VenueTest {
         String temp = venuesPage.getName().getText();
         venuesPage.pressView();
         venuePage.ensureIsDisplayed2();
-        venuePage.submitButton();
+        venuePage.clickSubmitButton();
         venuePage.ensureResponseErrorMessageIsEqualToString("Venue name, street and city combination must be unique!");
         assertEquals("Venue name, street and city combination must be unique!",venuePage.getResponseErrorMessage().getText());
         venuePage.pressVenues();

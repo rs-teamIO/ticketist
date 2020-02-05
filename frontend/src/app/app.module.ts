@@ -17,8 +17,6 @@ import {EventFormSectorsComponent} from './event/event-form/event-form-sectors/e
 import {VenueComponent} from './venue/venue.component';
 import {VenueListComponent} from './venue/venue-list/venue-list.component';
 import {VenueFormComponent} from './venue/venue-form/venue-form.component';
-import {VenueFormBasicComponent} from './venue/venue-form/venue-form-basic/venue-form-basic.component';
-import {VenueFormSectorsComponent} from './venue/venue-form/venue-form-sectors/venue-form-sectors.component';
 import {ReportComponent} from './report/report.component';
 import {ReportChartComponent} from './report/report-chart/report-chart.component';
 import {ReportTableComponent} from './report/report-table/report-table.component';
@@ -28,20 +26,20 @@ import {ReservationListComponent} from './reservation-list/reservation-list.comp
 import {ReservationItemComponent} from './reservation-list/reservation-item/reservation-item.component';
 import {EventItemComponent} from './event/event-list/event-item/event-item.component';
 import {VenueItemComponent} from './venue/venue-list/venue-item/venue-item.component';
-import { ErrorPageComponent } from './error-page/error-page.component';
-import { CheckoutComponent } from './checkout/checkout.component';
-import { TicketListComponent } from './checkout/ticket-list/ticket-list.component';
-import { TicketItemComponent } from './checkout/ticket-list/ticket-item/ticket-item.component';
-import { UserProfileComponent } from './user-profile/user-profile.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { CustomMaterialModule } from './shared/material.module';
-import { AuthInterceptorService } from './services/auth-interceptor.service';
-import { AgmCoreModule } from '@agm/core';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { BrowserModule } from '@angular/platform-browser';
-import { MapViewComponent } from './venue/venue-form/map-view/map-view.component';
-
+import {CheckoutComponent} from './checkout/checkout.component';
+import {UserProfileComponent} from './user-profile/user-profile.component';
+import {ReactiveFormsModule} from '@angular/forms';
+import {CustomMaterialModule} from './shared/material.module';
+import {AuthInterceptorService} from './services/auth-interceptor.service';
+import {NgxChartsModule} from '@swimlane/ngx-charts';
+import {ToMonthChartPipe} from './pipes/to-month-chart.pipe';
+import {ToInitialChartPipe} from './pipes/to-initial-chart.pipe';
+import {ErrorPageComponent} from './error-page/error-page.component';
+import {TicketItemComponent} from './checkout/ticket-item/ticket-item.component';
+import {AgmCoreModule} from '@agm/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {MapViewComponent} from './venue/venue-form/map-view/map-view.component';
+import {GridsterModule} from 'angular-gridster2';
 
 @NgModule({
   declarations: [
@@ -59,8 +57,6 @@ import { MapViewComponent } from './venue/venue-form/map-view/map-view.component
     VenueComponent,
     VenueListComponent,
     VenueFormComponent,
-    VenueFormBasicComponent,
-    VenueFormSectorsComponent,
     ReportComponent,
     ReportChartComponent,
     ReportTableComponent,
@@ -71,9 +67,10 @@ import { MapViewComponent } from './venue/venue-form/map-view/map-view.component
     EventItemComponent,
     VenueItemComponent,
     CheckoutComponent,
-    TicketListComponent,
     TicketItemComponent,
     UserProfileComponent,
+    ToMonthChartPipe,
+    ToInitialChartPipe,
     ErrorPageComponent,
     MapViewComponent
   ],
@@ -84,13 +81,13 @@ import { MapViewComponent } from './venue/venue-form/map-view/map-view.component
         ReactiveFormsModule,
         CustomMaterialModule,
         HttpClientModule,
+        NgxChartsModule,
         AgmCoreModule.forRoot({
             apiKey: 'AIzaSyCn40xrisQWoIytZzAEohvAWPQfTIk1SR4',
             libraries: ['places', 'geometry']
             /* apiKey is required, unless you are a premium customer, in which case you can use clientId */
         }),
-        MatDividerModule,
-        MatPaginatorModule
+        GridsterModule,
     ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }],
   bootstrap: [AppComponent]

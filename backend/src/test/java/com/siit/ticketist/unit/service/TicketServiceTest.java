@@ -15,8 +15,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -34,33 +36,32 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql("/tickets.sql")
 public class TicketServiceTest {
 
-    @Autowired
+    @InjectMocks
     private TicketService ticketService;
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
-    @MockBean
+    @Mock
     private TicketRepository ticketRepositoryMock;
 
-    @MockBean
+    @Mock
     private UserService userServiceMock;
 
-    @MockBean
+    @Mock
     private EmailService emailServiceMock;
 
-    @MockBean
+    @Mock
     private ReservationRepository reservationRepositoryMock;
 
     RegisteredUser registeredUser;
 
     @Before
     public void before(){
+        MockitoAnnotations.initMocks(this);
+
         registeredUser = new RegisteredUser("kaca", "123456", "kaca@gmail.com", "Katarina", "Tukelic");
         registeredUser.setReservations(new HashSet<>());
         registeredUser.setTickets(new HashSet<>());

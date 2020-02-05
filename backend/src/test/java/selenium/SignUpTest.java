@@ -70,7 +70,7 @@ public class SignUpTest {
         signUpPage.setEmailInput("email@gmail.com");
         assertTrue(signUpPage.getSubmitButton().isEnabled());
         signUpPage.submitSignUp();
-        eventsPage.ensureIsDisplayed();
+        eventsPage.ensureSearchButtonIsDisplayed();
     }
 
     @After

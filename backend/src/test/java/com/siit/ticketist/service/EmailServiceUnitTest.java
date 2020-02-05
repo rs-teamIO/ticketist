@@ -5,6 +5,7 @@ import com.siit.ticketist.model.Event;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.repository.TicketRepository;
+import com.siit.ticketist.service.EmailService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
