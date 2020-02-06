@@ -33,8 +33,10 @@ export class EventItemComponent implements OnInit, OnDestroy {
 
     if (this.eventModel.mediaFiles.length !== 0) {
       this.eventService.getEventImage(this.eventModel.id, this.eventModel.mediaFiles[0].fileName).subscribe((response: Blob) => {
-        this.imageToShow = this.createImageFromBlob(response);
-        this.imageLoading = false;
+        this.eventService.createImageFromBlob(response, (readerResponse) => {
+          this.imageToShow = readerResponse;
+          this.imageLoading = false;
+        });
       });
     }
   }
@@ -61,17 +63,6 @@ export class EventItemComponent implements OnInit, OnDestroy {
 
       }
     });
-  }
-
-  createImageFromBlob(image: Blob) {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => {
-      this.imageToShow =  reader.result;
-    }, false);
-
-    if (image) {
-      reader.readAsDataURL(image);
-    }
   }
 
   ngOnDestroy(): void {

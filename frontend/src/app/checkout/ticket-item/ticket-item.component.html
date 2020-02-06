@@ -1,8 +1,12 @@
 <div fxLayout="row" class="outer-container">
   <mat-card class="mat-card-flat">
-    <img
-      src="https://pb2eu.interticket.com/imgs/system-20/program/000/001/334/zdravko-colic-474-279-10882.jpg"
-      alt="Event image">
+    <img [src]="imageToShow"
+         alt="Event image"
+         *ngIf="!imageLoading; else tempImage">
+    <ng-template #tempImage>
+      <img src="https://www.metrorollerdoors.com.au/wp-content/uploads/2018/02/unavailable-image.jpg"
+           alt="Temp image">
+    </ng-template>
   </mat-card>
 
   <mat-card class="mat-card-flat" style="padding-right: 50px;">

@@ -115,7 +115,7 @@ export class EventService {
   }
 
   createEvent(event: IEvent) {
-    const { eventSectors, mediaFiles, basicInfo } = event;
+    const {eventSectors, mediaFiles, basicInfo} = event;
     return this.http.post<any>(
       this.postEventPath,
       {
@@ -136,7 +136,7 @@ export class EventService {
     const headers = new HttpHeaders();
     headers.append('Content-Type', 'odata=verbose');
 
-    return this.http.post(`http://localhost:${PORT}/api/events/${eventID}/media`, fd, { headers });
+    return this.http.post(`http://localhost:${PORT}/api/events/${eventID}/media`, fd, {headers});
   }
 
   getEvent(id: number): Observable<EventModel> {
@@ -148,6 +148,25 @@ export class EventService {
   }
 
   getEventImage(eventId: number, fileName: string): Observable<Blob> {
-    return this.http.get(`http://localhost:${PORT}/api/events/${eventId}/media/${fileName}`, { responseType: 'blob' });
+    return this.http.get(`http://localhost:${PORT}/api/events/${eventId}/media/${fileName}`, {responseType: 'blob'});
   }
+
+  getEventMediaFiles(eventId: number): any {
+    return this.http.get<any>(`http://localhost:${PORT}/api/events/${eventId}/media`);
+  }
+
+  /*
+   * Util method for image converting (Blob to base64 string)
+   */
+  createImageFromBlob(image: Blob, onLoadCallback: any) {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
+      onLoadCallback(reader.result);
+    }, false);
+
+    if (image) {
+      reader.readAsDataURL(image);
+    }
+  }
+
 }

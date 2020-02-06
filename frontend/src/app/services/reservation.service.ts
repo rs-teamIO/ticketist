@@ -11,6 +11,7 @@ export interface IReservation {
   venueName: string;
   price: number;
   ticketCount: number;
+  eventId?: number;
 }
 
 export interface IReservationPage {

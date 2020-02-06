@@ -28,6 +28,8 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
   seatsMap: { [key: number]: ITicket[] } = {};
   counterValue = 0;
 
+  sectorInactive = false;
+
   constructor(private ticketService: TicketService,
               private renderer: Renderer2,
               private router: Router) {
@@ -38,6 +40,8 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
       eventDate: new FormControl({value: '', disabled: false}),
       selectedSector: new FormControl()
     });
+
+
   }
 
   onBuy() {
@@ -48,7 +52,12 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
     if (this.selectedSeats.length <= this.event.reservationLimit) {
       this.ticketService.reserveTickets(this.selectedSeats.map(seat => seat.id)).subscribe(
         (response) => {
-          Swal.fire({icon: 'success', title: 'Reservation successful', text: 'You will be redirected to front page now', timer: 3000})
+          Swal.fire({
+            icon: 'success',
+            title: 'Reservation successful',
+            text: 'You will be redirected to front page now',
+            timer: 3000
+          })
             .then(() => this.router.navigate(['/']));
         }, (error) => {
           Swal.fire({icon: 'error', title: 'Reservation failed', text: error.error.message});
@@ -61,6 +70,7 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
   onLoadSectorSeats() {
     this.seatsMap = {};
     this.seatRows = [];
+    this.sectorInactive = false;
 
     this.event.eventSectors.forEach((el) => {
       if (moment(moment(el.date)).format('YYYY-MM-DD HH:mm:ss') === this.eventSectorForm.get('eventDate').value &&
@@ -81,7 +91,6 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
             }
           } else {
             this.notNumeratedTickets = responseData.filter((ticket: ITicket) => ticket.status === 'FREE');
-            console.log(this.notNumeratedTickets)
           }
 
         });
@@ -107,7 +116,7 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
       this.notNumeratedTickets.splice(this.notNumeratedTickets.indexOf(ticket), 1);
       this.counterValue++;
     } else {
-      Swal.fire({ icon: 'warning', text: 'No more tickets available for this sector', toast: true});
+      Swal.fire({icon: 'warning', text: 'No more tickets available for this sector', toast: true});
     }
   }
 

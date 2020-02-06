@@ -25,6 +25,9 @@ public class ReservationDTO {
     @NotNull(message = "size cannot be null")
     private Integer ticketCount;
 
+//    @NotNull(message = "event id cannot be null")
+    private Long eventId;
+
     public ReservationDTO(Reservation reservation) {
         this.id = reservation.getId();
         this.eventName = reservation.getEvent().getName();
@@ -34,6 +37,7 @@ public class ReservationDTO {
             this.price += ticket.getPrice().doubleValue();
         }
         this.ticketCount = reservation.getTickets().size();
+        this.eventId = reservation.getEvent().getId();
     }
 
 }

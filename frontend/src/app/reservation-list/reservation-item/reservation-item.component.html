@@ -1,8 +1,10 @@
 <div fxLayout="row" class="outer-container">
   <div class="card-column">
-    <img
-      src="https://www.sveopoznatima.com/wp-content/uploads/2018/12/Zorica-Brunclik-Biografija-Visina-Te%C5%BEina-Godi%C5%A1te.jpg"
-      alt="Event image">
+    <img [src]="imageToShow" alt="Event image" *ngIf="!imageLoading; else tempImage">
+    <ng-template #tempImage>
+      <img src="https://www.metrorollerdoors.com.au/wp-content/uploads/2018/02/unavailable-image.jpg"
+           alt="Temp image">
+    </ng-template>
       <ng-container *ngIf="errorMessage !== ''">
         <p class="error-message">{{errorMessage}}</p>
       </ng-container>
