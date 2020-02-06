@@ -4,6 +4,10 @@ mat-card {
   border-radius: 8px;
 }
 
+mat-card img {
+  height: 165px;
+}
+
 mat-card:hover {
   cursor: default;
   background-color: rgba(255,255,255,0.45);

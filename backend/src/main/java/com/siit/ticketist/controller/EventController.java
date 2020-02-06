@@ -140,7 +140,7 @@ public class EventController {
      * @param fileName Name of the requested file
      * @return Byte array representation of the requested file
      */
-    @GetMapping(value = "{eventId}/media/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "{eventId}/media/{fileName}", produces = { MediaType.IMAGE_JPEG_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE })
     public @ResponseBody byte[] getMediaFile(@PathVariable("eventId") Long eventId,
                                              @PathVariable("fileName") String fileName) {
         return eventService.getMediaFile(eventId, fileName);

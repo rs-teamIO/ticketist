@@ -45,6 +45,12 @@ export interface IEventSector {
   date?: number;
 }
 
+export interface IMediaFile {
+  id?: number;
+  fileName?: string;
+  mimeType?: string;
+}
+
 @Injectable({providedIn: 'root'})
 export class EventService {
 
@@ -141,5 +147,7 @@ export class EventService {
     return this.http.get<EventModel>(this.cancelEventPath + id);
   }
 
-
+  getEventImage(eventId: number, fileName: string): Observable<Blob> {
+    return this.http.get(`http://localhost:${PORT}/api/events/${eventId}/media/${fileName}`, { responseType: 'blob' });
+  }
 }
