@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { EventComponent } from './event/event.component';
-import { VenueComponent } from './venue/venue.component';
 import { LoginComponent } from './auth/login/login.component';
 import { SignUpComponent } from './auth/sign-up/sign-up.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
@@ -19,7 +18,6 @@ const routes: Routes = [
   { path: '', redirectTo: '/events', pathMatch: 'full' },
   { path: 'events', component: EventComponent },
   { path: 'events/new', component: EventFormComponent, canActivate: [AdminAuthGuard]},
-  { path: 'venues', component: VenueComponent },
   { path: 'venues/list', component: VenueListComponent, canActivate: [AdminAuthGuard] },
   { path: 'venues/new', component: VenueFormComponent, canActivate: [AdminAuthGuard] },
   { path: 'venues/:id', component: VenueFormComponent, canActivate: [AdminAuthGuard] },

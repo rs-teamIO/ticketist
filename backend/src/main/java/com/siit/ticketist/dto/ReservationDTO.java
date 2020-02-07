@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Getter @Setter @NoArgsConstructor
 public class ReservationDTO {
@@ -25,7 +26,8 @@ public class ReservationDTO {
     @NotNull(message = "size cannot be null")
     private Integer ticketCount;
 
-//    @NotNull(message = "event id cannot be null")
+    private Date date;
+
     private Long eventId;
 
     public ReservationDTO(Reservation reservation) {
@@ -35,6 +37,7 @@ public class ReservationDTO {
         this.price = 0.0;
         for(Ticket ticket : reservation.getTickets()) {
             this.price += ticket.getPrice().doubleValue();
+            this.date = ticket.getEventSector().getDate();
         }
         this.ticketCount = reservation.getTickets().size();
         this.eventId = reservation.getEvent().getId();

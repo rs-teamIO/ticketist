@@ -1,6 +1,6 @@
 import {Component, OnInit, Input} from '@angular/core';
 import {IReservation, ReservationService} from 'src/app/services/reservation.service';
-import {EventService, IMediaFile} from "../../services/event.service";
+import {EventService, IMediaFile} from '../../services/event.service';
 
 @Component({
   selector: 'app-reservation-item',
@@ -13,9 +13,7 @@ export class ReservationItemComponent implements OnInit {
   imageToShow: any;
   imageLoading = true;
 
-  constructor(private reservationService: ReservationService,
-              private eventService: EventService) {
-  }
+  constructor(private reservationService: ReservationService, private eventService: EventService) {}
 
   ngOnInit() {
     this.eventService.getEventMediaFiles(this.reservation.eventId).subscribe((response: IMediaFile[]) =>{

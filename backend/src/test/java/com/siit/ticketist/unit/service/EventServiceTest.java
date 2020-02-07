@@ -228,6 +228,7 @@ public class EventServiceTest {
         eventService.save(event);
     }
 
+    @Test
     public void Save_ShouldPass_whenEventIsValidNumerable(){
         Event event = new Event();
         Venue ven = new Venue();

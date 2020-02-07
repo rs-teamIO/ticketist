@@ -13,12 +13,13 @@
   <div class="card-column" style="justify-content: space-between;">
     <mat-card-title>{{reservation.eventName}}</mat-card-title>
     <mat-card-subtitle>{{reservation.venueName}}</mat-card-subtitle>
-    <mat-card-subtitle>02.02.2020. 12:00</mat-card-subtitle>
+    <mat-card-subtitle>{{reservation.date | date}}</mat-card-subtitle>
   </div>
 
-  <div class="card-column" style="justify-content: space-around;">
-    <mat-card-subtitle>Tickets: <b>{{reservation.ticketCount}}</b></mat-card-subtitle>
-    <mat-card-subtitle>Total price: <b>${{reservation.price}}</b></mat-card-subtitle>
+  <div class="card-column" style="justify-content: space-between; margin-top: 20px">
+    <mat-card-subtitle></mat-card-subtitle>
+    <mat-card-subtitle>Tickets: {{reservation.ticketCount}}</mat-card-subtitle>
+    <mat-card-subtitle>Total price: ${{reservation.price}}</mat-card-subtitle>
   </div>
 
   <div class="card-column" style="justify-content: space-around;">
