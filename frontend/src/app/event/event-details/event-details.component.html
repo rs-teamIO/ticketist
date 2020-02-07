@@ -19,7 +19,9 @@
         <p>{{event.description}}</p>
         </mat-card-content>
         <mat-card-actions>
-        <app-map-view [latitude]="venue.latitude" [longitude]="venue.longitude"></app-map-view>
+        <agm-map [latitude]=venue.latitude [longitude]=venue.longitude [zoom]="10">
+          <agm-marker [latitude]=venue.latitude [longitude]=venue.longitude></agm-marker>
+        </agm-map>
         </mat-card-actions>
     </mat-card>
 
