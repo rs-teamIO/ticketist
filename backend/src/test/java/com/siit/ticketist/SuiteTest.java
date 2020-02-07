@@ -1,10 +1,9 @@
 package com.siit.ticketist;
 
+import com.siit.ticketist.integration.repository.SectorRepositoryTest;
 import com.siit.ticketist.repository.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({

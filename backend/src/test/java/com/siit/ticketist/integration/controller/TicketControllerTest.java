@@ -242,4 +242,37 @@ public class TicketControllerTest {
         assertEquals("Expected status FORBIDDEN", HttpStatus.FORBIDDEN, response.getStatusCode());
     }
 
+    //----------------------
+
+    @Test
+    public void ticketAccept_ShouldThrowBadRequestException_whenReservationIsInvalid(){
+        HttpEntity request = new HttpEntity<>(headers);
+
+        ResponseEntity<String> result = testRestTemplate.exchange("/api/tickets/reservations/accept/100", HttpMethod.POST, request, String.class);
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+        assertEquals("{\"message\":\"Reservation does not exist\"}", result.getBody().toString());
+    }
+
+    @Test
+    public void ticketCancel_ShouldThrowBadRequestException_whenReservationIsInvalid(){
+        HttpEntity request = new HttpEntity<>(headers);
+
+        ResponseEntity<String> result = testRestTemplate.exchange("/api/tickets/reservations/cancel/100", HttpMethod.POST, request, String.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+        assertEquals("{\"message\":\"Reservation does not exist\"}", result.getBody().toString());
+
+    }
+
+    @Test
+    public void ticketAccept_ShouldThrowBadRequestException_whenReservationDoesntBelongToUser(){
+        HttpEntity request = new HttpEntity<>(headers);
+
+        ResponseEntity<String> result = testRestTemplate.exchange("/api/tickets/reservations/accept/3", HttpMethod.POST, request, String.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+        assertEquals("{\"message\":\"Reservation does not belong to that user!\"}", result.getBody().toString());
+
+
+    }
 }

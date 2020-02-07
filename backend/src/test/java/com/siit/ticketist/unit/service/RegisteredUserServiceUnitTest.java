@@ -1,8 +1,10 @@
-package com.siit.ticketist.service;
+package com.siit.ticketist.unit.service;
 import com.siit.ticketist.exceptions.AuthorizationException;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.RegisteredUser;
+import com.siit.ticketist.service.RegisteredUserService;
+import com.siit.ticketist.service.UserService;
 import org.junit.Rule;
 import org.junit.Test;
 import static org.junit.Assert.*;

@@ -1,4 +1,4 @@
-package com.siit.ticketist.service;
+package com.siit.ticketist.unit.service;
 import static org.junit.Assert.*;
 
 import com.siit.ticketist.exceptions.BadRequestException;
@@ -6,6 +6,7 @@ import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.SectorRepository;
+import com.siit.ticketist.service.EventService;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

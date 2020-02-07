@@ -1,4 +1,4 @@
-package com.siit.ticketist.service;
+package com.siit.ticketist.integration.service;
 
 import com.siit.ticketist.exceptions.AuthorizationException;
 import com.siit.ticketist.exceptions.BadRequestException;
@@ -6,6 +6,8 @@ import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.User;
 import com.siit.ticketist.security.UserDetailsServiceImpl;
+import com.siit.ticketist.service.RegisteredUserService;
+import com.siit.ticketist.service.UserService;
 import com.sun.deploy.security.ruleset.ExceptionRule;
 import org.junit.Before;
 import org.junit.Rule;

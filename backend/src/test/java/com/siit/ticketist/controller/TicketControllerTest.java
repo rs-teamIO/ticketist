@@ -21,12 +21,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Sql("/data.sql")
+@Sql("/tickets.sql")
 public class TicketControllerTest {
 
     @Autowired
@@ -42,7 +41,7 @@ public class TicketControllerTest {
 
     @Before
     public void setUp() {
-        final UserDetails userDetails = userDetailsService.loadUserByUsername("filip");
+        final UserDetails userDetails = userDetailsService.loadUserByUsername("kaca");
         final String token = tokenUtils.generateToken(userDetails);
 
         headers = new HttpHeaders();
@@ -53,20 +52,19 @@ public class TicketControllerTest {
     public void ticketAccept_ShouldThrowBadRequestException_whenReservationIsInvalid(){
         HttpEntity request = new HttpEntity<>(headers);
 
-//        ResponseEntity<Boolean> result = testRestTemplate.exchange("/api/tickets/reservations/accept/100", HttpMethod.POST, request, Boolean.class);
-            ResponseEntity<Boolean> result = testRestTemplate.postForEntity("/api/tickets/reservations/accept/100/",request,Boolean.class);
+        ResponseEntity<String> result = testRestTemplate.exchange("/api/tickets/reservations/accept/100", HttpMethod.POST, request, String.class);
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertNull(result.getBody().booleanValue());
+        assertEquals("{\"message\":\"Reservation does not exist\"}", result.getBody().toString());
     }
 
     @Test
     public void ticketCancel_ShouldThrowBadRequestException_whenReservationIsInvalid(){
         HttpEntity request = new HttpEntity<>(headers);
 
-        ResponseEntity<Boolean> result = testRestTemplate.exchange("/api/tickets/reservations/cancel/100", HttpMethod.POST, request, Boolean.class);
+        ResponseEntity<String> result = testRestTemplate.exchange("/api/tickets/reservations/cancel/100", HttpMethod.POST, request, String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertNull(result.getBody().booleanValue());
+        assertEquals("{\"message\":\"Reservation does not exist\"}", result.getBody().toString());
 
     }
 
@@ -74,10 +72,11 @@ public class TicketControllerTest {
     public void ticketAccept_ShouldThrowBadRequestException_whenReservationDoesntBelongToUser(){
         HttpEntity request = new HttpEntity<>(headers);
 
-        ResponseEntity<Boolean> result = testRestTemplate.exchange("/api/tickets/reservations/accept/3", HttpMethod.POST, request, Boolean.class);
+        ResponseEntity<String> result = testRestTemplate.exchange("/api/tickets/reservations/accept/3", HttpMethod.POST, request, String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertNull(result.getBody().booleanValue());
+        assertEquals("{\"message\":\"Reservation does not belong to that user!\"}", result.getBody().toString());
+
 
     }
 
@@ -86,10 +85,10 @@ public class TicketControllerTest {
     public void ticketCancel_ShouldThrowBadRequestException_whenReservationDoesntBelongToUser(){
         HttpEntity<Long> request = new HttpEntity<>(3l, headers);
 
-        ResponseEntity<Boolean> result = testRestTemplate.exchange("/api/tickets/reservations/cancel/3", HttpMethod.POST, request, Boolean.class);
+        ResponseEntity<String> result = testRestTemplate.exchange("/api/tickets/reservations/cancel/3", HttpMethod.POST, request, String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertNull(result.getBody().booleanValue());
+        assertEquals("{\"message\":\"Reservation does not belong to that user!\"}", result.getBody().toString());
 
     }
 
@@ -100,8 +99,8 @@ public class TicketControllerTest {
 
         ResponseEntity<Boolean> result = testRestTemplate.exchange("/api/tickets/reservations/accept/1", HttpMethod.POST, request, Boolean.class);
 
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertNull(result.getBody().booleanValue());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertTrue(result.getBody().booleanValue());
 
     }
 
@@ -113,8 +112,8 @@ public class TicketControllerTest {
 
         ResponseEntity<Boolean> result = testRestTemplate.exchange("/api/tickets/reservations/accept/1", HttpMethod.POST, request, Boolean.class);
 
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertNull(result.getBody().booleanValue());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertTrue(result.getBody().booleanValue());
     }
 
 
@@ -128,6 +127,6 @@ public class TicketControllerTest {
         });
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(4, result.getBody().size());
+        assertEquals(3, result.getBody().size());
     }
 }

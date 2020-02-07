@@ -1,9 +1,11 @@
-package com.siit.ticketist.service;
+package com.siit.ticketist.integration.service;
 
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.ForbiddenException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
+import com.siit.ticketist.service.EventService;
+import com.siit.ticketist.service.TicketService;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
