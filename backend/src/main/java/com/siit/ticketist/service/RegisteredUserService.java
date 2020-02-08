@@ -4,6 +4,7 @@ import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.Role;
 import com.siit.ticketist.repository.RegisteredUserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -12,18 +13,12 @@ import java.util.UUID;
 /**
  * Registered User service layer.
  */
-@Service
+@Service @RequiredArgsConstructor
 public class RegisteredUserService {
 
     private final UserService userService;
     private final RegisteredUserRepository registeredUserRepository;
     private final EmailService emailService;
-
-    public RegisteredUserService(UserService userService, RegisteredUserRepository registeredUserRepository, EmailService emailService) {
-        this.userService = userService;
-        this.registeredUserRepository = registeredUserRepository;
-        this.emailService = emailService;
-    }
 
     /**
      * Creates a new Registered User and sends verification email
