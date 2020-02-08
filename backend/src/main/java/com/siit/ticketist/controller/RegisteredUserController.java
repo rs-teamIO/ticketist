@@ -8,6 +8,7 @@ import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.User;
 import com.siit.ticketist.service.RegisteredUserService;
 import com.siit.ticketist.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,17 +23,12 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class RegisteredUserController {
 
     private final RegisteredUserService registeredUserService;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-
-    public RegisteredUserController(RegisteredUserService registeredUserService, UserService userService, PasswordEncoder passwordEncoder) {
-        this.registeredUserService = registeredUserService;
-        this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     /**
      * POST /api/users
@@ -56,7 +52,7 @@ public class RegisteredUserController {
      * @return {@link ResponseEntity} containing HttpStatus and message of the operation result
      */
     @GetMapping(value="verify/{verificationCode}")
-    public ResponseEntity handleVerify(@PathVariable("verificationCode") String verificationCode) {
+    public ResponseEntity<SuccessResponse> handleVerify(@PathVariable("verificationCode") String verificationCode) {
         registeredUserService.verify(verificationCode);
         return new ResponseEntity(new SuccessResponse("User verified successfully."), HttpStatus.OK);
     }
