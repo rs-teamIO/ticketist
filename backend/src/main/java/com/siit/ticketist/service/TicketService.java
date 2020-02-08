@@ -60,7 +60,8 @@ public class TicketService {
     }
 
     public Set<Ticket> findAllByReservationId(Long id) {
-        return reservationRepository.findOneById(id).orElseThrow(() -> new NotFoundException("Reservation not found")).getTickets();
+        return reservationRepository.findOneById(id)
+                .orElseThrow(() -> new NotFoundException("Reservation not found")).getTickets();
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false, rollbackFor = OptimisticLockException.class)
