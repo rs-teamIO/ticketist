@@ -32,10 +32,18 @@ export class EventFormComponent implements OnInit, OnDestroy {
   sectorForm: FormGroup;
   errorMessage = '';
   selectedFiles: File[] = [];
+  allHours = [];
+  allMinutes = [];
 
   constructor(private router: Router, private eventService: EventService, private venueService: VenueService) { }
 
   ngOnInit() {
+    for (let i = 0; i < 60; i++) {
+      this.allMinutes.push(i);
+      if (i < 24) {
+        this.allHours.push(i);
+      }
+    }
     this.newEventForm = new FormGroup({
       eventName: new FormControl('', Validators.required),
       category: new FormControl('', Validators.required),
@@ -44,6 +52,8 @@ export class EventFormComponent implements OnInit, OnDestroy {
         startDate: new FormControl(null, [Validators.required]),
         endDate: new FormControl(null, [Validators.required])
       }, [this.datesValidator.bind(this)]),
+      minutes: new FormControl('', Validators.required),
+      hours: new FormControl('', Validators.required),
       reservationLimit: new FormControl(null, [Validators.required, Validators.min(1)]),
       description: new FormControl('', Validators.required)
     });
@@ -114,14 +124,17 @@ export class EventFormComponent implements OnInit, OnDestroy {
     });
     eventSectors = eventSectors.filter((sector: IEventSector) => sector !== null);
 
+    const hours = (+this.hours.value) * 60 * 60 * 1000;
+    const minutes = (+this.minutes.value) * 60 * 1000;
+
     const newEvent: IEvent = {
       basicInfo: {
         venueId: this.currentVenue.id,
         name: this.eventName.value,
         category: this.category.value,
-        startDate: new Date(this.startDateInfo.value).getTime() + 60 * 60 * 1000,
-        endDate: new Date(this.endDateInfo.value).getTime() + 2 * 60 * 60 * 1000,
-        reservationDeadline: new Date(this.reservationDeadlineInfo.value).getTime(),
+        startDate: new Date(this.startDateInfo.value).getTime() + 0.5 * 60 * 60 * 1000 + (hours + minutes),
+        endDate: new Date(this.endDateInfo.value).getTime() + 1.5 * 60 * 60 * 1000 + (hours + minutes),
+        reservationDeadline: new Date(this.reservationDeadlineInfo.value).getTime() + (hours + minutes),
         description: this.description.value,
         reservationLimit: this.reservationLimit.value
       },
@@ -179,6 +192,14 @@ export class EventFormComponent implements OnInit, OnDestroy {
 
   get endDateInfo() {
     return this.newEventForm.get('dates').get('endDate');
+  }
+
+  get hours() {
+    return this.newEventForm.get('hours');
+  }
+
+  get minutes() {
+    return this.newEventForm.get('minutes');
   }
 
   get reservationDeadlineInfo() {
