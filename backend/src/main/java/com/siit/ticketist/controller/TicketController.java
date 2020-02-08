@@ -18,7 +18,6 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Tickets REST controller.

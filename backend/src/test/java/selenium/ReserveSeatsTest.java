@@ -6,9 +6,9 @@ import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.PageFactory;
-import selenium.Pages.*;
-
-import java.util.concurrent.TimeUnit;
+import selenium.Pages.EventDetailsPage;
+import selenium.Pages.EventsPage;
+import selenium.Pages.LoginPage;
 
 import static org.junit.Assert.*;
 

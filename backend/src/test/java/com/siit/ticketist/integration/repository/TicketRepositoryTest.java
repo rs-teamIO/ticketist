@@ -1,6 +1,5 @@
 package com.siit.ticketist.integration.repository;
 
-import com.siit.ticketist.model.Ticket;
 import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.repository.TicketRepository;
 import org.hamcrest.collection.IsEmptyCollection;
