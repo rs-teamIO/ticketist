@@ -23,10 +23,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.*;
@@ -429,15 +426,20 @@ public class EventServiceTest {
         Venue ven = new Venue();
         ven.setId(1l);
         event.setVenue(ven);
+        event.setReservationLimit(3);
+        event.setDescription("");
+        event.setCategory(Category.ENTERTAINMENT);
+        event.setName("");
+        event.setMediaFiles(new HashSet<MediaFile>());
         //'2020-03-14', '2020-03-15'
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         Date date = null;
         Date date2 = null;
         Date date3 = null;
         try {
-            date = dateFormat.parse("15/04/2020");
-            date2 = dateFormat.parse("17/04/2020");
-            date3 = dateFormat.parse("14/04/2020");
+            date = dateFormat.parse("15/04/2021");
+            date2 = dateFormat.parse("17/04/2021");
+            date3 = dateFormat.parse("14/04/2021");
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -478,17 +480,22 @@ public class EventServiceTest {
         Event event = new Event();
         Venue ven = new Venue();
         ven.setId(1l);
-
         event.setVenue(ven);
+        event.setVenue(ven);
+        event.setReservationLimit(3);
+        event.setDescription("");
+        event.setCategory(Category.ENTERTAINMENT);
+        event.setName("");
+        event.setMediaFiles(new HashSet<MediaFile>());
         //'2020-03-14', '2020-03-15'
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         Date date = null;
         Date date2 = null;
         Date date3 = null;
         try {
-            date = dateFormat.parse("15/04/2020");
-            date2 = dateFormat.parse("17/04/2020");
-            date3 = dateFormat.parse("14/04/2020");
+            date = dateFormat.parse("15/04/2021");
+            date2 = dateFormat.parse("17/04/2021");
+            date3 = dateFormat.parse("14/04/2021");
         } catch (ParseException e) {
             e.printStackTrace();
         }

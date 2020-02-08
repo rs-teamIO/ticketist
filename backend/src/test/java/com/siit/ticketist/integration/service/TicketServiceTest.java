@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -370,21 +371,29 @@ public class TicketServiceTest {
         Reservation reservation = new Reservation();
         reservation.setId(1l);
 
+        Optional<Reservation> test;
         ticketService.acceptOrCancelReservations(reservation.getId(), TicketStatus.PAID);
+
+
+        test = reservationRepository.findById(reservation.getId());
+        if(test.isPresent()){
+            for (Ticket ticket: test.get().getTickets()) {
+                assertEquals(TicketStatus.PAID, ticket.getStatus());
+                assertNull(ticket.getReservation());
+            }
+        }
     }
 
     @Test
     public void getUsersBoughtTickets_ShouldPass_whenUserIsValid(){
         List<Ticket> tickets = this.ticketService.getUsersBoughtTickets();
         assertEquals(3,tickets.size());
-
     }
 
     @Test
     public void getTotalNumberOfUsersReservations_ShouldPass_whenUserIsValid(){
         Long ticketSize = this.ticketService.getTotalNumberOfUsersReservations();
-        assertTrue(ticketSize.equals(2l));
+        assertEquals(Long.valueOf(2),ticketSize);
 
     }
-
 }
