@@ -12,6 +12,9 @@ public class EventsPage extends BasePage {
     @FindBy(xpath = "//button[@routerlink=\"/my-reservations\"]")
     private WebElement myReservationsButton;
 
+    @FindBy(xpath = "//button[@routerlink=\"/events/new\"]")
+    private WebElement newEventButton;
+
     @FindBy(xpath = "//button[@routerlink=\"/profile\"]")
     private WebElement profileButton;
 
@@ -47,6 +50,12 @@ public class EventsPage extends BasePage {
 
     @FindBy(xpath = "//div[contains(@class, 'card-item')][4]/app-event-item//button")
     private WebElement buyReserveEXITButton;
+
+    @FindBy(xpath = "/html/body/app-root/app-header/mat-toolbar/div/button[4]")
+    private WebElement logoutButton;
+
+    @FindBy(xpath = "/html/body/app-root/app-event/div/app-event-list/div/mat-card/mat-card-header/p[1]")
+    private WebElement futureEventsPar;
 
     public EventsPage(WebDriver driver) { super(driver); }
 
@@ -86,10 +95,16 @@ public class EventsPage extends BasePage {
         myReservationsButton.click();
     }
 
+    public void navigateToNewEvent() { newEventButton.click(); }
+
+    public void ensureIsDisplayedNewEventButton() { ensureIsDisplayed(newEventButton);}
+
     public void submitProfile() {
         WebElement el = getProfileButton();
         el.click();
     }
+
+
 
     public void clickVenuesButton() { clickElement(venuesButton); }
 
@@ -119,6 +134,12 @@ public class EventsPage extends BasePage {
     public void enterStarDate(String text) { enterText(searchStarDate, text); }
 
     public void enterEndDate(String text) { enterText(searchEndDate, text); }
+
+    public void ensureIsDisplayedLogout() { ensureIsDisplayed(logoutButton);}
+
+    public void ensureIsDisplayedPage() { ensureIsDisplayed(futureEventsPar); }
+
+    public void logout() { clickElement(logoutButton);}
 
     public void clearAllSearchFields() {
         searchEventName.clear();
