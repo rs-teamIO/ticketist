@@ -74,30 +74,39 @@ public class CheckoutTest {
     }
 
     private void testSuccessfulPayment() {
+        // right items are to be payed
         checkoutPage.ensureTotalPriceIsDisplayed();
         assertThat("Total price should be 70$", checkoutPage.getTotalPrice().getText().contains(CART_TOTAL));
-        checkoutPage.clickPaypalButton();
 
+        // switch to paypal window
+        checkoutPage.clickPaypalButton();
         String winHandleBefore = driver.getWindowHandle();
         Set<String> handle= driver.getWindowHandles();
         checkoutPage.ensureNumberOfWindowsIsEqual(2);
         for(String winHandle : driver.getWindowHandles()){
             driver.switchTo().window(winHandle);
         }
+
+        // ToDo enter wrong email
+
+        // enter right credentials
         checkoutPage.enterEmail("sb-st3c6518971@personal.example.com");
         checkoutPage.clickNextPaypalButton();
         checkoutPage.enterPassword("hd*}'c3V");
         checkoutPage.clickLoginPaypalButton();
 
+        // same amount to be payed is in paypal cart
         checkoutPage.ensureCartTotalIsDisplayed();
         assertThat("Cart total should be 70$", checkoutPage.getCartTotal().getText().contains(CART_TOTAL));
         checkoutPage.ensurePaymentSubmitIsClickable();
         checkoutPage.clickPaymentSubmitButton();
 
+        // confirm successful payment
         driver.switchTo().window(winHandleBefore);
         checkoutPage.ensureSwalAlertIsSuccessful("Payment successful!");
         checkoutPage.clickSwalOkButton();
 
+        // redirected to front page
         assertEquals("http://localhost:4200/events", driver.getCurrentUrl());
     }
 }

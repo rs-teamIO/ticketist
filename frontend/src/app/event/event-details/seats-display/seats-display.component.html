@@ -31,7 +31,8 @@
 
     <mat-form-field color="primary" appearance="outline" class="sector-select">
       <mat-select placeholder="Pick a sector" formControlName="selectedSector" (selectionChange)="onLoadSectorSeats()" id="sector-select">
-        <mat-option *ngFor="let sector of venue.sectors" [value]="sector">{{sector.name}}</mat-option>
+        <mat-option *ngFor="let sector of venue.sectors" [value]="sector" [disabled]="!isSectorActive(sector.id)">
+          {{sector.name}}</mat-option>
       </mat-select>
     </mat-form-field>
 

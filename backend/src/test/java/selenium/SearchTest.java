@@ -1,6 +1,5 @@
 package selenium;
 
-import com.siit.ticketist.model.Category;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -46,10 +46,10 @@ public class SearchTest {
 
         testSearchEventsByName();
         testSearchEmptyFields();
-//////        testSearchEventsByCategory();
-//////        testSearchEventsByVenueName();
+        testSearchEventsByCategory();
+        testSearchEventsByVenueName();
         testSearchEventsByStartDate();
-//        testSearchEventsByEndDate();
+        testSearchEventsByEndDate();
         testSearchNonExistingEvent();
 
     }
@@ -79,20 +79,22 @@ public class SearchTest {
 
     private void testSearchEventsByCategory() throws InterruptedException {
         eventsPage.clearAllSearchFields();
-        eventsPage.enterCategory(Category.ENTERTAINMENT);
+        eventsPage.selectCategoryEntertainment();
         eventsPage.clickSearchButton();
         eventsPage.ensureNumberOfResultsIs("Results found: 4");
         assertThat("There are 4 events with ENTERTAINMENT category",
                 eventsPage.getNumberOfResults().getText().contains("Results found: 4"));
+        Thread.sleep(5000);
     }
 
-    private void testSearchEventsByVenueName () {
+    private void testSearchEventsByVenueName() throws InterruptedException {
         eventsPage.clearAllSearchFields();
-        eventsPage.enterVenueName("Spens");
+        eventsPage.selectVenueSpens();
         eventsPage.clickSearchButton();
         eventsPage.ensureNumberOfResultsIs("Results found: 10");
         assertThat("There are 10 events with 'Spens' venue",
                 eventsPage.getNumberOfResults().getText().contains("Results found: 10"));
+        Thread.sleep(5000);
     }
 
     private void testSearchEventsByStartDate() throws InterruptedException {
@@ -157,12 +159,8 @@ public class SearchTest {
     }
 
     private Date parseDate(String stringDate) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
         return sdf.parse(stringDate);
 
     }
-
-
-
-
 }

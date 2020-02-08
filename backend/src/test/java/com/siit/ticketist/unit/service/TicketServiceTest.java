@@ -14,27 +14,19 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.mail.MessagingException;
 import java.math.BigDecimal;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class TicketServiceTest {
 
@@ -604,5 +596,75 @@ public class TicketServiceTest {
 
     }
 
+    private static final Long TICKET_ID = 1L;
+    private static final String TICKET_NOT_PAID_MESSAGE = "Unable to scan ticket with requested ID.";
+    private static final String TICKET_NOT_FOUND_MESSAGE = "No ticket found with specified ID.";
+    /**
+     * Tests scanTicket in {@link TicketService} when ticket with given ID exists and the ticket
+     * status is set to {@link TicketStatus.PAID}.
+     */
+    @Test
+    public void scanTicket_shouldReturnTicket_whenTicketExistsAndTicketIsPaid() {
+        // Arrange
+        final Ticket ticket = new Ticket();
+        ticket.setId(TICKET_ID);
+        ticket.setStatus(TicketStatus.PAID);
 
+        when(this.ticketRepositoryMock.findOneById(TICKET_ID))
+                .thenReturn(Optional.of(ticket));
+
+        // Act
+        Ticket scannedTicket = this.ticketService.scanTicket(TICKET_ID);
+
+        // Assert
+        verify(this.ticketRepositoryMock, times(1)).findOneById(TICKET_ID);
+        verify(this.ticketRepositoryMock, times(1)).save(ticket);
+        assertNotNull(scannedTicket);
+        assertEquals(TICKET_ID, scannedTicket.getId());
+        assertEquals(TicketStatus.USED, scannedTicket.getStatus());
+    }
+
+    /**
+     * Tests scanTicket in {@link TicketService} when ticket with given ID exists and the ticket
+     * status is NOT set to {@link TicketStatus.PAID}.
+     */
+    @Test
+    public void scanTicket_shouldThrowBadRequestException_whenTicketExistsAndTicketIsNotPaid() {
+        // Arrange
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage(TICKET_NOT_PAID_MESSAGE);
+        final Ticket ticket = new Ticket();
+        ticket.setId(TICKET_ID);
+        ticket.setStatus(TicketStatus.RESERVED);
+
+        when(this.ticketRepositoryMock.findOneById(TICKET_ID))
+                .thenReturn(Optional.of(ticket));
+
+        // Act
+        this.ticketService.scanTicket(TICKET_ID);
+
+        // Assert
+        verify(this.ticketRepositoryMock, times(1)).findOneById(TICKET_ID);
+        verify(this.ticketRepositoryMock, times(0)).save(ticket);
+    }
+
+    /**
+     * Tests scanTicket in {@link TicketService} when ticket with given ID does not exist.
+     */
+    @Test
+    public void scanTicket_shouldThrowBadRequestException_whenTicketDoesNotExist() {
+        // Arrange
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage(TICKET_NOT_FOUND_MESSAGE);
+
+        when(this.ticketRepositoryMock.findOneById(TICKET_ID))
+                .thenReturn(Optional.empty());
+
+        // Act
+        this.ticketService.scanTicket(TICKET_ID);
+
+        // Assert
+        verify(this.ticketRepositoryMock, times(1)).findOneById(TICKET_ID);
+        verify(this.ticketRepositoryMock, times(0)).save(any(Ticket.class));
+    }
 }

@@ -1,19 +1,17 @@
 package com.siit.ticketist.service;
 
-import com.itextpdf.text.DocumentException;
-import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.dto.PdfTicket;
+import com.siit.ticketist.exceptions.BadRequestException;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -22,7 +20,7 @@ import java.util.Map;
 /**
  * PDF Service implementation. Generates PDF files in-memory.
  */
-@Service
+@Service @RequiredArgsConstructor
 public class PdfService {
 
     private static final String ENDPOINT = "https://localhost:8080/api/tickets/validate/";
@@ -32,14 +30,8 @@ public class PdfService {
     @Value("${templates.pdf.tickets}")
     private String ticketTemplateName;
 
-    private final SpringTemplateEngine springTemplateEngine;
+    private final ITemplateEngine springTemplateEngine;
     private final QrCodeService qrCodeService;
-
-    @Autowired
-    public PdfService(SpringTemplateEngine springTemplateEngine, QrCodeService qrCodeService) {
-        this.springTemplateEngine = springTemplateEngine;
-        this.qrCodeService = qrCodeService;
-    }
 
     /**
      * Generates a PDF file based on given parameters
@@ -51,14 +43,14 @@ public class PdfService {
      */
     private byte[] createPdf(String templateName, Map<String, Object> variables) {
         Assert.notNull(templateName, "The templateName can not be null");
-        String processedHtml = springTemplateEngine.process(templateName, new Context(Locale.getDefault(), variables));
+        String processedHtml = this.springTemplateEngine.process(templateName, new Context(Locale.getDefault(), variables));
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             ITextRenderer renderer = new ITextRenderer();
             renderer.setDocumentFromString(processedHtml);
             renderer.layout();
             renderer.createPDF(outputStream, true);
             return outputStream.toByteArray();
-        } catch (DocumentException | IOException e) {
+        } catch (Exception e) {
             throw new BadRequestException("Error occurred while trying to create PDF.");
         }
     }
@@ -69,15 +61,15 @@ public class PdfService {
      * @param tickets List of PdfTicket objects to be included in the invoice
      * @return byte array representation of the invoice PDF file
      */
-    byte[] generatePdfInvoice(List<PdfTicket> tickets) {
+    public byte[] generatePdfInvoice(List<PdfTicket> tickets) {
         Map<String, Object> templateData = new HashMap<>();
         tickets.forEach(pdfTicket -> {
-            byte[] qrCodeImage = qrCodeService.getQRCodeImage(ENDPOINT.concat(pdfTicket.getTicketId()), QR_CODE_WIDTH, QR_CODE_HEIGHT);
+            byte[] qrCodeImage = this.qrCodeService.getQRCodeImage(ENDPOINT.concat(pdfTicket.getTicketId()), QR_CODE_WIDTH, QR_CODE_HEIGHT);
             String base64 = Base64.encodeBase64String(qrCodeImage);
             String image = "data:image/jpg;base64,".concat(base64);
             pdfTicket.setBase64Image(image);
         });
         templateData.put("tickets", tickets);
-        return createPdf(ticketTemplateName, templateData);
+        return this.createPdf(ticketTemplateName, templateData);
     }
 }
