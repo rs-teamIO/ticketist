@@ -53,7 +53,6 @@ export interface IMediaFile {
 
 @Injectable({providedIn: 'root'})
 export class EventService {
-
   private page: Page = new Page(0, 8);
   eventsChanged = new Subject<IEventPage>();
   pageChanged = new Subject<PageEvent>();
@@ -65,7 +64,7 @@ export class EventService {
   private readonly postEventPath = `http://localhost:${PORT}/api/events`;
   private readonly cancelEventPath = `http://localhost:${PORT}/api/events/cancel/`;
 
-  private searchParams = {
+  private _searchParams = {
     eventName: '',
     category: '',
     venueName: '',
@@ -78,7 +77,7 @@ export class EventService {
       this.page = {page: value.pageIndex, size: value.pageSize};
     });
     this.searchParamsChanged.subscribe((value) => {
-      this.searchParams = value;
+      this._searchParams = value;
     });
   }
 
@@ -91,7 +90,7 @@ export class EventService {
   }
 
   getEvents() {
-    if (EventService.checkIfEmpty(this.searchParams)) {
+    if (EventService.checkIfEmpty(this._searchParams)) {
       this.getAll();
     } else {
       this.searchAll();
@@ -108,7 +107,7 @@ export class EventService {
 
   protected searchAll(): void {
     const params: HttpParams = new HttpParams().set('page', String(this.page.page)).set('size', String(this.page.size));
-    this.http.post<IEventPage>(this.searchEventsPath, this.searchParams, {params})
+    this.http.post<IEventPage>(this.searchEventsPath, this._searchParams, {params})
       .subscribe(responseData => {
         this.eventsChanged.next(responseData);
       });
@@ -151,8 +150,8 @@ export class EventService {
     return this.http.get(`http://localhost:${PORT}/api/events/${eventId}/media/${fileName}`, {responseType: 'blob'});
   }
 
-  getEventMediaFiles(eventId: number): any {
-    return this.http.get<any>(`http://localhost:${PORT}/api/events/${eventId}/media`);
+  getEventMediaFiles(eventId: number): Observable<IMediaFile[]> {
+    return this.http.get<IMediaFile[]>(`http://localhost:${PORT}/api/events/${eventId}/media`);
   }
 
   /*
