@@ -39,8 +39,6 @@ export class EventDetailsComponent implements OnInit {
         this.venueService.getVenue(this.event.venueId)
           .subscribe(responseData => {
             this.venue = responseData;
-            console.log(this.venue);
-            console.log(this.event);
           });
       });
   }

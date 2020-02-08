@@ -7,6 +7,7 @@ import { ReportComponent } from './report.component';
 import { ReportChartComponent } from './report-chart/report-chart.component';
 import { ReportTableComponent } from './report-table/report-table.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import {MatSortModule} from "@angular/material/sort";
 
 @NgModule({
   imports: [
@@ -18,7 +19,8 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     MatSelectModule,
     MatCardModule,
     MatTableModule,
-    MatButtonModule
+    MatButtonModule,
+    MatSortModule
   ],
   declarations: [
     ReportComponent,

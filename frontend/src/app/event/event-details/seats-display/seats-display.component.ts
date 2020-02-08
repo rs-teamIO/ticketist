@@ -40,8 +40,6 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
       eventDate: new FormControl({value: '', disabled: false}),
       selectedSector: new FormControl()
     });
-
-
   }
 
   onBuy() {
@@ -149,5 +147,12 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
     let total = 0;
     this.selectedSeats.forEach(seat => total += seat.price);
     return total;
+  }
+
+  isSectorActive(sectorId: number): boolean {
+    if (this.event.eventSectors.find(vel => vel.sectorId === sectorId)) {
+      return true;
+    }
+    return false;
   }
 }

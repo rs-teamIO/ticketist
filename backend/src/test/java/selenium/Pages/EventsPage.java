@@ -22,19 +22,28 @@ public class EventsPage extends BasePage {
     private WebElement searchButton;
 
     @FindBy(id = "search-event-name")
-    private WebElement searchEventName;
+    private WebElement searchEventNameInput;
 
     @FindBy(id = "search-category")
-    private WebElement searchCategory;
+    private WebElement searchCategorySelect;
+
+    @FindBy(xpath = "//span[@class=\"mat-option-text\" and contains(text(), 'Entertainment')]")
+    private WebElement categoryEntertainment;
+
+    @FindBy(xpath = "//span[@class=\"mat-option-text\" and contains(text(), 'All')]")
+    private WebElement selectAll;
 
     @FindBy(id = "search-venue-name")
-    private WebElement searchVenueName;
+    private WebElement searchVenueNameSelect;
+
+    @FindBy(xpath = "//span[@class=\"mat-option-text\" and contains(text(), 'Spens')]")
+    private WebElement venueSpens;
 
     @FindBy(id = "search-start-date")
-    private WebElement searchStarDate;
+    private WebElement searchStartDateInput;
 
     @FindBy(id = "search-end-date")
-    private WebElement searchEndDate;
+    private WebElement searchEndDateInput;
 
     @FindBy(id = "loaded-events-list")
     private WebElement eventsList;
@@ -99,43 +108,40 @@ public class EventsPage extends BasePage {
 
     public void clickBuyReserveButton() { clickElement(buyReserveEXITButton); }
 
-    public void enterEventName(String text) { enterText(searchEventName, text); }
+    public void enterEventName(String text) { enterText(searchEventNameInput, text); }
 
-    public void enterCategory(Category text) {
-        ensureIsDisplayed(searchCategory);
-        clear(searchCategory);
-        searchCategory.sendKeys(text.toString());
+    public void selectCategoryEntertainment() {
+        clickElement(searchCategorySelect);
+        clickElement(categoryEntertainment);
     }
 
-    public void enterVenueName(String text) {
-        ensureIsDisplayed(searchVenueName);
-//        clear(searchVenueName);
-//        searchVenueName.sendKeys(text);
-        Select select = new Select(searchVenueName);
-        select.deselectAll();
-        select.selectByValue(text);
+    public void selectVenueSpens() {
+        clickElement(searchVenueNameSelect);
+        clickElement(venueSpens);
     }
 
-    public void enterStarDate(String text) { enterText(searchStarDate, text); }
+    public void enterStarDate(String text) { enterText(searchStartDateInput, text); }
 
-    public void enterEndDate(String text) { enterText(searchEndDate, text); }
+    public void enterEndDate(String text) { enterText(searchEndDateInput, text); }
 
-    public void clearAllSearchFields() {
-        searchEventName.clear();
-        searchEventName.sendKeys("A");
-        searchEventName.sendKeys(Keys.BACK_SPACE);
+    public void clearAllSearchFields() throws InterruptedException {
+        searchEventNameInput.clear();
+        searchEventNameInput.sendKeys("A");
+        searchEventNameInput.sendKeys(Keys.BACK_SPACE);
 
-//        clear(searchCategory);
-//
-//        Select venueNameSelect = new Select(searchVenueName);
-//        venueNameSelect.deselectAll();
+        clickElement(searchCategorySelect);
+        clickElement(selectAll);
 
-        clear(searchStarDate);
-        searchStarDate.sendKeys("A");
-        searchStarDate.sendKeys(Keys.BACK_SPACE);
+        Thread.sleep(3000);
+        clickElement(searchVenueNameSelect);
+        clickElement(selectAll);
 
-        clear(searchEndDate);
-        searchEndDate.sendKeys("A");
-        searchEndDate.sendKeys(Keys.BACK_SPACE);
+        clear(searchStartDateInput);
+        searchStartDateInput.sendKeys("A");
+        searchStartDateInput.sendKeys(Keys.BACK_SPACE);
+
+        clear(searchEndDateInput);
+        searchEndDateInput.sendKeys("A");
+        searchEndDateInput.sendKeys(Keys.BACK_SPACE);
     }
 }
