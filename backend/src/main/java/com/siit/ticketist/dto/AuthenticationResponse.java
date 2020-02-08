@@ -1,14 +1,13 @@
 package com.siit.ticketist.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Getter
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class AuthenticationResponse {
 
     private static String message = "Authentication successful.";
     private String token;
-
-    public AuthenticationResponse(String token) {
-        this.token = token;
-    }
 }

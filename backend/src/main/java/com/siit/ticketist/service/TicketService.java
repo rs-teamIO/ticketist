@@ -124,7 +124,6 @@ public class TicketService {
         //Initialization
         RegisteredUser registeredUser = (RegisteredUser) userService.findCurrentUser();
         List<Ticket> resultTickets = new ArrayList<>();
-        List<PdfTicket> pdfTickets = new ArrayList<>();
         Reservation reservation = new Reservation();
         Ticket dbTicket;
 
@@ -139,10 +138,7 @@ public class TicketService {
             dbTicket.setReservation(reservation);
             reservation.getTickets().add(dbTicket);
             resultTickets.add(dbTicket);
-            pdfTickets.add(new PdfTicket(dbTicket));
         }
-
-        this.emailService.sendTicketsPurchaseEmail(registeredUser, pdfTickets);
 
         return resultTickets;
     }

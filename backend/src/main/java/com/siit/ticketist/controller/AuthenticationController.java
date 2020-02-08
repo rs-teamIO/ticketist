@@ -6,6 +6,7 @@ import com.siit.ticketist.dto.AuthenticationResponse;
 import com.siit.ticketist.model.User;
 import com.siit.ticketist.security.TokenUtils;
 import com.siit.ticketist.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ import javax.validation.Valid;
 /**
  * Authentication REST Controller
  */
-@RestController
+@RestController @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthenticationController {
 
@@ -32,15 +33,6 @@ public class AuthenticationController {
     private final UserDetailsService userDetailsService;
     private final UserService userService;
     private final TokenUtils tokenUtils;
-
-    @Autowired
-    public AuthenticationController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService,
-                                    UserService userService, TokenUtils tokenUtils) {
-        this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
-        this.userService = userService;
-        this.tokenUtils = tokenUtils;
-    }
 
     /**
      * POST /api/auth

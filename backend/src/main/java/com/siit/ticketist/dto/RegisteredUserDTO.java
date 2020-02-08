@@ -1,6 +1,7 @@
 package com.siit.ticketist.dto;
 
 import com.siit.ticketist.model.RegisteredUser;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,7 +9,7 @@ import lombok.Setter;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class RegisteredUserDTO {
 
     @NotBlank(message = "Username may not be blank")

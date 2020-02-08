@@ -1,5 +1,7 @@
 package com.siit.ticketist.integration.controller;
 
+import com.siit.ticketist.dto.ErrorResponse;
+import com.siit.ticketist.dto.SuccessResponse;
 import com.siit.ticketist.dto.TicketDTO;
 import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.security.TokenUtils;
@@ -18,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
@@ -330,4 +333,61 @@ public class TicketControllerTest {
 
 
 
+    private static final String SCAN_TICKET_URL = "/api/tickets/scan?ticketId=";
+
+    private static final Long PAID_TICKET_ID = 10L;
+    private static final Long RESERVED_TICKET_ID = 1L;
+    private static final Long NON_EXISTING_TICKET_ID = 666L;
+
+    private static final String TICKET_SCANNED_SUCCESSFULLY_MESSAGE = "Ticket scanned successfully.";
+    private static final String UNABLE_TO_SCAN_TICKET_MESSAGE = "Unable to scan ticket with requested ID.";
+    private static final String NO_TICKET_FOUND_MESSAGE = "No ticket found with specified ID.";
+
+    @Test
+    public void scanTicket_shouldSuccessfullyScanAndInvalidateTicket_whenTicketWithGivenIdExists() {
+        // Arrange
+        HttpHeaders customHeaders = new HttpHeaders();
+        HttpEntity<Object> request = new HttpEntity<>(customHeaders);
+
+        // Act
+        ResponseEntity<SuccessResponse> response = this.testRestTemplate
+                .exchange(SCAN_TICKET_URL.concat(PAID_TICKET_ID.toString()), HttpMethod.GET, request, SuccessResponse.class);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertThat(response.getBody(), notNullValue());
+        assertEquals(TICKET_SCANNED_SUCCESSFULLY_MESSAGE, response.getBody().getMessage());
+    }
+
+    @Test
+    public void scanTicket_shouldThrowBadRequestException_whenTicketWithGivenIdIsNotPaid() {
+        // Arrange
+        HttpHeaders customHeaders = new HttpHeaders();
+        HttpEntity<Object> request = new HttpEntity<>(customHeaders);
+
+        // Act
+        ResponseEntity<ErrorResponse> response = this.testRestTemplate
+                .exchange(SCAN_TICKET_URL.concat(RESERVED_TICKET_ID.toString()), HttpMethod.GET, request, ErrorResponse.class);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertThat(response.getBody(), notNullValue());
+        assertEquals(UNABLE_TO_SCAN_TICKET_MESSAGE, response.getBody().getMessage());
+    }
+
+    @Test
+    public void scanTicket_shouldThrowBadRequestException_whenTicketWithGivenIdDoesNotExist() {
+        // Arrange
+        HttpHeaders customHeaders = new HttpHeaders();
+        HttpEntity<Object> request = new HttpEntity<>(customHeaders);
+
+        // Act
+        ResponseEntity<ErrorResponse> response = this.testRestTemplate
+                .exchange(SCAN_TICKET_URL.concat(NON_EXISTING_TICKET_ID.toString()), HttpMethod.GET, request, ErrorResponse.class);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertThat(response.getBody(), notNullValue());
+        assertEquals(NO_TICKET_FOUND_MESSAGE, response.getBody().getMessage());
+    }
 }
