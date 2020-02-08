@@ -1,11 +1,9 @@
 package selenium.Pages;
 
-import com.siit.ticketist.model.Category;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.Select;
 
 public class EventsPage extends BasePage {
 
@@ -139,21 +137,16 @@ public class EventsPage extends BasePage {
 
     public void enterEndDate(String text) { enterText(searchEndDateInput, text); }
 
+    public void ensureIsDisplayedLogout() { ensureIsDisplayed(logoutButton); }
+
+    public void ensureIsDisplayedPage() { ensureIsDisplayed(futureEventsPar); }
+
+    public void logout() { clickElement(logoutButton); }
+
     public void clearAllSearchFields() throws InterruptedException {
         searchEventNameInput.clear();
         searchEventNameInput.sendKeys("A");
         searchEventNameInput.sendKeys(Keys.BACK_SPACE);
-
-    public void ensureIsDisplayedLogout() { ensureIsDisplayed(logoutButton);}
-
-    public void ensureIsDisplayedPage() { ensureIsDisplayed(futureEventsPar); }
-
-    public void logout() { clickElement(logoutButton);}
-
-    public void clearAllSearchFields() {
-        searchEventName.clear();
-        searchEventName.sendKeys("A");
-        searchEventName.sendKeys(Keys.BACK_SPACE);
 
         clickElement(searchCategorySelect);
         clickElement(selectAll);
