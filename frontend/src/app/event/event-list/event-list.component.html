@@ -1,10 +1,10 @@
-<div fxLayout="column" fxLayoutAlign="center center" style="height: 100%;">
-  <div *ngIf="totalSize !== 0 && events.length === 0; else eventsLoaded" style="margin-top: 150px;" >
+<div fxLayout="column" fxLayoutAlign="center center">
+  <div *ngIf="totalSize !== 0 && events.length === 0; else eventsLoaded" style="margin-top: 150px;">
     <mat-spinner color="accent" strokeWidth="4"></mat-spinner>
   </div>
 
   <ng-template #eventsLoaded>
-    <mat-card class="mat-card-flat card-deck-container" id="loaded-events-list">
+    <mat-card class="mat-card-flat card-deck-container" id="loaded-events-list" style="height: 680px;">
       <mat-card-header>
         <p style="font-weight: bolder;">Future events</p>
         <span fxFlex></span>
@@ -19,14 +19,14 @@
     </mat-card>
 
     <div class="paginator mat-elevation-z5">
-      <mat-paginator [length]="totalSize"
+      <mat-paginator #paginator [length]="totalSize" style="margin-top: 50px;"
                      pageSize="8"
                      pageIndex="0"
                      (page)="onPageChanged($event)">
       </mat-paginator>
     </div>
-  </ng-template>
 
+  </ng-template>
 </div>
 
 

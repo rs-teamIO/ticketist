@@ -1,8 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {FormControl, FormGroup} from '@angular/forms';
 import {EventService, ISearchParams} from '../../services/event.service';
-import {Page} from '../../model/page.model';
-import {EventModel} from '../../model/event.model';
 import {VenueService} from '../../services/venue.service';
 
 @Component({

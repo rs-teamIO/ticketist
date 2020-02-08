@@ -2,9 +2,9 @@ import {EventListComponent} from './event-list.component';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {EventService} from '../../services/event.service';
 import {EventItemComponent} from './event-item/event-item.component';
-import {CustomMaterialModule} from "../../shared/material.module";
-import {RouterTestingModule} from "@angular/router/testing";
-import {PageEvent} from "@angular/material/paginator";
+import {CustomMaterialModule} from '../../shared/material.module';
+import {RouterTestingModule} from '@angular/router/testing';
+import {PageEvent} from '@angular/material/paginator';
 
 describe('EventListComponent', () => {
   let component: EventListComponent;

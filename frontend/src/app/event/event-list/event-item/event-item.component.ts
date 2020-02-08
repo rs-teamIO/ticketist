@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {EventModel} from '../../../model/event.model';
+import {IEventModel} from '../../../model/event.model';
 import Swal from 'sweetalert2';
 import {EventService} from '../../../services/event.service';
 import {AuthService} from '../../../services/auth.service';
@@ -11,7 +11,7 @@ import {Subscription} from 'rxjs';
   styleUrls: ['./event-item.component.scss']
 })
 export class EventItemComponent implements OnInit, OnDestroy {
-  @Input() eventModel: EventModel;
+  @Input() eventModel: IEventModel;
   @Output() eventCancelled: EventEmitter<any> = new EventEmitter();
   private userSub: Subscription;
   role = null;

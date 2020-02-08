@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {EventModel} from '../../model/event.model';
+import {IEventModel} from '../../model/event.model';
 import {EventService} from '../../services/event.service';
-import {VenueService} from '../../services/venue.service';
-import {Venue} from '../../model/venue.model';
+import {IVenue, VenueService} from '../../services/venue.service';
 import {ActivatedRoute} from '@angular/router';
 
 @Component({
@@ -12,8 +11,8 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class EventDetailsComponent implements OnInit {
 
-  event: EventModel = new EventModel();
-  venue: Venue = new Venue();
+  event: IEventModel = {} as IEventModel;
+  venue: IVenue = {} as IVenue;
   imageToShow: any;
   imageLoading = true;
 

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {EventModel} from '../model/event.model';
+import {IEventModel} from '../model/event.model';
 import {HttpClient, HttpParams, HttpHeaders} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
 import {Page} from '../model/page.model';
@@ -7,7 +7,7 @@ import {PageEvent} from '@angular/material';
 import {PORT} from '../shared/constants';
 
 export interface IEventPage {
-  events: EventModel[];
+  events: IEventModel[];
   totalSize: number;
 }
 
@@ -98,7 +98,7 @@ export class EventService {
     }
   }
 
-  private getAll(): void {
+  protected getAll(): void {
     const params: HttpParams = new HttpParams().set('page', String(this.page.page)).set('size', String(this.page.size));
     this.http.get<IEventPage>(this.getEventsPath, {params})
       .subscribe(responseData => {
@@ -106,7 +106,7 @@ export class EventService {
       });
   }
 
-  private searchAll(): void {
+  protected searchAll(): void {
     const params: HttpParams = new HttpParams().set('page', String(this.page.page)).set('size', String(this.page.size));
     this.http.post<IEventPage>(this.searchEventsPath, this.searchParams, {params})
       .subscribe(responseData => {
@@ -139,12 +139,12 @@ export class EventService {
     return this.http.post(`http://localhost:${PORT}/api/events/${eventID}/media`, fd, {headers});
   }
 
-  getEvent(id: number): Observable<EventModel> {
-    return this.http.get<EventModel>(this.getEventPath + id);
+  getEvent(id: number): Observable<IEventModel> {
+    return this.http.get<IEventModel>(this.getEventPath + id);
   }
 
-  cancelEvent(id: number): Observable<EventModel> {
-    return this.http.get<EventModel>(this.cancelEventPath + id);
+  cancelEvent(id: number): Observable<IEventModel> {
+    return this.http.get<IEventModel>(this.cancelEventPath + id);
   }
 
   getEventImage(eventId: number, fileName: string): Observable<Blob> {

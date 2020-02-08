@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-report',
@@ -7,15 +6,10 @@ import {FormControl, FormGroup} from '@angular/forms';
   styleUrls: ['./report.component.scss']
 })
 export class ReportComponent implements OnInit {
-  reportForm: FormGroup;
 
   constructor() { }
 
   ngOnInit() {
-    this.reportForm = new FormGroup({
-      venueName: new FormControl(''),
-      criteria: new FormControl('')
-    });
   }
 
 }

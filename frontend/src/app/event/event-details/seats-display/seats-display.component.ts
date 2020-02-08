@@ -1,12 +1,12 @@
-import {Component, Input, OnChanges, OnInit, Renderer2, SimpleChanges, Inject, forwardRef} from '@angular/core';
-import {EventModel} from '../../../model/event.model';
-import {Venue} from '../../../model/venue.model';
+import {Component, Input, OnChanges, OnInit, Renderer2, SimpleChanges} from '@angular/core';
+import {IEventModel} from '../../../model/event.model';
 import * as moment from 'moment';
 import {FormControl, FormGroup} from '@angular/forms';
 import {ITicket, TicketService} from '../../../services/ticket.service';
 import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import {IEventSector} from '../../../services/event.service';
+import {IVenue} from '../../../services/venue.service';
 
 @Component({
   selector: 'app-seats-display',
@@ -18,8 +18,8 @@ export class SeatsDisplayComponent implements OnInit, OnChanges {
   selectedEventSector: IEventSector = {} as IEventSector;
   notNumeratedTickets: ITicket[] = [];
 
-  @Input() event: EventModel = new EventModel();
-  @Input() venue: Venue = new Venue();
+  @Input() event: IEventModel = {} as IEventModel;
+  @Input() venue: IVenue = {} as IVenue;
   dates: Date[] = [];
 
   eventSectorForm: FormGroup;

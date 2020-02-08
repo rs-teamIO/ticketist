@@ -6,7 +6,6 @@ import {PageEvent} from '@angular/material';
 import {ISector} from './sector.service';
 import {tap} from 'rxjs/operators';
 import { PORT } from '../shared/constants';
-import {Venue} from '../model/venue.model';
 
 export interface IVenue {
   id: number;
@@ -111,7 +110,7 @@ export class VenueService {
       });
   }
 
-  getVenue(venueId: number): Observable<Venue> {
-    return this.http.get<Venue>(this.venueBasicPath + venueId);
+  getVenue(venueId: number): Observable<IVenue> {
+    return this.http.get<IVenue>(this.venueBasicPath + venueId);
   }
 }

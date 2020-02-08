@@ -1,8 +1,18 @@
-import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
+import {
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 import {PageEvent} from '@angular/material';
-import {EventModel} from '../../model/event.model';
+import {IEventModel} from '../../model/event.model';
 import {EventService, IEventPage} from '../../services/event.service';
 import {Subscription} from 'rxjs';
+import {MatPaginator} from '@angular/material/paginator';
 
 @Component({
   selector: 'app-event-list',
@@ -10,7 +20,8 @@ import {Subscription} from 'rxjs';
   styleUrls: ['./event-list.component.scss']
 })
 export class EventListComponent implements OnInit, AfterViewInit, OnDestroy {
-  events: EventModel[] = [];
+  @ViewChild('paginator', {static: false}) paginator: MatPaginator;
+  events: IEventModel[] = [];
   totalSize: number;
   subscription: Subscription;
 
@@ -26,7 +37,6 @@ export class EventListComponent implements OnInit, AfterViewInit, OnDestroy {
         this.events = eventPage.events;
         this.totalSize = eventPage.totalSize;
       });
-
     this.loadData();
   }
 
@@ -37,6 +47,7 @@ export class EventListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadData() {
     this.eventService.getEvents();
+    console.log(this.events)
   }
 
   ngOnDestroy(): void {

@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatSort, MatTableDataSource} from '@angular/material';
 import {ReportService} from '../../services/report.service';
-import {Report} from '../../model/report.model';
 import {Subscription} from 'rxjs';
 
 @Component({

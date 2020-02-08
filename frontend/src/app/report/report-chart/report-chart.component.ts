@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {ReportService} from '../../services/report.service';
+import {IReport, ReportService} from '../../services/report.service';
 import {map} from 'rxjs/operators';
-import {Report} from '../../model/report.model';
 import {ToMonthChartPipe} from '../../pipes/to-month-chart.pipe';
 import {Subscription} from 'rxjs';
 import {ToInitialChartPipe} from '../../pipes/to-initial-chart.pipe';
@@ -35,12 +34,12 @@ export class ReportChartComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initialReportSubscription = this.reportService.initialReportChanged
-      .pipe(map((report: Report) => {
+      .pipe(map((report: IReport) => {
         return this.toInitialChartPipe.transform(report.allVenuesChart);
       })).subscribe(chart => this.allVenuesChart = chart);
 
     this.specificReportSubscription = this.reportService.specificReportChanged
-      .pipe(map((report: Report) => {
+      .pipe(map((report: IReport) => {
         return this.toMonthChartPipe.transform(report.singleVenueChart, this.selectedVenue);
       })).subscribe(chart => this.singleVenueChart = [chart]);
 

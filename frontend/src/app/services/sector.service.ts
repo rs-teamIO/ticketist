@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable, Subject} from 'rxjs';
-import { Router } from '@angular/router';
-import { PORT } from '../shared/constants';
-import {IEventPage} from './event.service';
+import {Observable} from 'rxjs';
+import {Router} from '@angular/router';
+import {PORT} from '../shared/constants';
 
 export interface ISector {
   id?: number;
