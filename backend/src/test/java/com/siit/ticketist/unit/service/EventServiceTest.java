@@ -33,30 +33,79 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * This class contains unit test methods for {@link EventService}.
+ */
 public class EventServiceTest {
 
-    @InjectMocks
-    private EventService eventService;
+    private static final Long EVENT_ID = 1L;
+    private static final String EVENT_NOT_FOUND_MESSAGE = "Event not found.";
 
     @Mock
     private EventRepository eventRepository;
 
     @Mock
-    private SectorRepository sectorRepository;
+    private TicketRepository ticketRepository;
 
     @Mock
-    private TicketRepository ticketRepository;
+    private SectorRepository sectorRepository;
 
     @Mock
     private EmailService emailService;
 
+    @InjectMocks
+    private EventService eventService;
+
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
+    /**
+     * Initializes mocks
+     */
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
         ReflectionTestUtils.setField(eventService, "emailService", this.emailService);
+    }
+
+    /**
+     * Tests findOne method in {@link EventService} when {@link Event} with given ID exists.
+     */
+    @Test
+    public void findOne_shouldReturnEvent_whenEventWithGivenIdExists() {
+        // Arrange
+        Event event = new Event();
+        event.setId(EVENT_ID);
+        when(this.eventRepository.findById(EVENT_ID))
+                .thenReturn(Optional.of(event));
+
+        // Act
+        Event foundEvent = this.eventService.findOne(EVENT_ID);
+
+        // Assert
+        verify(this.eventRepository).findById(EVENT_ID);
+        assertNotNull(foundEvent);
+        assertEquals(EVENT_ID, foundEvent.getId());
+    }
+
+    /**
+     * Tests findOne method in {@link EventService} when {@link Event} with given doesn't exist.
+     * Should throw {@link NotFoundException}.
+     */
+    @Test
+    public void findOne_shouldThrowNotFoundException_whenEventWithGivenIdDoesNotExist() {
+        // Arrange
+        this.exceptionRule.expect(NotFoundException.class);
+        this.exceptionRule.expectMessage(EVENT_NOT_FOUND_MESSAGE);
+        when(this.eventRepository.findById(EVENT_ID))
+                .thenReturn(Optional.empty());
+
+        // Act
+        this.eventService.findOne(EVENT_ID);
+
+        // Assert
+        verify(this.eventRepository, never()).findById(EVENT_ID);
     }
 
     @Test

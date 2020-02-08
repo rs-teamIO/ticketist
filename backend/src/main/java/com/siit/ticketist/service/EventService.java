@@ -283,7 +283,7 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-     /* Deletes the requested file.
+     /** Deletes the requested file.
      *
      * @param eventId ID of the event the media file is bound to
      * @param fileName Name of the file to be deleted
@@ -330,7 +330,7 @@ public class EventService {
         return this.eventRepository.save(event);
     }
 
-    /*
+    /**
      *  Search events by given parameters
      *
      * @param eventName full or partial name of the event
@@ -373,5 +373,4 @@ public class EventService {
         cal.add(Calendar.DATE, days);
         return cal.getTime();
     }
-
 }

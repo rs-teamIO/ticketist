@@ -34,13 +34,13 @@ import static org.mockito.Mockito.*;
  */
 public class UserServiceTest {
 
-    public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
-    public static final String FIRST_NAME = "First name";
-    public static final String LAST_NAME = "Last name";
-    public static final String EMAIL = "test@ticketist.com";
+    private static final String USERNAME = "username";
+    private static final String PASSWORD = "password";
+    private static final String FIRST_NAME = "First name";
+    private static final String LAST_NAME = "Last name";
+    private static final String EMAIL = "test@ticketist.com";
 
-    public static final String FORBIDDEN_EXCEPTION_MESSAGE = "You don't have permission to access this method on the server.";
+    private static final String FORBIDDEN_EXCEPTION_MESSAGE = "You don't have permission to access this method on the server.";
 
     @Mock
     private UserRepository userRepositoryMock;
