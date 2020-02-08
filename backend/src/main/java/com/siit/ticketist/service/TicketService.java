@@ -1,10 +1,13 @@
 package com.siit.ticketist.service;
 
+import com.siit.ticketist.dto.PdfTicket;
 import com.siit.ticketist.exceptions.BadRequestException;
 import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.exceptions.OptimisticLockException;
-import com.siit.ticketist.dto.PdfTicket;
-import com.siit.ticketist.model.*;
+import com.siit.ticketist.model.RegisteredUser;
+import com.siit.ticketist.model.Reservation;
+import com.siit.ticketist.model.Ticket;
+import com.siit.ticketist.model.TicketStatus;
 import com.siit.ticketist.repository.ReservationRepository;
 import com.siit.ticketist.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -268,7 +271,7 @@ public class TicketService {
      */
     public Ticket scanTicket(Long id) {
         final Ticket ticket = ticketRepository.findOneById(id)
-                .orElseThrow(() -> new BadRequestException("No ticket found with specified id."));
+                .orElseThrow(() -> new BadRequestException("No ticket found with specified ID."));
 
         if(!ticket.getStatus().equals(TicketStatus.PAID))
             throw new BadRequestException("Unable to scan ticket with requested ID.");
