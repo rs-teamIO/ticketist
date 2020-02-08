@@ -3,12 +3,13 @@ import {HttpClient} from '@angular/common/http';
 import {Report} from '../model/report.model';
 import {Observable, Subject} from 'rxjs';
 import {IEventPage} from './event.service';
+import { PORT } from '../shared/constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReportService {
-  private readonly getInitialReportPath = 'http://localhost:8080/api/reports';
+  private readonly getInitialReportPath = `http://localhost:${PORT}/api/reports`;
   initialReportChanged = new Subject<Report>();
   specificReportChanged = new Subject<Report>();
   eventsListChanged = new Subject<any[]>();

@@ -1,8 +1,8 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {EventModel} from '../../../model/event.model';
 import Swal from 'sweetalert2';
 import {EventService} from '../../../services/event.service';
-import {AuthService} from "../../../services/auth.service";
+import {AuthService} from '../../../services/auth.service';
 import {Subscription} from 'rxjs';
 
 @Component({
@@ -10,11 +10,13 @@ import {Subscription} from 'rxjs';
   templateUrl: './event-item.component.html',
   styleUrls: ['./event-item.component.scss']
 })
-export class EventItemComponent implements OnInit {
+export class EventItemComponent implements OnInit, OnDestroy {
   @Input() eventModel: EventModel;
   @Output() eventCancelled: EventEmitter<any> = new EventEmitter();
   private userSub: Subscription;
   role = null;
+  imageToShow: any;
+  imageLoading = true;
 
   constructor(private eventService: EventService,
               private authService: AuthService) {
@@ -28,6 +30,15 @@ export class EventItemComponent implements OnInit {
         this.role = null;
       }
     });
+
+    if (this.eventModel.mediaFiles.length !== 0) {
+      this.eventService.getEventImage(this.eventModel.id, this.eventModel.mediaFiles[0].fileName).subscribe((response: Blob) => {
+        this.eventService.createImageFromBlob(response, (readerResponse) => {
+          this.imageToShow = readerResponse;
+          this.imageLoading = false;
+        });
+      });
+    }
   }
 
   onCancelEvent() {
@@ -52,6 +63,10 @@ export class EventItemComponent implements OnInit {
 
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.userSub.unsubscribe();
   }
 
 }

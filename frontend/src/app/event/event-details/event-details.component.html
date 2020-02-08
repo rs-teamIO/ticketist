@@ -1,6 +1,14 @@
 <div fxLayout="row" fxLayoutAlign="center" class="outer-container">
     <mat-card class="example-card mat-card-flat">
-        <img mat-card-image src="https://pb2eu.interticket.com/imgs/system-20/program/000/001/334/zdravko-colic-474-279-10882.jpg" alt="Event image">
+        <img mat-card-image
+             [src]="imageToShow"
+             alt="Event image"
+              *ngIf="!imageLoading; else tempImage">
+        <ng-template #tempImage>
+          <img mat-card-image
+               src="https://media.giphy.com/media/l2JhtqTs67xX3RbVu/giphy.gif"
+          alt="Temp image">
+        </ng-template>
         <mat-card-content>
         <mat-card-title>
             {{event.name}}
@@ -11,7 +19,9 @@
         <p>{{event.description}}</p>
         </mat-card-content>
         <mat-card-actions>
-        <app-map-view [latitude]="venue.latitude" [longitude]="venue.longitude"></app-map-view>
+        <agm-map [latitude]=venue.latitude [longitude]=venue.longitude [zoom]="10">
+          <agm-marker [latitude]=venue.latitude [longitude]=venue.longitude></agm-marker>
+        </agm-map>
         </mat-card-actions>
     </mat-card>
 

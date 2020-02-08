@@ -183,7 +183,6 @@ public class VenueServiceTest {
         assertEquals("Venue's longitude is correct", new Double(longitude), savedVenue.getLongitude());
         assertSame("Venue's sector size is correct", 2, savedVenue.getSectors().size());
 
-        //add sector validation
     }
 
     @Test

@@ -1,4 +1,4 @@
-import {IEventSector} from '../services/event.service';
+import {IEventSector, IMediaFile} from '../services/event.service';
 
 export class EventModel {
 
@@ -10,7 +10,8 @@ export class EventModel {
               public endDate?: Date,
               public description?: string,
               public reservationLimit?: number,
-              public eventSectors?: IEventSector[]) {
+              public eventSectors?: IEventSector[],
+              public mediaFiles?: IMediaFile[]) {
   }
 
   get id(): number {

@@ -72,6 +72,26 @@
           </div>
         </div>
 
+        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+          <mat-form-field style="width: 47%;">
+            <mat-select formControlName="hours" placeholder="Hours">
+              <mat-option *ngFor="let hour of allHours" [value]="hour">{{hour}}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="hours.invalid && hours.touched">
+              Hours are required!
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field style="width: 47%;">
+            <mat-select formControlName="minutes" placeholder="Minutes">
+              <mat-option *ngFor="let minute of allMinutes" [value]="minute">{{minute}}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="minutes.invalid && minutes.touched">
+              Minutes are required!
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+
         <mat-form-field >
           <input matInput type="number" min="1" placeholder="Reservation limit" formControlName="reservationLimit">
           <mat-error *ngIf="reservationLimit.errors && reservationLimit.errors['required'] && reservationLimit.touched">

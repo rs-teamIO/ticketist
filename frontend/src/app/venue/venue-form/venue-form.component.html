@@ -39,8 +39,9 @@
         </mat-card-content>
       </mat-card>
     </div>
-
-    <app-map-view [latitude]="latitude" [longitude]="longitude"></app-map-view>
+    <agm-map [latitude]=latitude [longitude]=longitude [zoom]="10">
+      <agm-marker [latitude]=latitude [longitude]=longitude></agm-marker>
+    </agm-map>
   </div>
 
   <!-- app-venue-form-sectors -->

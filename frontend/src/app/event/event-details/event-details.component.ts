@@ -14,21 +14,35 @@ export class EventDetailsComponent implements OnInit {
 
   event: EventModel = new EventModel();
   venue: Venue = new Venue();
+  imageToShow: any;
+  imageLoading = true;
 
   constructor(private eventService: EventService,
               private venueService: VenueService,
-              private route: ActivatedRoute) { }
+              private route: ActivatedRoute) {
+  }
 
   ngOnInit() {
     this.eventService.getEvent(this.route.snapshot.params.id)
       .subscribe(eventModel => {
         this.event = eventModel;
+
+        if (this.event.mediaFiles.length > 0) {
+          this.eventService.getEventImage(this.event.id, this.event.mediaFiles[0].fileName).subscribe((response: Blob) => {
+            this.eventService.createImageFromBlob(response, (readerResponse) => {
+              this.imageToShow = readerResponse;
+              this.imageLoading = false;
+            });
+          });
+        }
+
         this.venueService.getVenue(this.event.venueId)
           .subscribe(responseData => {
             this.venue = responseData;
+            console.log(this.venue);
+            console.log(this.event);
           });
       });
   }
-
 
 }
