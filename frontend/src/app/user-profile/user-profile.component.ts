@@ -14,7 +14,7 @@ export class UserProfileComponent implements OnInit {
   isLoading = false;
   error = '';
 
-  constructor(private userService: UserService, private router: Router) { }
+  constructor(private userService: UserService) { }
 
   ngOnInit() {
     this.userForm = new FormGroup({
@@ -38,23 +38,23 @@ export class UserProfileComponent implements OnInit {
     );
   }
 
-  get firstName(){
+  get firstName() {
     return this.userForm.get('firstName');
   }
 
-  get lastName(){
+  get lastName() {
     return this.userForm.get('lastName');
   }
 
-  get username(){
+  get username() {
     return this.userForm.get('username');
   }
 
-  get email(){
+  get email() {
     return this.userForm.get('email');
   }
 
-  get password(){
+  get password() {
     return this.userForm.get('oldPassword');
   }
 
@@ -67,7 +67,7 @@ export class UserProfileComponent implements OnInit {
     this.isLoading = true;
 
     const { email, oldPassword, lastName, firstName, username, newPassword, newPasswordRepeat } = this.userForm.value;
-    const User: IUserUpdate = {
+    const user: IUserUpdate = {
       email,
       oldPassword,
       username,
@@ -79,7 +79,7 @@ export class UserProfileComponent implements OnInit {
 
     this.error = '';
 
-    this.userService.update(User).subscribe(
+    this.userService.update(user).subscribe(
       resData => {
         console.log(resData);
         this.presetForm(resData);

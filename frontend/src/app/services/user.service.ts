@@ -31,8 +31,8 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  update(user: IUserUpdate): Observable<IRegisteredUser> {
-    return this.http.put<IRegisteredUser>(
+  update(user: IUserUpdate): Observable<any> {
+    return this.http.put<any>(
       this.usersBasicPath,
       {
         username: user.username,

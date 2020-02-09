@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IUserRegister } from '../../services/auth.service';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 
 describe('SignUpComponent', () => {
   let component: SignUpComponent;
@@ -21,7 +21,7 @@ describe('SignUpComponent', () => {
   beforeEach(async(() => {
     const authServiceMock = {
       signup: jasmine.createSpy('signup')
-      .and.returnValue(of(5))
+      .and.returnValue(of({}))
     };
 
     TestBed.configureTestingModule({
