@@ -60,7 +60,9 @@ public class EventServiceTest {
 
     @Test
     public void findOne_ShouldReturnEvent_whenIdIsFound(){
-        eventService.findOne(1l);
+        Event event = eventService.findOne(1L);
+        assertNotNull(event);
+        assertEquals(1L, event.getId().longValue());
     }
 
     @Test

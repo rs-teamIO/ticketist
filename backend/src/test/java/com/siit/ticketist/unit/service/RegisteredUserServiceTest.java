@@ -31,19 +31,19 @@ import static org.mockito.Mockito.*;
  */
 public class RegisteredUserServiceTest {
 
-    public static final Long ID = 1L;
-    public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
-    public static final String FIRST_NAME = "First name";
-    public static final String LAST_NAME = "Last name";
-    public static final String EMAIL = "test@ticketist.com";
-    public static final String VERIFICATION_CODE = "verification_code";
-    public static final String UPDATED_EMAIL = "test_updated@ticketist.com";
-    public static final String UPDATED_PASSWORD = "updated_password";
+    private static final Long ID = 1L;
+    private static final String USERNAME = "username";
+    private static final String PASSWORD = "password";
+    private static final String FIRST_NAME = "First name";
+    private static final String LAST_NAME = "Last name";
+    private static final String EMAIL = "test@ticketist.com";
+    private static final String VERIFICATION_CODE = "verification_code";
+    private static final String UPDATED_EMAIL = "test_updated@ticketist.com";
+    private static final String UPDATED_PASSWORD = "updated_password";
 
-    public static final String USERNAME_TAKEN_EXCEPTION_MESSAGE = "Username '%s' is already taken";
-    public static final String EMAIL_TAKEN_EXCEPTION_MESSAGE = "User with e-mail '%s' already registered";
-    public static final String VERIFICATION_CODE_EXCEPTION_MESSAGE = "No user found with specified verification code.";
+    private static final String USERNAME_TAKEN_EXCEPTION_MESSAGE = "Username '%s' is already taken";
+    private static final String EMAIL_TAKEN_EXCEPTION_MESSAGE = "User with e-mail '%s' already registered";
+    private static final String VERIFICATION_CODE_EXCEPTION_MESSAGE = "No user found with specified verification code.";
 
     @Mock
     private UserService userServiceMock;
@@ -236,7 +236,7 @@ public class RegisteredUserServiceTest {
      * Tests update method in {@link RegisteredUserService} when {@link RegisteredUser} updated e-mail is not taken.
      */
     @Test
-    public void update_shouldThrowBadRequestException_whenUpdatedEmailNotTaken() {
+    public void update_shouldThrowBadRequestException_whenUpdatedEmailIsTaken() {
         // Arrange
         this.exceptionRule.expect(BadRequestException.class);
         this.exceptionRule.expectMessage(String.format(EMAIL_TAKEN_EXCEPTION_MESSAGE, UPDATED_EMAIL));

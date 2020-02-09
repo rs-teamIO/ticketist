@@ -142,6 +142,12 @@
             <artifactId>testng</artifactId>
             <version>6.8.7</version>
         </dependency>
+        <dependency>
+            <groupId>com.icegreen</groupId>
+            <artifactId>greenmail</artifactId>
+            <version>1.5.5</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
