@@ -22,7 +22,7 @@
   <mat-card-actions fxLayoutAlign="center end">
     <span *ngIf="role === 'ADMIN'; else ticketsButton">
       <!--    [routerLink]="['/events', eventModel.id]"-->
-      <button mat-button color="primary" disabled>EDIT</button>
+<!--      <button mat-button color="primary" disabled>EDIT</button>-->
       <button mat-button color="warn" type="button" (click)="onCancelEvent()">CANCEL</button>
     </span>
 
