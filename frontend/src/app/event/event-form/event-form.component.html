@@ -1,0 +1,175 @@
+<div fxLayout="row" fxLayout.xs="column" class="main">
+  <div fxFlex="30" fxLayout="column" fxFlexAlign="center center" class="basicInfoPanel">
+    <form [formGroup]="newEventForm" (ngSubmit)="onSubmit()">
+        <mat-form-field>
+          <input matInput placeholder="Event Name" formControlName="eventName">
+          <mat-error *ngIf="eventName.invalid && eventName.touched">
+            Event name is required!
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-select formControlName="category" placeholder="Category">
+            <mat-option value="ENTERTAINMENT">Entertainment</mat-option>
+            <mat-option value="SPORTS">Sports</mat-option>
+            <mat-option value="CULTURAL">Cultural</mat-option>
+          </mat-select>
+          <mat-error *ngIf="category.invalid && category.touched">
+            Category is required!
+          </mat-error>
+        </mat-form-field>
+
+        <div formGroupName="dates">
+          <mat-form-field>
+            <input matInput [min]="minDate" [matDatepicker]="reservationDeadline" placeholder="Select reservation deadline" formControlName="reservationDeadline">
+            <mat-datepicker-toggle matSuffix [for]="reservationDeadline"></mat-datepicker-toggle>
+            <mat-datepicker #reservationDeadline></mat-datepicker>
+            <mat-error *ngIf="datesInfo.errors && (datesInfo.errors['reservationDeadlineRequired'] ||
+            (reservationDeadlineInfo.errors && reservationDeadlineInfo.errors['required'])) && reservationDeadlineInfo.touched">
+              Reservation deadline is required!
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <input matInput [min]="minDate" [matDatepicker]="startDate" placeholder="Select start date" formControlName="startDate">
+            <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+            <mat-datepicker #startDate></mat-datepicker>
+            <mat-error *ngIf="datesInfo.errors && (datesInfo.errors['startDateRequired'] ||
+            (startDateInfo.errors && startDateInfo.errors['required'])) && startDateInfo.touched">
+              Start date is required!
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <input matInput [min]="minDate" [matDatepicker]="endDate" placeholder="Select end date" formControlName="endDate">
+            <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+            <mat-datepicker #endDate></mat-datepicker>
+            <mat-error *ngIf="datesInfo.errors && (datesInfo.errors['endDateRequired'] ||
+            (endDateInfo.errors && endDateInfo.errors['required'])) && endDateInfo.touched">
+              End date is required!
+            </mat-error>
+          </mat-form-field>
+
+          <div class="errorMessageDate">
+            <mat-error *ngIf="datesInfo.errors && datesInfo.errors['reservationDeadlineAfterStartDate'] && reservationDeadlineInfo.touched">
+              Reservation deadline cannot be after start date!
+            </mat-error>
+            <mat-error *ngIf="datesInfo.errors && datesInfo.errors['reservationDeadlineAfterEndDate'] && reservationDeadlineInfo.touched">
+              Reservation deadline cannot be after end date!
+            </mat-error>
+            <mat-error *ngIf="datesInfo.errors && datesInfo.errors['startDateBeforeDeadline'] && startDateInfo.touched">
+              Start date cannot be before deadline!
+            </mat-error>
+            <mat-error *ngIf="!!datesInfo.errors && !!datesInfo.errors['startDateAfterEndDate'] && !!startDateInfo.touched">
+              Start date cannot be after end date!
+            </mat-error>
+            <mat-error *ngIf="datesInfo.errors && datesInfo.errors['endDateBeforeDeadline'] && endDateInfo.touched">
+              End date cannot be before reservation deadline!
+            </mat-error>
+            <mat-error *ngIf="datesInfo.errors && datesInfo.errors['endDateBeforeStartDate'] && endDateInfo.touched">
+              End date cannot be before start date!
+            </mat-error>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+          <mat-form-field style="width: 47%;">
+            <mat-select formControlName="hours" placeholder="Hours">
+              <mat-option *ngFor="let hour of allHours" [value]="hour">{{hour}}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="hours.invalid && hours.touched">
+              Hours are required!
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field style="width: 47%;">
+            <mat-select formControlName="minutes" placeholder="Minutes">
+              <mat-option *ngFor="let minute of allMinutes" [value]="minute">{{minute}}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="minutes.invalid && minutes.touched">
+              Minutes are required!
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+
+        <mat-form-field >
+          <input matInput type="number" min="1" placeholder="Reservation limit" formControlName="reservationLimit">
+          <mat-error *ngIf="reservationLimit.errors && reservationLimit.errors['required'] && reservationLimit.touched">
+            Reservation limit is required!
+          </mat-error>
+          <mat-error *ngIf="reservationLimit.errors && reservationLimit.errors['min'] && reservationLimit.touched">
+            Reservation limit must be greater than or equal to 1
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field >
+          <textarea matInput placeholder="Enter description" formControlName="description"></textarea>
+          <mat-error *ngIf="description.invalid && description.touched">
+            Description is required!
+          </mat-error>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" class="submitButton" [disabled]="newEventForm.invalid || sectorForm.invalid">
+          <span>Add Event</span>
+        </button>
+        <p class="centralError">{{errorMessage}}</p>
+    </form>
+  </div>
+  <div fxLayout="column" fxFlex="70">
+    <div fxLayout="row" class="venueSectorPanel">
+      <form [formGroup]="sectorForm" *ngIf="activeVenues.length > 0">
+        <mat-form-field>
+          <mat-select formControlName="venueName">
+            <div>
+              <mat-option *ngFor="let venue of activeVenues" [value]="venue.name">
+                {{venue.name}} ({{venue.street}}, {{venue.city}})
+              </mat-option>
+            </div>
+          </mat-select>
+        </mat-form-field>
+        <div formArrayName="sectors">
+          <table id="sectorTable">
+            <tr>
+              <th>Sector name</th>
+              <th>Max. Capacity</th>
+              <th>Ticket price</th>
+              <th>Capacity</th>
+              <th>Numerated seats</th>
+              <th>Active</th>
+              <th>Valid</th>
+            </tr>
+            <tr *ngFor="let sectorControl of sectorForm.get('sectors')['controls']; let i = index">
+              <ng-container [formGroupName]="i">
+                <td class="tableInput">{{sectorControl.controls.sectorName.value}}</td>
+                <td class="tableInput">{{sectorControl.controls.maxCapacity.value}}</td>
+                <td><input matInput type="number" formControlName="ticketPrice" class="tableInput"></td>
+                <td><input matInput type="number" formControlName="capacity" class="tableInput"></td>
+                <td class="tableInput">
+                    <input type="checkbox" [value]="sectorControl.controls.numeratedSeats.value" formControlName="numeratedSeats">
+                </td>
+                <td class="tableInput">
+                    <input type="checkbox" [value]="sectorControl.controls.active.value" formControlName="active">
+                </td>
+                <td class="tableInput">
+                  <p *ngIf="!sectorControl.controls.active.value"><mat-icon></mat-icon></p>
+                  <p *ngIf="sectorControl.controls.active.value && sectorControl.valid"><mat-icon>done</mat-icon></p>
+                  <p *ngIf="sectorControl.controls.active.value && sectorControl.invalid"><mat-icon>clear</mat-icon></p>
+                </td>
+              </ng-container>
+            </tr>
+          </table>
+        </div>
+        <div>
+          <p *ngIf="sectorForm.errors && sectorForm.errors['noSelectedSectors']" class="errorMessage">*Event must contain at least one sector!</p>
+        </div>
+      </form>
+      <div *ngIf="activeVenues.length === 0">
+        <h3>There is no active venue at the moment. You need at least one in order to create event!</h3>
+      </div>
+    </div>
+    <div fxLayout="row" class="imagePanel">
+      <h4 style="margin-right: 15px;">Image upload:</h4>
+      <input type="file" (change)="onFileSelected($event)" style="align-self: center;" multiple>
+    </div>
+  </div>
+</div>

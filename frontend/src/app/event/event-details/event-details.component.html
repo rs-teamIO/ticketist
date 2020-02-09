@@ -1,0 +1,29 @@
+<div fxLayout="row" fxLayoutAlign="center" class="outer-container">
+    <mat-card class="example-card mat-card-flat">
+        <img mat-card-image
+             [src]="imageToShow"
+             alt="Event image"
+              *ngIf="!imageLoading; else tempImage">
+        <ng-template #tempImage>
+          <img mat-card-image
+               src="https://media.giphy.com/media/l2JhtqTs67xX3RbVu/giphy.gif"
+          alt="Temp image">
+        </ng-template>
+        <mat-card-content>
+        <mat-card-title>
+            {{event.name}}
+        </mat-card-title>
+        <mat-card-subtitle>
+            {{venue.name}}, {{venue.city}}
+        </mat-card-subtitle>
+        <p>{{event.description}}</p>
+        </mat-card-content>
+        <mat-card-actions>
+        <agm-map [latitude]=venue.latitude [longitude]=venue.longitude [zoom]="10">
+          <agm-marker [latitude]=venue.latitude [longitude]=venue.longitude></agm-marker>
+        </agm-map>
+        </mat-card-actions>
+    </mat-card>
+
+    <app-seats-display [event]="event" [venue]="venue"></app-seats-display>
+</div>

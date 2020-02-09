@@ -1,0 +1,29 @@
+<div fxLayout="row" class="outer-container">
+  <div class="card-column">
+    <img [src]="imageToShow" alt="Event image" *ngIf="!imageLoading; else tempImage">
+    <ng-template #tempImage>
+      <img src="https://www.metrorollerdoors.com.au/wp-content/uploads/2018/02/unavailable-image.jpg"
+           alt="Temp image">
+    </ng-template>
+      <ng-container *ngIf="errorMessage !== ''">
+        <p class="error-message">{{errorMessage}}</p>
+      </ng-container>
+  </div>
+
+  <div class="card-column" style="justify-content: space-between;">
+    <mat-card-title>{{reservation.eventName}}</mat-card-title>
+    <mat-card-subtitle>{{reservation.venueName}}</mat-card-subtitle>
+    <mat-card-subtitle>{{reservation.date | date}}</mat-card-subtitle>
+  </div>
+
+  <div class="card-column" style="justify-content: space-between; margin-top: 20px">
+    <mat-card-subtitle></mat-card-subtitle>
+    <mat-card-subtitle>Tickets: {{reservation.ticketCount}}</mat-card-subtitle>
+    <mat-card-subtitle>Total price: ${{reservation.price}}</mat-card-subtitle>
+  </div>
+
+  <div class="card-column" style="justify-content: space-around;">
+    <button mat-raised-button routerLink="{{'/checkout/'+reservation.id}}">Pay Now</button>
+    <button mat-raised-button color="warn" (click)="cancelReservation()">Cancel</button>
+  </div>
+</div>

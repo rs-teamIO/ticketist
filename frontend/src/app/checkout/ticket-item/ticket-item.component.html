@@ -1,0 +1,27 @@
+<div fxLayout="row" class="outer-container">
+  <mat-card class="mat-card-flat">
+    <img [src]="imageToShow"
+         alt="Event image"
+         *ngIf="!imageLoading; else tempImage">
+    <ng-template #tempImage>
+      <img src="https://www.metrorollerdoors.com.au/wp-content/uploads/2018/02/unavailable-image.jpg"
+           alt="Temp image">
+    </ng-template>
+  </mat-card>
+
+  <mat-card class="mat-card-flat" style="padding-right: 50px;">
+    <mat-card-title>{{ticket.eventName}}</mat-card-title>
+    <mat-card-subtitle>{{ticket.venueName}}</mat-card-subtitle>
+    <mat-card-subtitle>{{ticket.date | date:'MMM d, y, HH:mm'}}</mat-card-subtitle>
+  </mat-card>
+
+  <mat-card class="mat-card-flat" style="padding-top: 24px;">
+    <mat-card-subtitle>Sector: {{ticket.sectorName}}</mat-card-subtitle>
+    <mat-card-subtitle>Row: {{ticket.numberRow}}</mat-card-subtitle>
+    <mat-card-subtitle>Seat: {{ticket.numberColumn}}</mat-card-subtitle>
+  </mat-card>
+
+  <mat-card class="mat-card-flat" style="width: 200px;" fxLayoutAlign="center center">
+    <p>Price: <b>{{ticket.price | currency}}</b></p>
+  </mat-card>
+</div>

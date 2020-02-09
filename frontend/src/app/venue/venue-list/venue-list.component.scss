@@ -1,0 +1,45 @@
+.card-deck-container {
+  width: 100%;
+  max-width: 1100px;
+  position: relative;
+  background-color: whitesmoke;
+  margin-top: 7px;
+}
+
+.card-item {
+  padding: 3px 3px 3px 3px;
+  margin-bottom: 3px;
+}
+
+mat-card-title {
+  font-weight: normal;
+}
+
+.page{
+  position: fixed;
+  margin-top: 100px;
+}
+
+mat-paginator {
+  color: rebeccapurple;
+}
+
+#table {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#table tr:hover{
+  background-color: white;
+}
+
+#table th {
+  padding-top: 12px;
+  padding-left: 9px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: mediumvioletred;
+  color: white;
+}
+

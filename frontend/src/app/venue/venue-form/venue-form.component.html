@@ -1,0 +1,98 @@
+<div fxLayout="row" fxLayoutAlign="left start">
+  <div class="form-container" fxFlex="30">
+
+    <!-- app-venue-form-basic -->
+    <div fxLayout="row" fxLayoutAlign="center center" class="main" *ngIf="found">
+      <mat-card fxFlex="100" fxFlex.sm="60" fxFlex.xs="100" class="example-card">
+        <mat-card-header>
+          <mat-card-title>Venue info</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="venueForm" (ngSubmit)="onSubmit()" class="example-full-width">
+            <mat-form-field class="example-full-width">
+              <input matInput placeholder="Name" formControlName="name">
+              <mat-error *ngIf="name.invalid && name.touched">
+                First name is required!
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field class="example-full-width">
+              <input matInput placeholder="Street" formControlName="street">
+              <mat-error *ngIf="street.invalid && street.touched">
+                Last name is required!
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field class="example-full-width">
+              <input matInput placeholder="City" formControlName="city">
+              <mat-error *ngIf="city.invalid && city.touched">
+                Username is required!
+              </mat-error>
+            </mat-form-field>
+            <button mat-raised-button type="submit" color="primary" class="example-full-width"
+                    [disabled]="venueForm.invalid" id="add-venue-button">
+              Add venue
+            </button>
+            <p class="centralError">{{error}}</p>
+          </form>
+          <button mat-raised-button (click)="viewOnMap()" class="example-full-width" [disabled]="venueForm.invalid" id="view-on-map-button">
+            View on map
+          </button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <agm-map [latitude]=latitude [longitude]=longitude [zoom]="10">
+      <agm-marker [latitude]=latitude [longitude]=longitude></agm-marker>
+    </agm-map>
+  </div>
+
+  <!-- app-venue-form-sectors -->
+  <div class="sector-container" fxFlex="70">
+    <form [formGroup]="addSectorForm" #formDirective="ngForm"
+          (ngSubmit)="onAddSector(formDirective); addSectorForm.reset()">
+      <mat-form-field appearance="outline" >
+        <mat-label>Sector name</mat-label>
+        <input matInput type="text" formControlName="sectorName" id="sector-name">
+        <mat-error *ngIf="sectorName.invalid && sectorName.touched">
+          Sector name can't be empty!
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Max capacity</mat-label>
+        <input matInput type="number" formControlName="maxCapacity" id="max-capacity">
+        <mat-error *ngIf="maxCapacity.invalid && maxCapacity.touched">
+          Max capacity must be a positive number!
+        </mat-error>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="addSectorForm.invalid || !new" id="add-sector-button">
+        <mat-icon>add</mat-icon>
+        <span>Add sector</span>
+      </button>
+    </form>
+
+    <div class="gridster-container">
+      <div fxLayoutAlign="center center" *ngIf="items.length === 0 && new">
+        <h2>Add sector layout here</h2>
+      </div>
+
+      <gridster [options]="options" style="background-color: whitesmoke" *ngIf="new">
+        <gridster-item [item]="item" *ngFor="let item of items" style="background-color: lavender; border-radius: 3px;"
+                       class="mat-elevation-z3 tooltip">
+
+          <span class="tooltiptext">
+            Name: {{ item.name }}<br>
+            Columns: {{item.cols}}<br>
+            Rows: {{item.rows}}
+          </span>
+
+          <div class="button-holder">
+            <button mat-mini-fab (click)="onRemoveItem(item)" color="primary">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </gridster-item>
+      </gridster>
+
+    </div>
+  </div>
+</div>

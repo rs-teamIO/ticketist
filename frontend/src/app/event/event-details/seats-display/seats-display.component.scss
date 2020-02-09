@@ -1,0 +1,68 @@
+.example-card {
+  width: 900px;
+}
+
+mat-form-field {
+  font-size: 12px;
+  margin-top: 8px;
+  // width: 500px;
+}
+
+mat-form-field.sector-select {
+  width: 100%;
+}
+
+button {
+  width: 100%;
+  margin-top: 11px;
+}
+
+.example-margin {
+  margin: 0 10px;
+  font-weight: lighter;
+}
+
+.table-container {
+  min-height: 500px;
+  position: relative;
+  border: 1px solid darkgray;
+}
+
+td.free:hover {
+  background-color: limegreen;
+  cursor: pointer;
+}
+
+.reserved, .paid {
+  background-color: indianred;
+  pointer-events: none;
+}
+
+.free {
+  background-color: gray;
+}
+
+.selected {
+  background-color: limegreen;
+}
+
+td {
+  border: 1px solid grey;
+  border-radius: 3px;
+  width: 25px;
+  height: 25px;
+}
+
+.counter-buttons {
+  margin-bottom: 20px;
+  width: 20px;
+}
+
+h3 {
+  font-weight: lighter;
+}
+
+
+
+
+

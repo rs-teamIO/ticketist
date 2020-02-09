@@ -1,0 +1,29 @@
+<table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+  <!-- Position Column -->
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+    <td mat-cell *matCellDef="let element" class="event-name-td"> {{element.name}} </td>
+  </ng-container>
+
+  <!-- Name Column -->
+  <ng-container matColumnDef="venueName">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Venue </th>
+    <td mat-cell *matCellDef="let element"> {{element.venueName}} </td>
+  </ng-container>
+
+  <!-- Weight Column -->
+  <ng-container matColumnDef="ticketsSold">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Tickets sold </th>
+    <td mat-cell *matCellDef="let element"> {{element.ticketsSold}} </td>
+  </ng-container>
+
+  <!-- Symbol Column -->
+  <ng-container matColumnDef="totalRevenue">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Total revenue ($) </th>
+    <td mat-cell *matCellDef="let element"> {{element.totalRevenue}} </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

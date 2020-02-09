@@ -1,0 +1,41 @@
+<mat-card class="mat-card-flat mat-elevation-z5">
+  <img mat-card-image
+       [src]="imageToShow"
+       alt="Event image"
+        *ngIf="!imageLoading; else tempImage">
+  <ng-template #tempImage>
+    <img mat-card-image
+         src="https://www.metrorollerdoors.com.au/wp-content/uploads/2018/02/unavailable-image.jpg"
+         alt="Temporary image">
+  </ng-template>
+  <mat-card-title style="font-weight: lighter">
+    {{eventModel.name}}
+  </mat-card-title>
+  <mat-card-subtitle fxLayout="column">
+    <span>{{eventModel.venueName}}</span>
+    <div>
+      {{ eventModel.startDate | date }}
+      <span *ngIf="eventModel.startDate !== eventModel.endDate">- {{ eventModel.endDate | date }}</span>
+    </div>
+  </mat-card-subtitle>
+  <mat-divider></mat-divider>
+  <mat-card-actions fxLayoutAlign="center end">
+    <span *ngIf="role === 'ADMIN'; else ticketsButton">
+      <!--    [routerLink]="['/events', eventModel.id]"-->
+<!--      <button mat-button color="primary" disabled>EDIT</button>-->
+      <button mat-button color="warn" type="button" (click)="onCancelEvent()">CANCEL</button>
+    </span>
+
+    <ng-template #ticketsButton>
+      <button mat-button color="primary" [routerLink]="['/event', eventModel.id]" *ngIf="role === 'REGISTERED_USER'">BUY/RESERVE</button>
+      <button mat-button color="primary" [routerLink]="['/login']" *ngIf="role === null">BUY/RESERVE</button>
+    </ng-template>
+  </mat-card-actions>
+</mat-card>
+
+
+
+
+
+
+
