@@ -41,7 +41,7 @@ VALUES
     ('REGISTERED_USER', 1, 'kacjica+1@gmail.com', 'Katarina', 'Tukelic', '$2a$10$6HhA6auhomFftE468xtynuk40nllNZAbKLkkyyps/uX6QY1YqIbjO', 'kaca', 1, null),
     ('ADMIN', 2, 'f@gmail.com', 'Filip', 'Ivkovic', '$2a$10$6HhA6auhomFftE468xtynuk40nllNZAbKLkkyyps/uX6QY1YqIbjO', 'filip', 1, null);
 
-INSERT INTO ticketist.user_role
+INSERT INTO user_role
 VALUES
     (1, 'REGISTERED_USER'),
     (2, 'ADMIN');

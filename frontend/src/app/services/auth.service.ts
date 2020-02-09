@@ -3,7 +3,6 @@ import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject} from 'rxjs';
 import {User} from '../model/user.model';
 import {tap} from 'rxjs/operators';
-import { Router } from '@angular/router';
 import { PORT } from '../shared/constants';
 
 export interface IUserRegister {
@@ -34,7 +33,7 @@ export class AuthService {
   private readonly signUpLink = `http://localhost:${PORT}/api/users`;
   private readonly loginLink = `http://localhost:${PORT}/api/auth`;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient) {}
 
   private handleAuthentication(token: string) {
     const parsedToken: IToken = this.parseJwt(token);
@@ -104,7 +103,6 @@ export class AuthService {
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
     }
-    this.router.navigate(['/login']);
   }
 
   autoLogout(expirationDate: number) {

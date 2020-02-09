@@ -2,18 +2,14 @@ package com.siit.ticketist.integration.service;
 
 import com.siit.ticketist.exceptions.AuthorizationException;
 import com.siit.ticketist.exceptions.BadRequestException;
-import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.User;
 import com.siit.ticketist.security.UserDetailsServiceImpl;
 import com.siit.ticketist.service.RegisteredUserService;
 import com.siit.ticketist.service.UserService;
-import com.sun.deploy.security.ruleset.ExceptionRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

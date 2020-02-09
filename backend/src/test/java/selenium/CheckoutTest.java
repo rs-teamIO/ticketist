@@ -12,7 +12,6 @@ import selenium.Pages.LoginPage;
 import selenium.Pages.MyReservationsPage;
 
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;

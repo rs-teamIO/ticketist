@@ -26,10 +26,10 @@ import static org.junit.Assert.assertThat;
 public class ReportsControllerTest {
 
     private static final String INITIAL_REPORT_PATH = "/api/reports";
-    private static final String INVALID_VENUE_ID_PATH = "/api/reports/-1/TICKETS";
-    private static final String INVALID_CRITERIA_PATH = "/api/reports/1/SOMETHINGNOTVALID";
-    private static final String TICKETS_CRITERIA_PATH = "/api/reports/1/TICKETS";
-    private static final String REVENUE_CRITERIA_PATH = "/api/reports/1/REVENUE";
+    private static final String INVALID_VENUE_NAME_PATH = "/api/reports/invalidvenuename/TICKETS";
+    private static final String INVALID_CRITERIA_PATH = "/api/reports/Spens/SOMETHINGNOTVALID";
+    private static final String TICKETS_CRITERIA_PATH = "/api/reports/Spens/TICKETS";
+    private static final String REVENUE_CRITERIA_PATH = "/api/reports/Spens/REVENUE";
 
     private HttpHeaders headers;
     private HttpEntity request;
@@ -61,39 +61,21 @@ public class ReportsControllerTest {
         ResponseEntity<InitialReportDTO> result = testRestTemplate.
                 exchange(INITIAL_REPORT_PATH, HttpMethod.GET, request, InitialReportDTO.class);
 
-
-//        List<EventReportDTO> lista = result.getBody().getEvents();
-//        List<EventReportDTO> lista2 = new ArrayList(){{
-//            add(new EventReportDTO("Event 1", "Spens", BigInteger.valueOf(2), new BigDecimal(80)));
-//            add(new EventReportDTO("Event 2", "Spens", BigInteger.valueOf(1), new BigDecimal(50)));
-//            add(new EventReportDTO("Event 3", "Novi Sad Fair", BigInteger.valueOf(0), new BigDecimal(0)));
-//            add(new EventReportDTO("Event 4", "Startit Centar", BigInteger.valueOf(0), new BigDecimal(0)));
-//        }};
-
-
-
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertThat(result.getBody(), notNullValue());
         assertThat(result.getBody().getAllVenuesChart().size(), is(4));
         assertThat(result.getBody().getEvents(), hasSize(4));
-
-//        assertThat(result.getBody().getEvents(), hasItems(
-//                new EventReportDTO("Event 1", "Spens", BigInteger.valueOf(2), new BigDecimal(80)),
-//                new EventReportDTO("Event 2", "Spens", BigInteger.valueOf(1), new BigDecimal(50)),
-//                new EventReportDTO("Event 3", "Novi Sad Fair", BigInteger.valueOf(0), new BigDecimal(0)),
-//                new EventReportDTO("Event 4", "Startit Centar", BigInteger.valueOf(0), new BigDecimal(0))
-//        ));
     }
 
     @Test
-    public void generateVenueReportEndpointShouldReturnNotFoundWhenVenueIdIsNotValid() {
+    public void generateVenueReportEndpointShouldReturnNotFoundWhenVenueNameIsNotValid() {
         ResponseEntity<VenueReportDTO> result = testRestTemplate
-                .exchange(INVALID_VENUE_ID_PATH, HttpMethod.GET, request, VenueReportDTO.class);
+                .exchange(INVALID_VENUE_NAME_PATH, HttpMethod.GET, request, VenueReportDTO.class);
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
     }
 
     @Test
-    public void generateVenueReportEndpointShouldReturnBadRequestWhenVenueIdIsNotValid() {
+    public void generateVenueReportEndpointShouldReturnBadRequestWhenCriteriaIsNotValid() {
         ResponseEntity<VenueReportDTO> result = testRestTemplate
                 .exchange(INVALID_CRITERIA_PATH, HttpMethod.GET, request, VenueReportDTO.class);
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());

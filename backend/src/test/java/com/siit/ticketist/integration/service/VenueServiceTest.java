@@ -76,7 +76,7 @@ public class VenueServiceTest {
                 assertSame("Second sector has start row equals to 4", 4, sector1.getStartRow());
                 assertSame("Second sector has start column equals to 4", 4, sector1.getStartColumn());
             } else {
-                assertEquals("Exception in case that there is unwanted sector", "NOT_EXIST", "NONE");
+                fail("Exception in case that there is unwanted sector");
             }
         }
     }
@@ -170,7 +170,7 @@ public class VenueServiceTest {
                 assertSame("Second sector has start row equals to 3", 3, sector.getStartRow());
                 assertSame("Second sector has start column equals to 3", 3, sector.getStartColumn());
             } else {
-                assertEquals("Exception in case that there is unwanted sector", "NOT_EXIST", "NONE");
+                fail("Exception in case that there is unwanted sector");
             }
         }
     }
@@ -307,7 +307,7 @@ public class VenueServiceTest {
         Venue startVenue = venueService.findOne(venueID);
 
         Set<Sector> sectors = startVenue.getSectors();
-        assertSame("Venue has 2 sectors", sectors.size(), 2);
+        assertSame("Venue has 2 sectors", 2, sectors.size());
 
         for(Sector sector1 : sectors) {
             if(sector1.getId() == 1L) {
@@ -327,13 +327,13 @@ public class VenueServiceTest {
                 assertSame("Second sector has start row equals to 4", 4, sector1.getStartRow());
                 assertSame("Second sector has start column equals to 4", 4, sector1.getStartColumn());
             } else {
-                assertEquals("Exception in case that there is unwanted sector", "NOT_EXIST", "NONE");
+                fail("Exception in case that there is unwanted sector");
             }
         }
 
         Venue changedVenue = venueService.addSectorToVenue(newSector, venueID);
 
-        assertSame("Venue has 3 sectors", changedVenue.getSectors().size(), 3);
+        assertSame("Venue has 3 sectors", 3, changedVenue.getSectors().size());
 
         for(Sector sector1 : changedVenue.getSectors()) {
             if(sector1.getId() == 1L) {
@@ -361,7 +361,7 @@ public class VenueServiceTest {
                 assertSame("Second sector has start row equals to 8", 8, sector1.getStartRow());
                 assertSame("Second sector has start column equals to 8", 8, sector1.getStartColumn());
             } else {
-                assertEquals("Exception in case that there is unwanted sector", "NOT_EXIST", "NONE");
+                fail("Exception in case that there is unwanted sector");
             }
         }
     }

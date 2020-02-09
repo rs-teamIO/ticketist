@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -50,7 +49,7 @@ public class VenueService {
         venue.setIsActive(true);
         venue.setId(null);
         checkVenueNameAndLocation(venue.getName(), venue.getStreet(), venue.getCity());
-        if (venue.getSectors().size() == 0) throw new BadRequestException("Venue must contain at least 1 sector");
+        if (venue.getSectors().isEmpty()) throw new BadRequestException("Venue must contain at least 1 sector");
         for (Sector firstSector: venue.getSectors()) {
             overlap = 0;
             sameNameCounter = 0;

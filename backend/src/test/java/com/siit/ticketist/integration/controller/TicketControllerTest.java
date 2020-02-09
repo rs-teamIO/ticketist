@@ -390,4 +390,39 @@ public class TicketControllerTest {
         assertThat(response.getBody(), notNullValue());
         assertEquals(NO_TICKET_FOUND_MESSAGE, response.getBody().getMessage());
     }
+
+    private static final Long VALID_RESERVATION_ID = 1L;
+    private static final Long INVALID_RESERVATION_ID = 666L;
+
+    private static final String FIND_RESERVATION_TICKETS_URL = "/api/tickets/reservations/";
+
+    @Test
+    public void findReservationTickets_shouldReturnListOfTicketsForGivenReservationId_whenReservationWithGivenIdExists() {
+        // Arrange
+        HttpEntity<Object> request = new HttpEntity<>(this.headers);
+
+        // Act
+        ResponseEntity<List> response = this.testRestTemplate
+                .exchange(FIND_RESERVATION_TICKETS_URL.concat(VALID_RESERVATION_ID.toString()), HttpMethod.GET, request, List.class);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertThat(response.getBody(), notNullValue());
+        assertEquals(2, response.getBody().size());
+    }
+
+    @Test
+    public void findReservationTickets_shouldThrowNotFoundException_whenReservationWithGivenIdDoesNotExist() {
+        // Arrange
+        HttpEntity<Object> request = new HttpEntity<>(this.headers);
+
+        // Act
+        ResponseEntity<ErrorResponse> response = this.testRestTemplate
+                .exchange(FIND_RESERVATION_TICKETS_URL.concat(INVALID_RESERVATION_ID.toString()), HttpMethod.GET, request, ErrorResponse.class);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertThat(response.getBody(), notNullValue());
+        assertEquals("Reservation not found", response.getBody().getMessage());
+    }
 }

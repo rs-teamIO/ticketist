@@ -6,7 +6,6 @@ import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.MediaFileRepository;
-import com.siit.ticketist.repository.SectorRepository;
 import com.siit.ticketist.repository.TicketRepository;
 import com.siit.ticketist.service.interfaces.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,14 +82,14 @@ public class EventService {
             throw new BadRequestException("Dates are invalid");
         if(!checkVenueAvailability(event))
             throw new BadRequestException("There is already an event at that time");
-        if(event.getEventSectors().size() == 0) {
+        if(event.getEventSectors().isEmpty()) {
             throw new BadRequestException("Event must contain at least one sector!");
         }
 
         Sector sector;
 
         for(EventSector eventSector : event.getEventSectors()) {
-            if(eventSector.getNumeratedSeats()) {
+            if(eventSector.getNumeratedSeats().booleanValue()) {
                 sector = sectorService.findOne(eventSector.getSector().getId());
                 eventSector.setCapacity(sector.getMaxCapacity());
             } else {
@@ -126,7 +125,7 @@ public class EventService {
 
     public Set<Ticket> generateTickets(EventSector eventSector) {
         Set<Ticket> tickets = new HashSet<>();
-        if (eventSector.getNumeratedSeats()) {
+        if (eventSector.getNumeratedSeats().booleanValue()) {
             Sector sector = sectorService.findOne(eventSector.getSector().getId());
             for (int row = 1; row <= sector.getRowsCount(); row++) {
                 for (int col = 1; col <= sector.getColumnsCount(); col++) {
@@ -361,7 +360,7 @@ public class EventService {
 
         List<Event> filteredEvents = new ArrayList<>();
         eventRepository.findAll().forEach(event -> {
-            if(!event.getIsCancelled() && sdf.format(event.getReservationDeadline()).equals(threeDaysFromNow))
+            if(!event.getIsCancelled().booleanValue() && sdf.format(event.getReservationDeadline()).equals(threeDaysFromNow))
                 filteredEvents.add(event);
         });
         return filteredEvents;

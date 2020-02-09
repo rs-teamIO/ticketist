@@ -1,8 +1,6 @@
 package com.siit.ticketist;
 
-import com.siit.ticketist.dto.RegisteredUserDTO;
 import com.siit.ticketist.dto.TicketDTO;
-import com.siit.ticketist.dto.UpdateUserDTO;
 import com.siit.ticketist.security.TokenUtils;
 import com.siit.ticketist.security.UserDetailsServiceImpl;
 import org.junit.Before;
@@ -13,11 +11,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 

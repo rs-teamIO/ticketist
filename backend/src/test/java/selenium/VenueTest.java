@@ -1,15 +1,15 @@
 package selenium;
 
-import selenium.Pages.EventsPage;
-import selenium.Pages.LoginPage;
-import selenium.Pages.VenuePage;
-import selenium.Pages.VenuesPage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.PageFactory;
+import selenium.Pages.EventsPage;
+import selenium.Pages.LoginPage;
+import selenium.Pages.VenuePage;
+import selenium.Pages.VenuesPage;
 
 import static org.junit.Assert.*;
 
@@ -23,7 +23,7 @@ public class VenueTest {
 
     @Before
     public void setupSelenium() {
-        System.setProperty("webdriver.chrome.driver", "src/test/resources/selenium-webdriver/chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "src/test/resources/selenium-webdriver/chromedriver-mac");
         browser = new ChromeDriver();
         browser.manage().window().maximize();
         browser.navigate().to("http://localhost:4200/login");
