@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface SectorRepository extends JpaRepository<Sector, Long> {
 
-    @Query(value = "select * from sectors s where s.venue_id = ?1", nativeQuery = true)
+    @Query(value = "SELECT * FROM sectors s WHERE s.venue_id = :id", nativeQuery = true)
     List<Sector> findSectorsByVenueId(Long id);
 
 }
