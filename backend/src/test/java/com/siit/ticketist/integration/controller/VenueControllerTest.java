@@ -62,9 +62,9 @@ public class VenueControllerTest {
         HttpEntity request = new HttpEntity(headers);
         ResponseEntity<VenueDTO> response = testRestTemplate.exchange("/api/venues/2", HttpMethod.GET, request, VenueDTO.class);
         assertEquals("Expected status OK", HttpStatus.OK, response.getStatusCode());
-        assertSame("Id equals to 2", response.getBody().getId(), 2L);
-        assertEquals("Name equals to Novi Sad Fair", response.getBody().getName(), "Novi Sad Fair");
-        assertSame("Sector number is 1", response.getBody().getSectors().size(), 1);
+        assertSame("Id equals to 2", 2L, response.getBody().getId());
+        assertEquals("Name equals to Novi Sad Fair", "Novi Sad Fair", response.getBody().getName());
+        assertSame("Sector number is 1", 1, response.getBody().getSectors().size());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class VenueControllerTest {
         HttpEntity request = new HttpEntity(headers);
         ResponseEntity<VenueDTO[]> response = testRestTemplate.exchange("/api/venues", HttpMethod.GET, request, VenueDTO[].class);
         assertEquals("Expected status OK", HttpStatus.OK, response.getStatusCode());
-        assertSame("Venues size is 3", response.getBody().length, 3);
+        assertSame("Venues size is 3", 3, response.getBody().length);
     }
 
     @Test
@@ -80,8 +80,8 @@ public class VenueControllerTest {
         HttpEntity request = new HttpEntity(headers);
         ResponseEntity<VenuePageDTO> response = testRestTemplate.exchange("/api/venues/paged", HttpMethod.GET, request, VenuePageDTO.class);
         assertEquals("Expected status OK", HttpStatus.OK, response.getStatusCode());
-        assertSame("Venues size is 3", response.getBody().getVenues().size(), 3);
-        assertEquals("Total size is 3", response.getBody().getTotalSize().toString(), "3");
+        assertSame("Venues size is 3",3,  response.getBody().getVenues().size());
+        assertEquals("Total size is 3", "3", response.getBody().getTotalSize().toString());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class VenueControllerTest {
         HttpEntity request = new HttpEntity(headers);
         ResponseEntity<VenueDTO[]> response = testRestTemplate.exchange("/api/venues/active", HttpMethod.GET, request, VenueDTO[].class);
         assertEquals("Expected status OK", HttpStatus.OK, response.getStatusCode());
-        assertSame("Venues size is 2", response.getBody().length, 2);
+        assertSame("Venues size is 2", 2, response.getBody().length);
     }
 
     @Test
@@ -277,7 +277,7 @@ public class VenueControllerTest {
         HttpEntity<SectorDTO> request = new HttpEntity<>(sectorDTO, headers);
         ResponseEntity<VenueDTO> response = testRestTemplate.exchange("/api/venues/sector/1", HttpMethod.POST, request, VenueDTO.class);
         assertEquals("Expected status OK", HttpStatus.OK, response.getStatusCode());
-        assertSame("Venue has 5 sectors", response.getBody().getSectors().size(), 5);
+        assertSame("Venue has 5 sectors", 5, response.getBody().getSectors().size());
     }
 
 }

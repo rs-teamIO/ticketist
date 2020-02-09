@@ -102,7 +102,7 @@ public class TicketService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false, rollbackFor = OptimisticLockException.class)
-    public List<Ticket> reserveTickets(List<Long> ticketIDS) throws MessagingException {
+    public List<Ticket> reserveTickets(List<Long> ticketIDS) {
 
         // Check ticket list min length
         checkNumberOfTickets(ticketIDS);

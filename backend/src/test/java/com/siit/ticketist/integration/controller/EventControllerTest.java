@@ -82,7 +82,7 @@ public class EventControllerTest {
     public void getEventsWithPagesEndpointShouldPassWhenCalledWithPageableObject() {
         ResponseEntity<EventPageDTO> result = testRestTemplate
                 .getForEntity(GET_EVENTS_PAGED_PATH, EventPageDTO.class, 0, 8);
-        assertEquals(result.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
         assertThat(result.getBody().getEvents(), hasSize(8));
         assertEquals(Long.valueOf(12), result.getBody().getTotalSize());

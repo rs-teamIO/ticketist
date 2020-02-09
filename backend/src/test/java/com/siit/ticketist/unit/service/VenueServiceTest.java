@@ -311,7 +311,7 @@ public class VenueServiceTest {
         Long venueID = 1L;
         Sector newSector = new Sector(2L, "Jug", 2, 2, 4, 3, 3);
 
-        assertSame("Venue has 1 sector", venue.getSectors().size(), 1);
+        assertSame("Venue has 1 sector", 1, venue.getSectors().size());
 
         for(Sector sector1 : venue.getSectors()) {
             assertSame("First sector has id equals to 1", 1L, sector1.getId());
@@ -325,7 +325,7 @@ public class VenueServiceTest {
 
         venueService.addSectorToVenue(newSector, venueID);
 
-        assertSame("Venue has 2 sectors", venue.getSectors().size(), 2);
+        assertSame("Venue has 2 sectors",2, venue.getSectors().size());
 
         for(Sector sector1 : venue.getSectors()) {
             if(sector1.getId() == 1L) {
@@ -345,7 +345,7 @@ public class VenueServiceTest {
                 assertSame("Second sector has start row equals to 3", 3, sector1.getStartRow());
                 assertSame("Second sector has start column equals to 3", 3, sector1.getStartColumn());
             } else {
-                assertEquals("Exception in case that there is unwanted sector", "NOT_EXIST", "NONE");
+                fail("Exception in case that there is unwanted sector");
             }
         }
     }
