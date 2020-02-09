@@ -61,35 +61,9 @@ public class VenueTest {
             venuesPage.ensureStatusChanged("Active");
         }
 
-        //Add venue, empty form
-        venuesPage.pressNewButton();
-        venuePage.ensureSubmitButtonIsDisplayed();
-        assertFalse(venuePage.getSubmitButton().isEnabled());
-        assertFalse(venuePage.getViewMapButton().isEnabled());
-
-        //Add venue, venue exists
-        venuePage.setNameInput("Spens");
-        venuePage.setStreetInput("Sutjeska 2");
-        venuePage.setCityInput("Novi Sad");
-        assertTrue(venuePage.getSubmitButton().isEnabled());
-        venuePage.clickSubmitButton();
-        venuePage.ensureResponseErrorMessageIsEqualToString("Venue name, street and city combination must be unique!");
-        assertEquals("Venue name, street and city combination must be unique!",venuePage.getResponseErrorMessage().getText());
-
-        //View map, form valid
-        assertTrue(venuePage.getViewMapButton().isEnabled());
-        venuePage.submitViewMap();
-
-        //Add venue, form valid
-        venuePage.setNameInput("Tasmajdan");
-        venuePage.clickSubmitButton();
-        venuePage.ensureResponsePassed();
-        venuePage.pressVenues();
-
         //View venue
         venuesPage.ensureIsDisplayed();
         venuesPage.ensureIsDisplayed2();
-        String temp = venuesPage.getName().getText();
         venuesPage.pressView();
         venuePage.ensureIsDisplayed2();
         venuePage.clickSubmitButton();
