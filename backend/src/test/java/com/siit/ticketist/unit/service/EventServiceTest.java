@@ -9,6 +9,8 @@ import com.siit.ticketist.repository.SectorRepository;
 import com.siit.ticketist.repository.TicketRepository;
 import com.siit.ticketist.service.EmailService;
 import com.siit.ticketist.service.EventService;
+import com.siit.ticketist.service.SectorService;
+import com.siit.ticketist.service.VenueService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,6 +43,12 @@ public class EventServiceTest {
 
     private static final Long EVENT_ID = 1L;
     private static final String EVENT_NOT_FOUND_MESSAGE = "Event not found.";
+
+    @Mock
+    private SectorService sectorService;
+
+    @Mock
+    private VenueService venueService;
 
     @Mock
     private EventRepository eventRepository;
@@ -138,6 +146,7 @@ public class EventServiceTest {
         evList.add(ev);
         when(eventRepository.findByVenueId(ven.getId())).thenReturn(evList);
 
+        when(venueService.checkIsActive(ven.getId())).thenReturn(true);
         Boolean check = eventService.checkVenueAvailability(event);
         assertTrue("venue is avaliable for this event",check);
     }
@@ -170,7 +179,7 @@ public class EventServiceTest {
         List<Event> evList = new ArrayList<Event>();
         evList.add(ev);
         when(eventRepository.findByVenueId(ven.getId())).thenReturn(evList);
-
+        when(venueService.checkIsActive(ven.getId())).thenReturn(true);
         Boolean check = eventService.checkVenueAvailability(event);
         assertFalse("venue is not avaliable for this event",check);
     }
@@ -180,7 +189,7 @@ public class EventServiceTest {
     public void checkSectorMaxCapacity_ShouldReturnFalse_whenCapacityIsGreaterThanSectorLimitUnit(){
         Sector sector = new Sector();
         sector.setMaxCapacity(5);
-        when(sectorRepository.findById(1l)).thenReturn(Optional.of(sector));
+        when(sectorService.findOne(1l)).thenReturn(sector);
         Boolean check = eventService.checkSectorMaxCapacity(1l,10);
         assertFalse("capacity is greater than max capacity",check);
     }
@@ -189,7 +198,7 @@ public class EventServiceTest {
     public void checkSectorMaxCapacity_ShouldReturnTrue_whenCapacityIsLowerThanSectorLimitUnit(){
         Sector sector = new Sector();
         sector.setMaxCapacity(5);
-        when(sectorRepository.findById(1l)).thenReturn(Optional.of(sector));
+        when(sectorService.findOne(1l)).thenReturn(sector);
         Boolean check = eventService.checkSectorMaxCapacity(1l,2);
         assertTrue("capacity is lesser than max capacity",check);
     }
@@ -211,7 +220,7 @@ public class EventServiceTest {
 
         eSector.setEvent(event);
 
-        when(sectorRepository.findById(1l)).thenReturn(Optional.of(sector));
+        when(sectorService.findOne(1l)).thenReturn(sector);
         Set<Ticket> tickets = eventService.generateTickets(eSector);
         assertEquals("ticket list is not empty",4,tickets.size());
 
@@ -226,13 +235,10 @@ public class EventServiceTest {
         sector.setId(10l);
         eSector.setSector(sector);
         eSector.setNumeratedSeats(true);
-        when(sectorRepository.findById(10l)).thenReturn(Optional.empty());
+        when(sectorService.findOne(10l)).thenThrow(new NotFoundException("Sector not found."));
         Set<Ticket> tickets = eventService.generateTickets(eSector);
         assertEquals("ticket list is empty",0,tickets.size());
     }
-
-
-    //------------------------------------------------------
 
     @Test
     public void Save_ShouldThrowNotFoundException_whenSectorIsNotFound(){
@@ -273,7 +279,14 @@ public class EventServiceTest {
         eventSectors.add(eSector);
         event.setEventSectors(eventSectors);
 
-        when(sectorRepository.findOne(Example.of(sec))).thenReturn(Optional.empty());
+        List<Event> evList = new ArrayList<Event>();
+        Event ev = new Event();
+        ev.setId(2l);
+        ev.setStartDate(new Timestamp(time));
+        ev.setEndDate(new Timestamp(time2));
+        when(eventRepository.findByVenueId(ven.getId())).thenReturn(evList);
+        when(venueService.checkIsActive(ven.getId())).thenReturn(true);
+        when(sectorService.findOne(100l)).thenThrow(new NotFoundException("Sector not found."));
 
         eventService.save(event);
     }
@@ -319,13 +332,16 @@ public class EventServiceTest {
         Sector sec = new Sector();
         sec.setId(1L);
         sec.setMaxCapacity(10);
+        sec.setRowsCount(1);
+        sec.setColumnsCount(1);
 
         eSector.setSector(sec);
 
         eventSectors.add(eSector);
         event.setEventSectors(eventSectors);
 
-        when(sectorRepository.findById(sec.getId())).thenReturn(Optional.of(sec));
+        when(venueService.checkIsActive(ven.getId())).thenReturn(true);
+        when(sectorService.findOne(sec.getId())).thenReturn(sec);
         eventService.save(event);
 
     }

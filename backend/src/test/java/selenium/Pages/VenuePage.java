@@ -16,7 +16,7 @@ public class VenuePage extends BasePage {
     @FindBy(xpath = "//input[@formcontrolname=\"city\"]")
     private WebElement cityInput;
 
-    @FindBy(xpath = "//button[3]")
+    @FindBy(xpath = "//button[2]")
     private WebElement venues;
 
     @FindBy(xpath = "//button[@id=\"view-on-map-button\"]")

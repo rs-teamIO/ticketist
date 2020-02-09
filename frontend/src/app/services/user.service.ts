@@ -29,7 +29,7 @@ export class UserService {
   private readonly getUsersInfoPath = `http://localhost:${PORT}/api/users/me`;
   private readonly usersBasicPath = `http://localhost:${PORT}/api/users`;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient) {}
 
   update(user: IUserUpdate): Observable<IRegisteredUser> {
     return this.http.put<IRegisteredUser>(
