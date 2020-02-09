@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.PageFactory;
+import selenium.Pages.CheckoutPage;
 import selenium.Pages.EventsPage;
 import selenium.Pages.LoginPage;
 import selenium.Pages.MyReservationsPage;
@@ -19,6 +20,7 @@ public class MyReservationsTest {
     MyReservationsPage myReservationsPage;
     LoginPage loginPage;
     EventsPage eventsPage;
+    CheckoutPage checkoutPage;
 
     @Before
     public void setupSelenium() {
@@ -29,6 +31,7 @@ public class MyReservationsTest {
         loginPage = PageFactory.initElements(browser, LoginPage.class);
         myReservationsPage = PageFactory.initElements(browser, MyReservationsPage.class);
         eventsPage = PageFactory.initElements(browser, EventsPage.class);
+        checkoutPage = PageFactory.initElements(browser, CheckoutPage.class);
     }
 
     @Test
@@ -78,7 +81,8 @@ public class MyReservationsTest {
 
         // accept reservation and move to /checkout page
         myReservationsPage.payFirstReservationInList();
-        // Todo check navigation to /checkout (wait for component to be done)
+        checkoutPage.ensureTotalPriceIsDisplayed();
+        assertEquals("http://localhost:4200/checkout/3", browser.getCurrentUrl());
 
     }
 

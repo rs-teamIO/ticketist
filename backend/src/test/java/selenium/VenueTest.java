@@ -23,7 +23,7 @@ public class VenueTest {
 
     @Before
     public void setupSelenium() {
-        System.setProperty("webdriver.chrome.driver", "src/test/resources/selenium-webdriver/chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "src/test/resources/selenium-webdriver/chromedriver-mac");
         browser = new ChromeDriver();
         browser.manage().window().maximize();
         browser.navigate().to("http://localhost:4200/login");
