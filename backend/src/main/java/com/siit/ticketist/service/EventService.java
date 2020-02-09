@@ -6,7 +6,6 @@ import com.siit.ticketist.exceptions.NotFoundException;
 import com.siit.ticketist.model.*;
 import com.siit.ticketist.repository.EventRepository;
 import com.siit.ticketist.repository.MediaFileRepository;
-import com.siit.ticketist.repository.SectorRepository;
 import com.siit.ticketist.repository.TicketRepository;
 import com.siit.ticketist.service.interfaces.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;

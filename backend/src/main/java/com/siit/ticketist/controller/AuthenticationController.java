@@ -1,13 +1,12 @@
 package com.siit.ticketist.controller;
 
-import com.siit.ticketist.exceptions.AuthorizationException;
 import com.siit.ticketist.dto.AuthenticationRequest;
 import com.siit.ticketist.dto.AuthenticationResponse;
+import com.siit.ticketist.exceptions.AuthorizationException;
 import com.siit.ticketist.model.User;
 import com.siit.ticketist.security.TokenUtils;
 import com.siit.ticketist.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

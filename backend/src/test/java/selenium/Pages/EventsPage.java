@@ -19,6 +19,9 @@ public class EventsPage extends BasePage {
     @FindBy(xpath = "//button[@routerlink=\"/venues/list\"]")
     private WebElement venuesButton;
 
+    @FindBy(xpath = "//button[@routerlink=\"/reports\"]")
+    private WebElement reportsButton;
+
     @FindBy(xpath = "//form/button")
     private WebElement searchButton;
 
@@ -120,6 +123,8 @@ public class EventsPage extends BasePage {
     public void clickNextPageButton() { clickElement(nextPageButton); }
 
     public void clickBuyReserveButton() { clickElement(buyReserveEXITButton); }
+
+    public void clickReportsButton() { clickElement(reportsButton); }
 
     public void enterEventName(String text) { enterText(searchEventNameInput, text); }
 

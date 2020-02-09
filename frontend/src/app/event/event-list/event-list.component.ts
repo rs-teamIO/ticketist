@@ -47,7 +47,6 @@ export class EventListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadData() {
     this.eventService.getEvents();
-    console.log(this.events);
   }
 
   ngOnDestroy(): void {

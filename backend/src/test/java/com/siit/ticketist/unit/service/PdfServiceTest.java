@@ -1,7 +1,9 @@
-package com.siit.ticketist.service;
+package com.siit.ticketist.unit.service;
 
 import com.siit.ticketist.dto.PdfTicket;
 import com.siit.ticketist.exceptions.BadRequestException;
+import com.siit.ticketist.service.PdfService;
+import com.siit.ticketist.service.QrCodeService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,7 +29,7 @@ import static org.mockito.Mockito.*;
 /**
  * This class contains unit test methods for {@link PdfService}.
  */
-public class PdfServiceUnitTest {
+public class PdfServiceTest {
 
     private static final String ENDPOINT = "https://localhost:8080/api/tickets/validate/";
     private static final Integer QR_CODE_WIDTH = 180;

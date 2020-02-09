@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.apache.commons.lang3.time.DateUtils.addDays;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;

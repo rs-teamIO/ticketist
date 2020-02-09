@@ -2,7 +2,6 @@ package com.siit.ticketist.controller;
 
 import com.siit.ticketist.dto.InitialReportDTO;
 import com.siit.ticketist.dto.VenueReportDTO;
-import com.siit.ticketist.model.Venue;
 import com.siit.ticketist.service.ReportService;
 import com.siit.ticketist.service.VenueService;
 import org.springframework.http.HttpStatus;

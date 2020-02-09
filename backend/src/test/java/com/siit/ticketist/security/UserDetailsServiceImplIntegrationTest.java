@@ -3,7 +3,6 @@ package com.siit.ticketist.security;
 import com.siit.ticketist.model.RegisteredUser;
 import com.siit.ticketist.model.User;
 import com.siit.ticketist.repository.UserRepository;
-import com.siit.ticketist.security.UserDetailsServiceImpl;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
