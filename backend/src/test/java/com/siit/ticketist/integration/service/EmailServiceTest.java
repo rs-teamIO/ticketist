@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -143,6 +144,7 @@ public class EmailServiceTest {
     }
 
     @Test
+    @Transactional
     @Sql("/email-notif.sql")
     public void sendEventCancelledEmails_shouldSendEventCancelledEmails_whenThereIsOnlyOneEmailToBeNotified() throws MessagingException, IOException {
         // Arrange
